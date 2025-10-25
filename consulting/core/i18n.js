@@ -77,6 +77,8 @@ export const translations = {
         h3_company_1: "Compagnie 1",
         h3_company_2: "Compagnie 2",
         label_company_name: "Nom de la compagnie",
+        label_start_age_f4: "Âge de début (Cible 67 ans)", // NOUVEAU
+        label_start_age_80_f4: "Âge de début (Cible 80 ans)", // NOUVEAU
         btn_compare: "Comparer les Projections",
         h4_f3_results: "Résultats de la Projection",
         span_f3_duration: "Durée : ",
@@ -175,6 +177,8 @@ export const translations = {
         h3_company_1: "Maatschappij 1",
         h3_company_2: "Maatschappij 2",
         label_company_name: "Naam maatschappij",
+        label_start_age_f4: "Startleeftijd (Doel 67 jaar)", // NOUVEAU
+        label_start_age_80_f4: "Startleeftijd (Doel 80 jaar)", // NOUVEAU
         btn_compare: "Projecties Vergelijken",
         h4_f3_results: "Projectieresultaten",
         span_f3_duration: "Looptijd: ",
@@ -273,6 +277,8 @@ export const translations = {
         h3_company_1: "Company 1",
         h3_company_2: "Company 2",
         label_company_name: "Company name",
+        label_start_age_f4: "Start Age (Target 67 years)", // NOUVEAU
+        label_start_age_80_f4: "Start Age (Target 80 years)", // NOUVEAU
         btn_compare: "Compare Projections",
         h4_f3_results: "Projection Results",
         span_f3_duration: "Duration: ",
@@ -325,7 +331,7 @@ export const translations = {
     }
 };
 
-// 2. LOGIQUE DE TRADUCTION (INCHANGÉE)
+// 2. LOGIQUE DE TRADUCTION (Adaptée pour les labels dynamiques F4)
 export let currentLang = 'fr'; // Langue par défaut
 const onLangChangeCallbacks = []; // Fonctions à appeler lors du changement de langue
 
@@ -354,6 +360,8 @@ export function applyTranslations() {
         if (key === 'span_tax_levied' || key === 'span_f3_tax') return;
         // Exclure les labels de graphiques qui seront gérés par les calculateurs
         if (['chart_evolution', 'chart_avant_taxe', 'chart_apres_taxe'].includes(key)) return;
+        // Exclure les labels d'âge de début F4 qui seront gérés par le calculateur
+        if (['label_start_age_f4', 'label_start_age_80_f4'].includes(key)) return;
 
 
         const isDynamicLabelF1 = ['label_birth_year', 'span_years'].includes(key);
