@@ -22,11 +22,11 @@ const defaultState = {
     f3_duree: 10,
     f3_taux: 3,
 
-    // F4 - Comparateur
+    // F4 - Comparateur // MODIFICATION ICI
     f4_c1_name: 'Belfius',
     f4_c1_type: 'pension',
     f4_c1_extend_80: false,
-    f4_c1_birth_year: 2001,
+    f4_c1_start_age: 25, // Anciennement f4_c1_birth_year
     f4_c1_versement: 87.50,
     f4_c1_rendement: 2,
     f4_c1_frais_entree: 3,
@@ -34,7 +34,7 @@ const defaultState = {
     f4_c2_name: 'AXA',
     f4_c2_type: 'pension',
     f4_c2_extend_80: false,
-    f4_c2_birth_year: 2000,
+    f4_c2_start_age: 25, // Anciennement f4_c2_birth_year
     f4_c2_versement: 87.50,
     f4_c2_rendement: 5,
     f4_c2_frais_entree: 3,
