@@ -21,13 +21,17 @@ export const translations = {
         h4_monthly_detail: "Détail Mensuel et Déductibilité", span_gross_monthly: "Versement Brut par mois", span_deductibility_monthly: "Déductibilité / Avantage Fiscal", span_net_cost_monthly: "Coût Net Réel (Déduction faite)",
         h4_annual_detail: "Détail Annuel et Déductibilité", span_gross_annual: "Versement Brut Annuel", span_deductibility_annual: "Avantage Fiscal Annuel", span_net_cost_annual: "Coût Net Annuel (Déduction faite)",
         h4_total_results: "Résultats Totaux sur la Durée", span_gross_total: "Versement Brut Total", span_deductibility_total: "Avantage Fiscal Total", span_net_total: "Capital Net Placé Total (votre effort)",
-        h4_final_projection: "Projection Finale (Âge 67 ans)", span_tax_levied: "Taxe Libératoire Prélevée (à 60 ans)", span_final_net_capital: "CAPITAL FINAL NET (Total perçu à 67 ans)",
+        h4_final_projection: "Projection Finale (Âge 67 ans)", 
+        span_tax_levied: "Taxe Libératoire Prélevée (à {age} ans)", // MODIFIÉ
+        span_final_net_capital: "CAPITAL FINAL NET (Total perçu à 67 ans)",
         h4_final_projection_80: "Projection Finale (Âge 80 ans)",
         span_final_net_capital_80: "CAPITAL FINAL NET (Total perçu à 80 ans)",
         p_capital_delayed: "Capital Final (Démarrage 1 an plus tard)",
         p_loss_estimated: "Perte potentielle de gain",
         h4_capital_evolution: "Évolution du Capital Net après Frais",
-        chart_evolution: "Évolution du Capital (Net de Taxe après 60 ans)", chart_avant_taxe: "Capital AVANT Prélèvement (60 ans)", chart_apres_taxe: "Capital APRÈS Prélèvement (60 ans)",
+        chart_evolution: "Évolution du Capital (Net de Taxe après {age} ans)", // MODIFIÉ
+        chart_avant_taxe: "Capital AVANT Prélèvement ({age} ans)", // MODIFIÉ
+        chart_apres_taxe: "Capital APRÈS Prélèvement ({age} ans)", // MODIFIÉ
         chart_final_net: "Capital Final NET (67 ans)",
         chart_final_net_80: "Capital Final NET (80 ans)",
         chart_retard: "Capital Final (Retard 1 an)",
@@ -80,7 +84,7 @@ export const translations = {
         span_f3_gross_total: "Investissement Brut Total",
         span_f3_deduction_total: "Avantage Fiscal Total",
         span_f3_net_total: "Investissement Net Total",
-        span_f3_tax: "Taxe Libératoire (à 60 ans)",
+        span_f3_tax: "Taxe Libératoire (à {age} ans)", // MODIFIÉ
         span_f3_final_capital: "CAPITAL FINAL NET (67 ans)",
         h3_difference: "Différence",
         span_difference_label: "Différence de Capital Final (C1 - C2)",
@@ -139,11 +143,15 @@ export const translations = {
         h4_monthly_detail: "Maandelijkse Details & Aftrekbaarheid", span_gross_monthly: "Bruto Storting per maand", span_deductibility_monthly: "Aftrekbaarheid / Fiscaal Voordeel", span_net_cost_monthly: "Reële Netto Kost (na aftrek)",
         h4_annual_detail: "Jaarlijkse Details & Fiscaliteit", span_gross_annual: "Bruto Jaarlijkse Storting", span_deductibility_annual: "Jaarlijks Fiscaal Voordeel", span_net_cost_annual: "Jaarlijkse Netto Kost (na aftrek)",
         h4_total_results: "Totale Resultaten over de Looptijd", span_gross_total: "Totale Bruto Storting", span_deductibility_total: "Totaal Fiscaal Voordeel", span_net_total: "Totaal Netto Geïnvesteerd Kapitaal",
-        h4_final_projection: "Eindprojectie (Leeftijd 67)", span_tax_levied: "Bevrijdende Belasting (op 60 jaar)", span_final_net_capital: "FINAAL NETTO KAPITAAL (Totaal ontvangen op 67)",
+        h4_final_projection: "Eindprojectie (Leeftijd 67)", 
+        span_tax_levied: "Bevrijdende Belasting (op {age} jaar)", // MODIFIÉ
+        span_final_net_capital: "FINAAL NETTO KAPITAAL (Totaal ontvangen op 67)",
         h4_final_projection_80: "Eindprojectie (Leeftijd 80)", span_final_net_capital_80: "FINAAL NETTO KAPITAAL (Totaal ontvangen op 80)",
         p_capital_delayed: "Definitief Kapitaal (1 jaar later starten)", p_loss_estimated: "Geschat verlies aan winst",
         h4_capital_evolution: "Evolutie van Netto Kapitaal na Kosten",
-        chart_evolution: "Kapitaalevolutie (Netto na belasting op 60)", chart_avant_taxe: "Kapitaal VOOR Belasting (60j)", chart_apres_taxe: "Kapitaal NA Belasting (60j)",
+        chart_evolution: "Kapitaalevolutie (Netto na belasting op {age})", // MODIFIÉ
+        chart_avant_taxe: "Kapitaal VOOR Belasting ({age}j)", // MODIFIÉ
+        chart_apres_taxe: "Kapitaal NA Belasting ({age}j)", // MODIFIÉ
         chart_final_net: "Finaal Netto Kapitaal (67j)", chart_final_net_80: "Finaal Netto Kapitaal (80j)",
         chart_retard: "Finaal Kapitaal (Vertraging 1j)",
         chart_y_label: "Bedrag (€)", chart_x_label: "Leeftijd (jaar)", no_data: "Geen gegevens om weer te geven",
@@ -174,7 +182,7 @@ export const translations = {
         span_f3_gross_total: "Totale Bruto Investering",
         span_f3_deduction_total: "Totaal Fiscaal Voordeel",
         span_f3_net_total: "Totale Netto Investering",
-        span_f3_tax: "Bevrijdende Belasting (op 60j)",
+        span_f3_tax: "Bevrijdende Belasting (op {age}j)", // MODIFIÉ
         span_f3_final_capital: "FINAAL NETTO KAPITAAL (67j)",
         h3_difference: "Verschil",
         span_difference_label: "Verschil Eindkapitaal (M1 - M2)",
@@ -233,11 +241,15 @@ export const translations = {
         h4_monthly_detail: "Monthly Detail & Deductibility", span_gross_monthly: "Gross Monthly Contribution", span_deductibility_monthly: "Deductibility / Tax Advantage", span_net_cost_monthly: "Real Net Cost (Deduction made)",
         h4_annual_detail: "Annual Detail & Taxation", span_gross_annual: "Gross Annual Contribution", span_deductibility_annual: "Annual Tax Advantage", span_net_cost_annual: "Annual Net Cost (Deduction made)",
         h4_total_results: "Total Results Over Duration", span_gross_total: "Total Gross Contribution", span_deductibility_total: "Total Tax Advantage", span_net_total: "Total Net Capital Invested (your effort)",
-        h4_final_projection: "Final Projection (Age 67)", span_tax_levied: "Final Tax Levied (at age 60)", span_final_net_capital: "FINAL NET CAPITAL (Total received at 67)",
+        h4_final_projection: "Final Projection (Age 67)", 
+        span_tax_levied: "Final Tax Levied (at age {age})", // MODIFIÉ
+        span_final_net_capital: "FINAL NET CAPITAL (Total received at 67)",
         h4_final_projection_80: "Final Projection (Age 80)", span_final_net_capital_80: "FINAL NET CAPITAL (Total received at 80)",
         p_capital_delayed: "Final Capital (Starting 1 Year Later)", p_loss_estimated: "Estimated Potential Loss",
         h4_capital_evolution: "Evolution of Net Capital after Fees",
-        chart_evolution: "Capital Evolution (Net of Tax after 60)", chart_avant_taxe: "Capital BEFORE Levy (age 60)", chart_apres_taxe: "Capital AFTER Levy (age 60)",
+        chart_evolution: "Capital Evolution (Net of Tax after {age})", // MODIFIÉ
+        chart_avant_taxe: "Capital BEFORE Levy (age {age})", // MODIFIÉ
+        chart_apres_taxe: "Capital AFTER Levy (age {age})", // MODIFIÉ
         chart_final_net: "FINAL NET Capital (age 67)", chart_final_net_80: "FINAL NET Capital (age 80)",
         chart_retard: "Final Capital (1 Year Delay)",
         chart_y_label: "Amount (€)", chart_x_label: "Age (yrs)", no_data: "No data to display",
@@ -268,7 +280,7 @@ export const translations = {
         span_f3_gross_total: "Total Gross Investment",
         span_f3_deduction_total: "Total Tax Advantage",
         span_f3_net_total: "Total Net Investment",
-        span_f3_tax: "Final Tax (at age 60)",
+        span_f3_tax: "Final Tax (at age {age})", // MODIFIÉ
         span_f3_final_capital: "FINAL NET CAPITAL (age 67)",
         h3_difference: "Difference",
         span_difference_label: "Final Capital Difference (C1 - C2)",
@@ -337,6 +349,12 @@ export function applyTranslations() {
 
         // Exclure les textes gérés dynamiquement par les fonctions de calcul (inflation summary)
         if (key === 'p_summary_f3') return;
+        
+        // Exclure les labels de taxe qui seront gérés par les calculateurs
+        if (key === 'span_tax_levied' || key === 'span_f3_tax') return;
+        // Exclure les labels de graphiques qui seront gérés par les calculateurs
+        if (['chart_evolution', 'chart_avant_taxe', 'chart_apres_taxe'].includes(key)) return;
+
 
         const isDynamicLabelF1 = ['label_birth_year', 'span_years'].includes(key);
         // MODIFIÉ: S'assurer que le label dynamique de F1 n'écrase pas le nouveau label F4
@@ -411,4 +429,3 @@ export function setLanguage(lang) {
         }
     });
 }
-
