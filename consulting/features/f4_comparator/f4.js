@@ -2,7 +2,7 @@
 
 import { updateElement } from '../../core/utils.js';
 import { translations, currentLang, registerOnLangChange } from '../../core/i18n.js';
-import { AGE_FINALE_DEFAUT, AGE_FINALE_LT, CURRENT_YEAR } from '../../core/constants.js';
+import { AGE_FINALE_DEFAUT, AGE_FINALE_LT, CURRENT_YEAR, AGE_TAXE } from '../../core/constants.js';
 import { effectuerSimulation } from '../../core/simulationEngine.js';
 
 // NOUVEAU: Importer le store
@@ -140,6 +140,14 @@ export function calculerComparaisonF3() {
         updateElement('f3-c1-final-capital-text', (t[finalAgeKey1] || "Capital Final Net").toUpperCase(), false);
         updateElement('f3-c2-final-capital-text', (t[finalAgeKey2] || "Capital Final Net").toUpperCase(), false);
 
+        // NOUVEAU: Mettre à jour les labels de taxe
+        const ageTaxe1 = result1.ageTaxe || AGE_TAXE;
+        const labelTaxe1 = t.span_f3_tax.replace('{age}', ageTaxe1.toFixed(0));
+        updateElement('f4-c1-tax-label', labelTaxe1, false);
+        
+        const ageTaxe2 = result2.ageTaxe || AGE_TAXE;
+        const labelTaxe2 = t.span_f3_tax.replace('{age}', ageTaxe2.toFixed(0));
+        updateElement('f4-c2-tax-label', labelTaxe2, false);
 
         // Mettre à jour les résultats (Colonne 1)
         const unit = currentLang === 'nl' ? 'jaar' : (currentLang === 'en' ? 'yrs' : 'ans');
