@@ -102,10 +102,19 @@ export function calculerProjectionF1() {
         const result = effectuerSimulation(params, CURRENT_YEAR);
         const resultRetard = effectuerSimulation(params, CURRENT_YEAR + 1);
 
+        // NOUVEAU: Récupérer l'âge de taxation et créer le label dynamique
+        const ageTaxe = result.ageTaxe || AGE_TAXE;
+        const labelTaxe = t.span_tax_levied.replace('{age}', ageTaxe.toFixed(0));
+
         // Reset UI si invalide
         if (!result || result.dureeAnnees <= 0 || isNaN(result.capitalFinalNet)) {
             console.warn("F1: Durée nulle ou résultat invalide.");
-             updateElement('duree-ans-info', "0", false); updateElement('versement-brut-mois', 0); updateElement('avantage-mois', 0); updateElement('net-place-mois', 0); updateElement('versement-brut-annuel', 0); updateElement('avantage-annuel-calcule', 0); updateElement('capital-net-annuel', 0); updateElement('versement-brut-total', 0); updateElement('avantage-total', 0); updateElement('capital-net-total', 0); updateElement('total-duree-annees', "0", false); updateInputElement('capital-avant-taxe-value', 0); updateInputElement('taxe-liberatoire-value', 0); updateElement('taxe-liberatoire', 0); updateElement('taxe-liberatoire-80', 0); updateElement('capital-final', 0); updateElement('capital-final-80', 0); updateElement('capital-retard', 0); updateElement('perte-estimee', 0); createChartF1([], 0, 0, 0, 0, finalAge); 
+             updateElement('duree-ans-info', "0", false); updateElement('versement-brut-mois', 0); updateElement('avantage-mois', 0); updateElement('net-place-mois', 0); updateElement('versement-brut-annuel', 0); updateElement('avantage-annuel-calcule', 0); updateElement('capital-net-annuel', 0); updateElement('versement-brut-total', 0); updateElement('avantage-total', 0); updateElement('capital-net-total', 0); updateElement('total-duree-annees', "0", false); updateInputElement('capital-avant-taxe-value', 0); updateInputElement('taxe-liberatoire-value', 0); updateElement('taxe-liberatoire', 0); updateElement('taxe-liberatoire-80', 0); updateElement('capital-final', 0); updateElement('capital-final-80', 0); updateElement('capital-retard', 0); updateElement('perte-estimee', 0); 
+             // NOUVEAU: Mettre à jour le label de taxe même en cas d'échec
+             const labelTaxeEchec = t.span_tax_levied.replace('{age}', AGE_TAXE.toFixed(0));
+             updateElement('f1-tax-label', labelTaxeEchec, false);
+             updateElement('f1-tax-label-80', labelTaxeEchec, false);
+             createChartF1([], 0, 0, 0, 0, finalAge, AGE_TAXE); 
              return; 
         }
 
@@ -128,6 +137,11 @@ export function calculerProjectionF1() {
         updateElement('total-duree-annees', result.dureeVersementAnnees.toFixed(0), false);
         updateInputElement('capital-avant-taxe-value', result.capitalAuMomentTaxe);
         updateInputElement('taxe-liberatoire-value', result.taxeLiberatoire);
+        
+        // NOUVEAU: Mettre à jour les labels de taxe dynamiques
+        updateElement('f1-tax-label', labelTaxe, false); // Pour le bloc 67 ans
+        updateElement('f1-tax-label-80', labelTaxe, false); // Pour le bloc 80 ans
+        
         updateElement('taxe-liberatoire', result.taxeLiberatoire);
         updateElement('taxe-liberatoire-80', result.taxeLiberatoire);
         updateElement('capital-final', result.capitalFinalNet); 
@@ -136,15 +150,16 @@ export function calculerProjectionF1() {
         updateElement('perte-estimee', perteEstimee);
         
         // Mettre à jour le graphique
-        createChartF1(result.evolutionCapital, anneeNaissance + AGE_TAXE, result.capitalAuMomentTaxe, result.taxeLiberatoire, resultRetard.capitalFinalNet, finalAge); 
+        createChartF1(result.evolutionCapital, anneeNaissance + AGE_TAXE, result.capitalAuMomentTaxe, result.taxeLiberatoire, resultRetard.capitalFinalNet, finalAge, ageTaxe); 
 
     } catch (error) {
         console.error("Erreur majeure dans calculerProjectionF1:", error);
-        updateElement('capital-final', 0); updateElement('capital-final-80', 0); createChartF1([], 0, 0, 0, 0, AGE_FINALE_DEFAUT); 
+        updateElement('capital-final', 0); updateElement('capital-final-80', 0); createChartF1([], 0, 0, 0, 0, AGE_FINALE_DEFAUT, AGE_TAXE); 
     }
 }
 
-function createChartF1(data, annee60Ans, capitalAuMomentTaxe, taxeLiberatoire, capitalRetardValue, finalAge) { 
+// NOUVEAU: Ajout de 'ageTaxe' pour les labels du graphique
+function createChartF1(data, annee60Ans, capitalAuMomentTaxe, taxeLiberatoire, capitalRetardValue, finalAge, ageTaxe) { 
     const ctx = document.getElementById('capitalChart')?.getContext('2d'); 
     if (!ctx) { console.warn("Canvas F1 non trouvé"); return;} 
     const t = translations[currentLang] || translations.fr; 
@@ -159,17 +174,18 @@ function createChartF1(data, annee60Ans, capitalAuMomentTaxe, taxeLiberatoire, c
         return;
     }
 
-    let index60Ans = chartData.findIndex(d => d.age >= AGE_TAXE); 
+    let indexTaxe = chartData.findIndex(d => d.age >= ageTaxe); // Utilise l'âge de taxe réel
     let pointAvantTaxeAjoute = false;
-    if (index60Ans > 0 && capitalAuMomentTaxe > 0 && taxeLiberatoire > 0) {
-        const pointAvantTaxe = { year: chartData[index60Ans].year, age: chartData[index60Ans].age, capital: capitalAuMomentTaxe };
-        if (index60Ans === 0 || chartData[index60Ans - 1].capital !== capitalAuMomentTaxe) {
-             chartData.splice(index60Ans, 0, pointAvantTaxe); 
+    if (indexTaxe >= 0 && capitalAuMomentTaxe > 0 && taxeLiberatoire > 0) {
+        // S'assurer qu'on ne l'ajoute pas si le point existe déjà
+        if (indexTaxe === 0 || chartData[indexTaxe - 1].capital !== capitalAuMomentTaxe) {
+             const pointAvantTaxe = { year: chartData[indexTaxe].year, age: chartData[indexTaxe].age, capital: capitalAuMomentTaxe };
+             chartData.splice(indexTaxe, 0, pointAvantTaxe); 
              pointAvantTaxeAjoute = true;
         }
     }
     
-    const finalIndex60Ans = pointAvantTaxeAjoute ? index60Ans : chartData.findIndex(d => d.age >= AGE_TAXE);
+    const finalIndexTaxe = pointAvantTaxeAjoute ? indexTaxe : chartData.findIndex(d => d.age >= ageTaxe);
 
     const labels = chartData.map(d => d.year); 
     const dataCapital = chartData.map(d => d.capital);
@@ -180,17 +196,24 @@ function createChartF1(data, annee60Ans, capitalAuMomentTaxe, taxeLiberatoire, c
     let pointAvantTaxePoints = labels.map(() => null); 
     let pointApresTaxePoints = labels.map(() => null); 
 
-    if (pointAvantTaxeAjoute && finalIndex60Ans < chartData.length) {
-         pointAvantTaxePoints[finalIndex60Ans] = capitalAuMomentTaxe;
-         if (finalIndex60Ans + 1 < chartData.length) {
-             pointApresTaxePoints[finalIndex60Ans + 1] = chartData[finalIndex60Ans + 1].capital;
+    if (finalIndexTaxe >= 0 && finalIndexTaxe < chartData.length) {
+         pointAvantTaxePoints[finalIndexTaxe] = capitalAuMomentTaxe;
+         if (finalIndexTaxe + 1 < chartData.length) {
+             pointApresTaxePoints[finalIndexTaxe + 1] = chartData[finalIndexTaxe + 1].capital;
          }
     }
 
     const pointFinalNet = labels.map((_, i) => i === finalIndex ? capitalFinalNet : null);
     const pointRetard = labels.map((_, i) => i === finalIndex ? capitalRetard : null);
+    
+    // NOUVEAU: Labels de graphique dynamiques
     const finalAgeKey = (finalAge === 80) ? 'chart_final_net_80' : 'chart_final_net';
     const finalLabel = t[finalAgeKey] || t.chart_final_net;
+    const ageTaxeStr = ageTaxe.toFixed(0);
+    const labelEvo = t.chart_evolution.replace('{age}', ageTaxeStr);
+    const labelAvant = t.chart_avant_taxe.replace('{age}', ageTaxeStr);
+    const labelApres = t.chart_apres_taxe.replace('{age}', ageTaxeStr);
+
 
     if (myChart) { myChart.destroy(); }
 
@@ -200,9 +223,9 @@ function createChartF1(data, annee60Ans, capitalAuMomentTaxe, taxeLiberatoire, c
             data: {
                 labels: labels, 
                 datasets: [
-                    { label: t.chart_evolution, data: dataCapital, borderColor: '#0070B0', backgroundColor: 'rgba(0, 112, 176, 0.1)', borderWidth: 2, fill: false, tension: 0.1, pointRadius: 2, pointHoverRadius: 4 }, 
-                    { label: t.chart_avant_taxe, data: pointAvantTaxePoints, borderColor: '#FF8800', backgroundColor: '#FF8800', borderWidth: 0, pointRadius: 6, pointStyle: 'star', showLine: false },
-                    { label: t.chart_apres_taxe, data: pointApresTaxePoints, borderColor: '#FF8800', backgroundColor: '#FF8800', borderWidth: 0, pointRadius: 6, pointStyle: 'triangle', showLine: false },
+                    { label: labelEvo, data: dataCapital, borderColor: '#0070B0', backgroundColor: 'rgba(0, 112, 176, 0.1)', borderWidth: 2, fill: false, tension: 0.1, pointRadius: 2, pointHoverRadius: 4 }, 
+                    { label: labelAvant, data: pointAvantTaxePoints, borderColor: '#FF8800', backgroundColor: '#FF8800', borderWidth: 0, pointRadius: 6, pointStyle: 'star', showLine: false },
+                    { label: labelApres, data: pointApresTaxePoints, borderColor: '#FF8800', backgroundColor: '#FF8800', borderWidth: 0, pointRadius: 6, pointStyle: 'triangle', showLine: false },
                     { label: finalLabel, data: pointFinalNet, borderColor: '#00B3A6', backgroundColor: '#00B3A6', borderWidth: 0, pointRadius: 7, pointStyle: 'circle', showLine: false },
                     { label: t.chart_retard, data: pointRetard, borderColor: '#D3425A', backgroundColor: '#D3425A', borderWidth: 0, pointRadius: 7, pointStyle: 'crossRot', showLine: false }
                 ]
@@ -225,9 +248,9 @@ function createChartF1(data, annee60Ans, capitalAuMomentTaxe, taxeLiberatoire, c
                                 const roundedYear = Math.round(value);
                                 const isFirst = chartData.findIndex(p => Math.abs(p.year - value) < 0.1) === 0; // Check if it's the first data point's year
                                 const isLast = chartData.findIndex(p => Math.abs(p.year - value) < 0.1) === chartData.length -1; // Check if it's the last data point's year
-                                const isAge60 = Math.abs(dataPoint.age - AGE_TAXE) < 1; 
+                                const isAgeTaxe = Math.abs(dataPoint.age - ageTaxe) < 1; // Utilise ageTaxe dynamique
 
-                                if (isFirst || isLast || isAge60 || (roundedYear % 5 === 0)) {
+                                if (isFirst || isLast || isAgeTaxe || (roundedYear % 5 === 0)) {
                                      return `${age} ${unit}`;
                                 }
                                 return null; 
