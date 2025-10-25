@@ -1,0 +1,12 @@
+/* Conteneur pour le graphique en anneau (F2) */
+.chart-container-donut {
+    position: relative;
+    height: 250px; 
+    width: 100%;
+    max-width: 300px; 
+    margin: 20px auto 0; 
+}
+
+@media (max-width: 480px) {
+    .chart-container-donut { height: 200px; } 
+}

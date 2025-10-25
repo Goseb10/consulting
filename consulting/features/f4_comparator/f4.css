@@ -1,0 +1,137 @@
+/* ======================================================= */
+/* ### STYLES : COMPARATEUR (F3 / ID HTML f3) ### */
+/* ======================================================= */
+#f3-comparator {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 30px;
+    justify-content: center;
+}
+.comparison-column {
+    flex: 1; 
+    min-width: 420px; 
+    max-width: 600px;
+    display: flex;
+    flex-direction: column;
+    gap: 25px; 
+}
+/* Carte pour les inputs, basée sur .parameters-card */
+.comparison-card {
+    padding: 25px; 
+    border-radius: var(--border-radius-base); 
+    box-shadow: var(--shadow-light); 
+    border: 1px solid var(--border-light);
+    background-color: var(--background-card);
+}
+.comparison-card h3 {
+    font-size: 1.5em; 
+    color: var(--text-color-dark); 
+    margin-bottom: 20px; 
+    font-weight: 700; 
+    border-bottom: 1px solid var(--border-light);
+    padding-bottom: 10px;
+}
+
+/* Carte pour les résultats */
+.comparison-results-card {
+    padding: 25px; 
+    border-radius: var(--border-radius-base); 
+    box-shadow: var(--shadow-light); 
+    border: 1px solid var(--border-light);
+    background-color: var(--background-card);
+}
+.comparison-results-card h4 {
+    font-size: 1.3em;
+    font-weight: 700;
+    color: var(--primary-color);
+    margin-bottom: 15px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--border-light);
+}
+
+/* Boîte pour la différence */
+.difference-box-container {
+    flex-basis: 100%; 
+    margin-top: 20px;
+    padding: 25px;
+    border-radius: var(--border-radius-base);
+    box-shadow: var(--shadow-light);
+    border: 2px solid var(--primary-color);
+    background-color: var(--background-card);
+}
+.difference-box-container h3 {
+    font-size: 1.5em; 
+    color: var(--text-color-dark); 
+    margin-bottom: 20px; 
+    font-weight: 700; 
+    border-bottom: 1px solid var(--border-light);
+    padding-bottom: 10px;
+}
+
+/* Style pour le montant de la différence */
+#f3-difference-capital {
+    font-size: 1.6em;
+    font-weight: 800;
+    color: var(--text-color-dark); 
+}
+#f3-difference-capital.positive {
+    color: var(--secondary-color); /* Vert si C1 > C2 */
+}
+#f3-difference-capital.negative {
+    color: var(--danger-color); /* Rouge si C1 < C2 */
+}
+
+/* Reponsivité F3 */
+@media (max-width: 1000px) {
+    .comparison-column { min-width: 100%; }
+}
+
+/* Style pour la ligne de taxe (copié de f1.css pour F3) */
+.info-tax-line {
+    display: flex; 
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 5px; /* Léger padding */
+    margin-top: 15px;
+    border-top: 1px dashed var(--border-light); /* Séparateur discret */
+}
+.info-tax-line label {
+    margin: 0;
+    font-weight: 600;
+    color: var(--text-color-dark);
+    font-size: 0.9em;
+}
+.info-tax-line span {
+    font-weight: 700;
+    font-size: 1em;
+    color: var(--text-color-dark); /* Couleur de texte normale */
+}
+
+/* --- NOUVEAU: Style for F3 Toggle Box (copié de f1.css) --- */
+.lt-extension-container-f3 {
+    display: none; /* Caché par défaut */
+    background-color: #fdfae6;
+    border: 1px solid #f0e0a4;
+    border-radius: 8px;
+    padding: 10px 15px;
+    margin-top: 15px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+    transition: border-color 0.2s ease;
+}
+.lt-extension-container-f3:hover {
+    border-color: var(--primary-color);
+}
+.lt-extension-container-f3 input[type="checkbox"] {
+    width: auto;
+    accent-color: var(--primary-color);
+}
+.lt-extension-container-f3 span {
+    margin: 0;
+    font-weight: 600;
+    color: var(--text-color-dark);
+    font-size: 0.9em;
+    user-select: none;
+}

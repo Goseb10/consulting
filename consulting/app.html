@@ -1,0 +1,654 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title data-key="meta_title">Goga Sebastian - Simulateur d'Épargne</title>
+    
+    <link rel="stylesheet" href="style.css">
+    
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Roboto:wght@300;400;500&display=swap" rel="stylesheet">
+</head>
+<body>
+
+    <header>
+        <h1><a href="#f1" style="text-decoration: none; color: inherit;">Sebastian Goga Consulting</a></h1>
+        
+        <button id="menu-toggle" aria-label="Menu" aria-expanded="false">☰</button>
+
+        <nav id="main-nav">
+            <a href="#f1" class="active" data-key="nav_f1">Épargne Pension / LT</a>
+            <a href="#f_nonfiscal" data-key="nav_nonfiscal">Épargne non déductible</a>
+            <a href="#f2" data-key="nav_f2">Inflation</a>
+            <a href="#f3" data-key="nav_f3">Comparateur Contrats</a>
+            <a href="#f4" data-key="nav_mail">Mail</a>
+            
+            <div id="language-selector">
+                <button class="flag-button active" data-lang="fr">🇫🇷</button>
+                <button class="flag-button" data-lang="nl">🇧🇪</button>
+                <button class="flag-button" data-lang="en">🇬🇧</button>
+            </div>
+            
+            <a href="index.php?logout=true" id="logout-button">Déconnexion</a>
+        </nav>
+    </header>
+
+    <main>
+        <section id="f1" class="calculator-section">
+            <h2 data-key="f1_title">Épargne Pension / Long Terme</h2>
+
+            <div class="calculator-content"> 
+                
+                <div class="parameters-card">
+                    <h3 data-key="h3_params">Paramètres</h3>
+                    
+                    <div class="input-group-section">
+                        <h4 data-key="h4_contract">Données</h4>
+                        <label for="type-epargne" data-key="label_type">Type d'Épargne</label>
+                        <select id="type-epargne">
+                            <option value="pension" data-key="opt_pension">Épargne Pension</option>
+                            <option value="long-terme" data-key="opt_lt">Épargne Long Terme</option>
+                        </select>
+                        
+                        <label id="lt-extension-container" for="extension-80ans-toggle">
+                            <input type="checkbox" id="extension-80ans-toggle">
+                            <span data-key="label_extend_lt">Prolonger jusqu'à 80 ans</span>
+                        </label>
+                        
+                        <label for="annee-naissance" data-key="label_birth_year">Année de Naissance (Cible 67 ans)</label>
+                        <input type="number" id="annee-naissance" value="2000" min="1900" max="2025">
+                        
+                        <div class="info-calculated-duration">
+                            <span data-key="span_duration">Durée totale : </span><span id="duree-ans-info">X</span> <span data-key="span_years">années (jusqu'à 67 ans)</span>
+                        </div>
+                    </div>
+
+                    <div class="input-group-section">
+                        <h4 data-key="h4_flux">Flux</h4>
+                        <label for="versement-brut" data-key="label_monthly_gross">Versement Brut Mensuel (€)</label>
+                        <input type="number" id="versement-brut" value="87.50" min="30">
+                        
+                        <label for="rendement" data-key="label_yield">Rendement Annuel Estimé (%)</label>
+                        <input type="number" id="rendement" value="5" step="1" min="0"> 
+                    </div>
+
+                    <div class="input-group-section">
+                        <h4 data-key="h4_fees">Frais Appliqués</h4>
+                        <div class="input-group-grid">
+                            <div>
+                                <label for="frais-entree" data-key="label_entry_fees">Frais d'Entrée (%)</label>
+                                <input type="number" id="frais-entree" value="3" step="0.1" min="0">
+                            </div>
+                            <div>
+                                <label for="frais-courant" data-key="label_running_fees">Frais de gestion (%)</label>
+                                <input type="number" id="frais-courant" value="0.85" step="0.01" min="0">
+                            </div>
+                        </div>
+
+                        <div id="elt-taxe-info" class="info-tax-line" style="display: none;">
+                            <label data-key="label_elt_tax">Taxe sur ELT</label>
+                            <span>2,00 %</span>
+                        </div>
+                        
+                        <div id="ep-taxe-info" class="info-tax-line" style="display: none;">
+                            <label data-key="label_ep_tax">Taxe sur EP</label>
+                            <span>0,00 %</span>
+                        </div>
+
+                    </div>
+                    
+                    <button class="main-button" id="f1-calculate-button" data-key="btn_calculate">Calculer la Projection</button>
+                    
+                    <div class="external-links-container">
+                        <h4 data-key="h4_external_links_f1">Exemples de produits :</h4>
+                        <div class="links-wrapper">
+                            <a href="pdf/europeequity.pdf" target="_blank" rel="noopener noreferrer" class="external-link-box">
+                                <img src="images/axaep.png" alt="Exemple Épargne Pension" class="external-logo">
+                                <span data-key="link_ep_example">Europe Equity (EP)</span>
+                            </a>
+                            <a href="https://www.lecho.be/les-marches/fonds/r-co-valor-f-eur.60203572.html" target="_blank" rel="noopener noreferrer" class="external-link-box">
+                                <img src="images/axaelt.png" alt="Exemple Épargne Long Terme" class="external-logo">
+                                <span data-key="link_elt_example">R-co Valor (ELT)</span>
+                            </a>
+                        </div>
+                    </div>
+                     <input type="hidden" id="capital-avant-taxe-value" value="0">
+                    <input type="hidden" id="taxe-liberatoire-value" value="0">
+                </div>
+                
+                <div class="results-card"> 
+                    <h3 data-key="h3_summary">Projection de l'épargne</h3>
+                    
+                    <div class="data-summary-table">
+                        
+                        <div class="table-group group-monthly">
+                             <h4 data-key="h4_monthly_detail">Détail Mensuel et Déductibilité</h4>
+                             <div class="data-line"><span data-key="span_gross_monthly">Versement Brut par mois</span> <strong class="data-value" id="versement-brut-mois">0,00 €</strong></div>
+                             <div class="data-line highlight-tax"><span data-key="span_deductibility_monthly">Déductibilité / Avantage Fiscal</span> <strong class="data-value" id="avantage-mois">0,00 €</strong></div>
+                             <div class="data-line highlight-net"><span data-key="span_net_cost_monthly">Coût Net Réel (Déduction faite)</span> <strong class="data-value" id="net-place-mois">0,00 €</strong></div>
+                        </div>
+
+                        <div class="table-group group-annual">
+                             <h4 data-key="h4_annual_detail">Détail Annuel et Déductibilité</h4>
+                             <div class="data-line"><span data-key="span_gross_annual">Versement Brut Annuel</span> <strong class="data-value" id="versement-brut-annuel">0,00 €</strong></div>
+                             <div class="data-line highlight-tax"><span data-key="span_deductibility_annual">Avantage Fiscal Annuel</span> <strong class="data-value" id="avantage-annuel-calcule">0,00 €</strong></div>
+                             <div class="data-line highlight-net"><span data-key="span_net_cost_annual">Coût Net Annuel (Déduction faite)</span> <strong class="data-value" id="capital-net-annuel">0,00 €</strong></div>
+                        </div>
+                        
+                        <div class="table-group group-projection">
+                             <h4 data-key="h4_total_results">Résultats Totaux sur la Durée (<span id="total-duree-annees">X</span> années)</h4>
+                             <div class="data-line"><span data-key="span_gross_total">Versement Brut Total</span> <strong class="data-value" id="versement-brut-total">0,00 €</strong></div>
+                             <div class="data-line highlight-tax"><span data-key="span_deductibility_total">Avantage Fiscal Total</span> <strong class="data-value" id="avantage-total">0,00 €</strong></div>
+                             <div class="data-line highlight-green"><span data-key="span_net_total">Capital Net Placé Total (votre effort)</span> <strong class="data-value" id="capital-net-total">0,00 €</strong></div>
+                        </div>
+
+                        <div class="table-group group-final-result" id="result-box-67">
+                            <h4 data-key="h4_final_projection">Projection Finale (Âge 67 ans)</h4>
+                            
+                            <div class="data-line highlight-tax-final">
+                                <span data-key="span_tax_levied">Taxe Libératoire Prélevée (à 60 ans)</span>
+                                <strong class="data-value" id="taxe-liberatoire">0,00 €</strong>
+                            </div>
+                            <div class="data-line highlight-final">
+                                <span data-key="span_final_net_capital">CAPITAL FINAL NET (Total perçu à 67 ans)</span> 
+                                <strong class="data-value" id="capital-final">0,00 €</strong>
+                            </div>
+                        </div>
+                        
+                        <div class="table-group group-final-result" id="result-box-80">
+                            <h4 data-key="h4_final_projection_80">Projection Finale (Âge 80 ans)</h4>
+                            
+                            <div class="data-line highlight-tax-final">
+                                <span data-key="span_tax_levied">Taxe Libératoire Prélevée (à 60 ans)</span>
+                                <strong class="data-value" id="taxe-liberatoire-80">0,00 €</strong> 
+                            </div>
+                            <div class="data-line highlight-final">
+                                <span data-key="span_final_net_capital_80">CAPITAL FINAL NET (Total perçu à 80 ans)</span> 
+                                <strong class="data-value" id="capital-final-80">0,00 €</strong>
+                            </div>
+                        </div>
+
+                    </div>
+                        
+                    <div class="comparison-box">
+                        <div class="delay-results">
+                            <div class="delay-capital">
+                                <p class="scenario-label" data-key="p_capital_delayed">Capital Final (Démarrage 1 an plus tard)</p>
+                                <strong class="data-value" id="capital-retard">0,00 €</strong>
+                            </div>
+                            <div class="delay-loss">
+                                <p class="scenario-label" data-key="p_loss_estimated">Perte potentielle de gain</p>
+                                <strong class="data-value" id="perte-estimee">0,00 €</strong>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+            </div> 
+            <div class="chart-area full-width-chart"> 
+                <h4 data-key="h4_capital_evolution">Évolution du Capital Net après Frais</h4>
+                <div class="chart-container">
+                    <canvas id="capitalChart"></canvas>
+                </div>
+            </div>
+        </section>
+
+        <section id="f_nonfiscal" class="calculator-section">
+            <h2 data-key="f2_title">Épargne non déductible (Intérêts Composés)</h2>
+
+            <div class="calculator-content">
+                
+                <div class="parameters-card">
+                    <h3 data-key="h3_params_f2">Paramètres de Simulation</h3>
+                    
+                    <div class="input-group-section">
+                        <h4 data-key="h4_amounts_f2">Montants</h4>
+                        <label for="nf-montant-initial" data-key="label_initial">Montant initial (€)</label>
+                        <input type="number" id="nf-montant-initial" value="0" min="0">
+                        
+                        <label for="nf-versement-mensuel" data-key="label_monthly">Versement mensuel (€)</label>
+                        <input type="number" id="nf-versement-mensuel" value="75" min="0">
+                    </div>
+
+                    <div class="input-group-section">
+                        <h4 data-key="h3_projection_f2">Projection</h4>
+                        <label for="nf-rendement" data-key="label_yield_f2">Rendement annuel estimé (%)</label>
+                        <input type="number" id="nf-rendement" value="8" step="0.5" min="0">
+                        
+                        <label for="nf-duree" data-key="label_duration_f2">Durée de l'investissement (années)</label>
+                        <input type="number" id="nf-duree" value="10" min="1">
+
+                    </div>
+                    
+                    <button class="main-button" id="f2-calculate-button" data-key="btn_calculate_f2">Calculer</button>
+                </div>
+                
+                <div class="results-card"> 
+                    <h3 data-key="h3_summary_f2">Résultats de la simulation</h3>
+                    
+                    <div class="data-summary-table">
+                        <div class="table-group">
+                             <div class="data-line"><span data-key="span_total_invested">Total versé (votre effort)</span> <strong class="data-value" id="nf-total-verse">0,00 €</strong></div>
+                             <div class="data-line highlight-tax"><span data-key="span_total_interest">Intérêts gagnés</span> <strong class="data-value" id="nf-total-interets">0,00 €</strong></div>
+                             <div class="data-line highlight-final">
+                                <span data-key="span_final_capital_f2">CAPITAL FINAL TOTAL</span> 
+                                <strong class="data-value" id="nf-capital-final">0,00 €</strong>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="external-links-container">
+                        <h4 data-key="h4_external_links">Exemples de supports (ETF) :</h4>
+                        <div class="links-wrapper">
+                            <a href="https://www.blackrock.com/fr/intermediaries/products/290846/ishares-msci-world-sri-ucits-etf" target="_blank" rel="noopener noreferrer" class="external-link-box">
+                                <img src="images/blackrock.png" alt="Logo BlackRock" class="external-logo">
+                                <span data-key="link_blackrock">iShares MSCI World SRI</span>
+                            </a>
+                            <a href="https://www.msci.com/documents/10199/178e6643-6ae6-47b9-82be-e1fc565ededb" target="_blank" rel="noopener noreferrer" class="external-link-box">
+                                <img src="images/msci.png" alt="Logo MSCI" class="external-logo">
+                                <span data-key="link_msci">Fiche d'info MSCI</span>
+                            </a>
+                        </div>
+                    </div>
+                    <div class="chart-area" style="margin-top: 25px; border-top: 1px solid var(--border-light);">
+                         <h4 data-key="h4_repartition">Répartition du capital final</h4>
+                         <div class="chart-container-donut">
+                            <canvas id="nfRepartitionChart"></canvas>
+                         </div>
+                    </div>
+
+                </div>
+            </div> 
+
+            <div class="chart-area full-width-chart"> 
+                <h4 data-key="h4_evolution_f2">Évolution du capital</h4>
+                <div class="chart-container">
+                    <canvas id="nfEvolutionChart"></canvas>
+                </div>
+            </div>
+        </section>
+        
+        <section id="f2" class="calculator-section">
+            <h2 data-key="f3_title">Calculateur d'Inflation</h2>
+             
+             <div class="calculator-content">
+                 <div class="parameters-card">
+                     <h3 data-key="h3_params_f3">Paramètres</h3>
+                     
+                     <div class="input-group-section">
+                         <label for="inflation-montant" data-key="label_amount_f3">Montant actuel (€)</label>
+                         <input type="number" id="inflation-montant" value="1000" min="0">
+                         
+                         <label for="inflation-duree" data-key="label_duration_f3">Nombre d'années</label>
+                         <input type="number" id="inflation-duree" value="10" min="1">
+                         
+                         <label for="inflation-taux" data-key="label_rate_f3">Taux d'inflation annuel (%)</label>
+                         <input type="number" id="inflation-taux" value="3" step="0.1" min="0">
+                     </div>
+                     
+                     <button class="main-button" id="f3-calculate-button" data-key="btn_calculate_f3">Calculer l'impact</button>
+                 </div>
+                 
+                 <div class="results-card">
+                     <h3 data-key="h3_results_f3">Impact de l'inflation</h3>
+                     
+                     <div class="data-summary-table">
+                         <div class="table-group">
+                             <div class="data-line">
+                                 <span data-key="span_future_needed">Montant nécessaire dans <span id="inflation-result-years">10</span> ans</span> 
+                                 <strong class="data-value" id="inflation-future-needed">0,00 €</strong>
+                             </div>
+                             <div class="data-line">
+                                 <span data-key="span_future_value">Valeur future de votre montant actuel</span> 
+                                 <strong class="data-value" id="inflation-future-value">0,00 €</strong>
+                             </div>
+                             <div class="data-line highlight-loss"> <span data-key="span_value_loss">Perte de pouvoir d'achat</span> 
+                                 <strong class="data-value" id="inflation-loss">0,00 €</strong>
+                             </div>
+                         </div>
+                     </div>
+                     
+                     <p class="summary-text" id="inflation-summary" data-key="p_summary_f3">...</p>
+                     
+                 </div>
+             </div>
+             
+             <div class="chart-area full-width-chart"> 
+                <h4 data-key="h4_devaluation_f3">Évolution du pouvoir d'achat</h4>
+                <div class="chart-container">
+                    <canvas id="inflationChart"></canvas>
+                </div>
+            </div>
+        </section>
+
+        <section id="f3" class="calculator-section">
+            <h2 data-key="f3_title_comparator">Comparateur de Contrats (EP/ELT)</h2>
+            
+            <div class="calculator-content" id="f3-comparator">
+
+                <div class="comparison-column" id="f3-col-1">
+                    <div class="comparison-card">
+                        <h3 data-key="h3_company_1">Compagnie 1</h3>
+                        
+                        <div class="input-group-section">
+                            <label for="f3-c1-name" data-key="label_company_name">Nom de la compagnie</label>
+                            <input type="text" id="f3-c1-name" value="Belfius">
+                        </div>
+
+                        <div class="input-group-section">
+                            <h4 data-key="h4_contract">Données</h4>
+                            <label for="f3-c1-type-epargne" data-key="label_type">Type d'Épargne</label>
+                            <select id="f3-c1-type-epargne">
+                                <option value="pension" data-key="opt_pension" selected>Épargne Pension</option>
+                                <option value="long-terme" data-key="opt_lt">Épargne Long Terme</option>
+                            </select>
+                            
+                            <label id="f3-c1-lt-extension-container" class="lt-extension-container-f3" for="f3-c1-extension-80ans-toggle">
+                                <input type="checkbox" id="f3-c1-extension-80ans-toggle">
+                                <span data-key="label_extend_lt">Prolonger jusqu'à 80 ans</span>
+                            </label>
+                            
+                            <label for="f3-c1-annee-naissance" data-key="label_birth_year">Année de Naissance (Cible 67 ans)</label>
+                            <input type="number" id="f3-c1-annee-naissance" value="2001" min="1900" max="2025">
+                            
+                            <div class="info-calculated-duration">
+                                <span data-key="span_f3_duration">Durée : </span><span id="f3-c1-duree-ans-info">X</span> <span id="f3-c1-duree-ans-text" data-key="span_years">années (jusqu'à 67 ans)</span>
+                            </div>
+                        </div>
+
+                        <div class="input-group-section">
+                            <h4 data-key="h4_flux">Flux & Rendement</h4>
+                            <label for="f3-c1-versement-brut" data-key="label_monthly_gross">Versement Brut Mensuel (€)</label>
+                            <input type="number" id="f3-c1-versement-brut" value="87.50" min="30">
+                            
+                            <label for="f3-c1-rendement" data-key="label_yield">Rendement Annuel Estimé (%)</label>
+                            <input type="number" id="f3-c1-rendement" value="2" step="0.1" min="0"> 
+                        </div>
+
+                        <div class="input-group-section">
+                            <h4 data-key="h4_fees">Frais Appliqués</h4>
+                            <div class="input-group-grid">
+                                <div>
+                                    <label for="f3-c1-frais-entree" data-key="label_entry_fees">Frais d'Entrée (%)</label>
+                                    <input type="number" id="f3-c1-frais-entree" value="3" step="0.1" min="0">
+                                </div>
+                                <div>
+                                    <label for="f3-c1-frais-courant" data-key="label_running_fees">Frais de gestion (%)</label>
+                                    <input type="number" id="f3-c1-frais-courant" value="1.25" step="0.01" min="0">
+                                </div>
+                            </div>
+                            
+                            <div id="f3-c1-elt-taxe-info" class="info-tax-line" style="display: none;">
+                                <label data-key="label_elt_tax">Taxe sur ELT</label>
+                                <span>2,00 %</span>
+                            </div>
+                            <div id="f3-c1-ep-taxe-info" class="info-tax-line" style="display: none;">
+                                <label data-key="label_ep_tax">Taxe sur EP</label>
+                                <span>0,00 %</span>
+                            </div>
+                            
+                        </div>
+                    </div> <div class="comparison-results-card">
+                        <h4 data-key="h4_f3_results">Résultats de la Projection</h4>
+                        <div class="data-summary-table">
+                             <div class="data-line"><span data-key="span_f3_duration_total">Durée totale de versement</span> <strong class="data-value" id="f3-c1-duree-ans-total">0 ans</strong></div>
+                             <div class="data-line"><span data-key="span_f3_gross_total">Investissement Brut Total</span> <strong class="data-value" id="f3-c1-versement-brut-total">0,00 €</strong></div>
+                             <div class="data-line highlight-tax"><span data-key="span_f3_deduction_total">Avantage Fiscal Total</span> <strong class="data-value" id="f3-c1-avantage-total">0,00 €</strong></div>
+                             <div class="data-line highlight-green"><span data-key="span_f3_net_total">Investissement Net Total</span> <strong class="data-value" id="f3-c1-capital-net-total">0,00 €</strong></div>
+                             <div class="data-line highlight-tax-final"><span data-key="span_f3_tax">Taxe Libératoire (à 60 ans)</span> <strong class="data-value" id="f3-c1-taxe-liberatoire">0,00 €</strong></div>
+                             <div class="data-line highlight-final"><span id="f3-c1-final-capital-text" data-key="span_f3_final_capital">CAPITAL FINAL NET (67 ans)</span> <strong class="data-value" id="f3-c1-capital-final">0,00 €</strong></div>
+                        </div>
+                    </div>
+                </div> <div class="comparison-column" id="f3-col-2">
+                    <div class="comparison-card">
+                        <h3 data-key="h3_company_2">Compagnie 2</h3>
+                        
+                         <div class="input-group-section">
+                            <label for="f3-c2-name" data-key="label_company_name">Nom de la compagnie</label>
+                            <input type="text" id="f3-c2-name" value="AXA">
+                        </div>
+
+                        <div class="input-group-section">
+                            <h4 data-key="h4_contract">Données</h4>
+                            <label for="f3-c2-type-epargne" data-key="label_type">Type d'Épargne</label>
+                            <select id="f3-c2-type-epargne">
+                                <option value="pension" data-key="opt_pension" selected>Épargne Pension</option>
+                                <option value="long-terme" data-key="opt_lt">Épargne Long Terme</option>
+                            </select>
+                            
+                            <label id="f3-c2-lt-extension-container" class="lt-extension-container-f3" for="f3-c2-extension-80ans-toggle">
+                                <input type="checkbox" id="f3-c2-extension-80ans-toggle">
+                                <span data-key="label_extend_lt">Prolonger jusqu'à 80 ans</span>
+                            </label>
+                            
+                            <label for="f3-c2-annee-naissance" data-key="label_birth_year">Année de Naissance (Cible 67 ans)</label>
+                            <input type="number" id="f3-c2-annee-naissance" value="2000" min="1900" max="2025">
+                            
+                            <div class="info-calculated-duration">
+                                <span data-key="span_f3_duration">Durée : </span><span id="f3-c2-duree-ans-info">X</span> <span id="f3-c2-duree-ans-text" data-key="span_years">années (jusqu'à 67 ans)</span>
+                            </div>
+                        </div>
+
+                        <div class="input-group-section">
+                            <h4 data-key="h4_flux">Flux & Rendement</h4>
+                            <label for="f3-c2-versement-brut" data-key="label_monthly_gross">Versement Brut Mensuel (€)</label>
+                            <input type="number" id="f3-c2-versement-brut" value="87.50" min="30">
+                            
+                            <label for="f3-c2-rendement" data-key="label_yield">Rendement Annuel Estimé (%)</label>
+                            <input type="number" id="f3-c2-rendement" value="5" step="0.1" min="0"> 
+                        </div>
+
+                        <div class="input-group-section">
+                            <h4 data-key="h4_fees">Frais Appliqués</h4>
+                            <div class="input-group-grid">
+                                <div>
+                                    <label for="f3-c2-frais-entree" data-key="label_entry_fees">Frais d'Entrée (%)</label>
+                                    <input type="number" id="f3-c2-frais-entree" value="3" step="0.1" min="0">
+                                </div>
+                                <div>
+                                    <label for="f3-c2-frais-courant" data-key="label_running_fees">Frais de gestion (%)</label>
+                                    <input type="number" id="f3-c2-frais-courant" value="0.85" step="0.01" min="0">
+                                </div>
+                            </div>
+                            
+                            <div id="f3-c2-elt-taxe-info" class="info-tax-line" style="display: none;">
+                                <label data-key="label_elt_tax">Taxe sur ELT</label>
+                                <span>2,00 %</span>
+                            </div>
+                            <div id="f3-c2-ep-taxe-info" class="info-tax-line" style="display: none;">
+                                <label data-key="label_ep_tax">Taxe sur EP</label>
+                                <span>0,00 %</span>
+                            </div>
+                            
+                        </div>
+                    </div> <div class="comparison-results-card">
+                        <h4 data-key="h4_f3_results">Résultats de la Projection</h4>
+                         <div class="data-summary-table">
+                             <div class="data-line"><span data-key="span_f3_duration_total">Durée totale de versement</span> <strong class="data-value" id="f3-c2-duree-ans-total">0 ans</strong></div>
+                             <div class="data-line"><span data-key="span_f3_gross_total">Investissement Brut Total</span> <strong class="data-value" id="f3-c2-versement-brut-total">0,00 €</strong></div>
+                             <div class="data-line highlight-tax"><span data-key="span_f3_deduction_total">Avantage Fiscal Total</span> <strong class="data-value" id="f3-c2-avantage-total">0,00 €</strong></div>
+                             <div class="data-line highlight-green"><span data-key="span_f3_net_total">Investissement Net Total</span> <strong class="data-value" id="f3-c2-capital-net-total">0,00 €</strong></div>
+                             <div class="data-line highlight-tax-final"><span data-key="span_f3_tax">Taxe Libératoire (à 60 ans)</span> <strong class="data-value" id="f3-c2-taxe-liberatoire">0,00 €</strong></div>
+                             <div class="data-line highlight-final"><span id="f3-c2-final-capital-text" data-key="span_f3_final_capital">CAPITAL FINAL NET (67 ans)</span> <strong class="data-value" id="f3-c2-capital-final">0,00 €</strong></div>
+                        </div>
+                    </div>
+                </div> <div class="difference-box-container">
+                    <h3 data-key="h3_difference">Différence</h3>
+                    <div class="data-summary-table">
+                        <div class="data-line">
+                            <span data-key="span_difference_label">Différence de Capital Final (C1 - C2)</span>
+                            <strong class="data-value" id="f3-difference-capital">0,00 €</strong>
+                        </div>
+                    </div>
+                    <button class="main-button" id="f4-compare-button" data-key="btn_compare">Comparer les Projections</button>
+                </div>
+
+            </div> 
+        </section>
+        
+        <section id="f4" class="calculator-section">
+            <h2 data-key="f4_title">Générateur de Mail de Synthèse</h2>
+            
+            <div class="calculator-content">
+                <div class="parameters-card">
+                    <h3 data-key="f4_client_info">Informations Client</h3>
+                    
+                    <div class="input-group-section mail-inputs-grid">
+                        <div>
+                            <label for="mail-client-prenom" data-key="f4_label_firstname">Prénom</label>
+                            <input type="text" id="mail-client-prenom" value="Prénom">
+                        </div>
+                        <div>
+                            <label for="mail-client-nom" data-key="f4_label_lastname">Nom</label>
+                            <input type="text" id="mail-client-nom" value="Nom">
+                        </div>
+                        <div>
+                            <label for="mail-rdv-date" data-key="f4_label_rdv_date">Date prochain RDV</label>
+                            <input type="text" id="mail-rdv-date" value="Mardi 4 mars">
+                        </div>
+                        <div>
+                            <label for="mail-rdv-time" data-key="f4_label_rdv_time">Heure prochain RDV</label>
+                            <input type="text" id="mail-rdv-time" value="10h00">
+                        </div>
+                    </div>
+
+                    <div class="input-group-section" style="border-top: 1px solid var(--border-light); padding-top: 15px; margin-top: 15px;">
+                        <label for="mail-langue" data-key="f4_label_mail_lang">Langue du Mail</label>
+                        <select id="mail-langue">
+                            <option value="fr" selected>Français</option>
+                            <option value="nl">Nederlands</option>
+                            <option value="en">English</option>
+                        </select>
+                    </div>
+
+                    <div class="input-group-section" id="common-options-container" style="border-top: 1px solid var(--border-light); padding-top: 15px; margin-top: 15px;">
+                        <h4 data-key="f4_common_options_title" style="margin-bottom: 15px;">Options Communes</h4>
+                        <div class="mail-inputs-grid">
+                            <div>
+                                <label for="mail-common-msci-rate" data-key="f4_label_common_msci_rate">Taux MSCI World (%)</label>
+                                <input type="number" id="mail-common-msci-rate" value="8.53" step="0.01">
+                            </div>
+                        </div>
+                    </div>
+
+
+                    <h3 data-key="f4_sections" style="margin-top: 25px;">Sections à inclure</h3>
+                    
+                    <div class="input-group-section mail-toggles-grid">
+                        <label class="toggle-group" for="toggle-ep">
+                            <input type="checkbox" id="toggle-ep" checked>
+                            <span data-key="f4_toggle_ep">Épargne Pension</span>
+                        </label>
+                        <label class="toggle-group" for="toggle-elt">
+                            <input type="checkbox" id="toggle-elt">
+                            <span data-key="f4_toggle_elt">Épargne Long Terme</span>
+                        </label>
+                        <label class="toggle-group" for="toggle-nonfiscal">
+                            <input type="checkbox" id="toggle-nonfiscal">
+                            <span data-key="f4_toggle_nonfiscal">Épargne non fiscal</span>
+                        </label>
+                        <label class="toggle-group" for="toggle-dela">
+                            <input type="checkbox" id="toggle-dela">
+                            <span data-key="f4_toggle_dela">Couverture Dela</span>
+                        </label>
+                        <label class="toggle-group" for="toggle-plci">
+                            <input type="checkbox" id="toggle-plci">
+                            <span data-key="f4_toggle_plci">PLCI</span>
+                        </label>
+                        <label class="toggle-group" for="toggle-inami">
+                            <input type="checkbox" id="toggle-inami">
+                            <span data-key="f4_toggle_inami">Plan INAMI</span>
+                        </label>
+                        <label class="toggle-group" for="toggle-eip">
+                            <input type="checkbox" id="toggle-eip">
+                            <span data-key="f4_toggle_eip">EIP</span>
+                        </label>
+                    </div>
+
+                    <div class="input-group-section" id="ep-options-container" style="display: none; border-top: 1px solid var(--border-light); padding-top: 15px; margin-top: 15px;">
+                        <h4 data-key="f4_ep_options_title" style="margin-bottom: 15px;">Options Épargne Pension</h4>
+                        <div class="mail-inputs-grid">
+                            <div>
+                                <label for="mail-ep-mensualite" data-key="f4_label_ep_monthly">Mensualité (€)</label>
+                                <input type="number" id="mail-ep-mensualite" value="87.50" step="0.01">
+                            </div>
+                            <div>
+                                <label for="mail-ep-birthyear" data-key="f4_label_ep_birthyear">Année de naissance</label>
+                                <input type="number" id="mail-ep-birthyear" value="2000" step="1">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="input-group-section" id="elt-options-container" style="display: none; border-top: 1px solid var(--border-light); padding-top: 15px; margin-top: 15px;">
+                        <h4 data-key="f4_elt_options_title" style="margin-bottom: 15px;">Options Épargne Long Terme</h4>
+                        <div class="mail-inputs-grid">
+                            <div>
+                                <label for="mail-elt-mensualite" data-key="f4_label_elt_monthly">Mensualité (€)</label>
+                                <input type="number" id="mail-elt-mensualite" value="100.00" step="0.01">
+                            </div>
+                            <div>
+                                <label for="mail-elt-birthyear" data-key="f4_label_elt_birthyear">Année de naissance</label>
+                                <input type="number" id="mail-elt-birthyear" value="2000" step="1">
+                            </div>
+                        </div>
+                        <label class="toggle-group" for="mail-elt-extend-80ans" style="margin-top: 15px;">
+                             <input type="checkbox" id="mail-elt-extend-80ans">
+                             <span data-key="f4_label_elt_extend_80">Prolonger jusqu'à 80 ans</span>
+                        </label>
+                    </div>
+
+                    <div class="input-group-section" id="nonfiscal-options-container" style="display: none; border-top: 1px solid var(--border-light); padding-top: 15px; margin-top: 15px;">
+                        <h4 data-key="f4_nonfiscal_options_title" style="margin-bottom: 15px;">Options Épargne Non-Fiscale</h4>
+                        <div class="mail-inputs-grid">
+                            <div>
+                                <label for="mail-nonfiscal-mensualite" data-key="f4_label_nonfiscal_monthly">Mensualité (€)</label>
+                                <input type="number" id="mail-nonfiscal-mensualite" value="100" step="10">
+                            </div>
+                            <div>
+                                <label for="mail-nonfiscal-birthyear" data-key="f4_label_nonfiscal_birthyear">Année de naissance</label>
+                                <input type="number" id="mail-nonfiscal-birthyear" value="2000" step="1">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="input-group-section" id="dela-options-container" style="display: none; border-top: 1px solid var(--border-light); padding-top: 15px; margin-top: 15px;">
+                        <h4 data-key="f4_dela_options_title" style="margin-bottom: 15px;">Options Dela</h4>
+                        <div class="mail-inputs-grid">
+                            <div>
+                                <label for="mail-dela-capital" data-key="f4_label_dela_capital">Capital Assuré (€)</label>
+                                <input type="number" id="mail-dela-capital" value="10000" step="500">
+                            </div>
+                            <div>
+                                <label for="mail-dela-prime" data-key="f4_label_dela_prime">Prime Mensuelle (€)</label>
+                                <input type="number" id="mail-dela-prime" value="25.00" step="0.01">
+                            </div>
+                        </div>
+                    </div>
+
+
+                    <button class="main-button" id="f5-generate-button" data-key="f4_btn_generate" style="margin-top: 25px;">Actualiser l'aperçu</button>
+                </div>
+                
+                <div class="results-card"> 
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 1px solid var(--border-light); padding-bottom: 10px;">
+                        <h3 data-key="f4_preview_title" style="margin: 0; border: none;">Aperçu de l'email</h3>
+                        <div>
+                            <button class="main-button" id="f5-copy-button" data-key="f4_btn_copy" style="margin: 0; padding: 10px 20px; font-size: 0.9em;">Copier l'email</button>
+                            <span id="copy-feedback" data-key="f4_feedback_copied">Copié !</span>
+                        </div>
+                    </div>
+                    
+                    <div id="email-preview-container">
+                        </div>
+
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <script type="module" src="main.js"></script>
+</body>
+</html>

@@ -1,0 +1,114 @@
+/* Style pour la case à cocher 80 ans (F1) */
+/* MODIFIÉ: Cible la <label> au lieu du <div> et ajoute un curseur/hover */
+label#lt-extension-container {
+    display: none; /* Caché par défaut */
+    background-color: #fdfae6;
+    border: 1px solid #f0e0a4;
+    border-radius: 8px;
+    padding: 10px 15px;
+    margin-top: 15px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer; /* Ajouté */
+    transition: border-color 0.2s ease; /* Ajouté */
+}
+label#lt-extension-container:hover {
+    border-color: var(--primary-color); /* Ajouté */
+}
+label#lt-extension-container input[type="checkbox"] {
+    width: auto;
+    accent-color: var(--primary-color);
+}
+/* MODIFIÉ: Cible le <span> à l'intérieur de la label */
+label#lt-extension-container span {
+    margin: 0;
+    font-weight: 600;
+    color: var(--text-color-dark);
+    font-size: 0.9em;
+    user-select: none; /* Ajouté */
+}
+
+.info-calculated-duration { 
+    margin-top: 15px; 
+    padding-top: 10px; 
+    font-size: 0.9em; 
+    color: var(--text-color-dark); 
+    border-top: 1px dashed var(--border-light); 
+}
+
+/* Cacher la boîte de 80 ans par défaut (F1) */
+#result-box-80 {
+    display: none;
+}
+
+
+/* --- SCÉNARIO RETARDÉ (F1) --- */
+.comparison-box {
+    background-color: #FFFBEA; 
+    padding: 20px; 
+    border-radius: var(--border-radius-base);
+    margin-top: 20px; 
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    border: 1px solid var(--accent-color);
+}
+.delay-results { 
+    display: flex; 
+    justify-content: space-around; 
+    align-items: center; 
+    text-align: center; 
+    gap: 30px; 
+}
+.delay-capital {
+    flex: 1;
+    border-right: 1px solid var(--border-light);
+    padding-right: 20px;
+}
+.delay-capital .scenario-label { font-size: 0.9em; }
+.delay-capital .data-value { 
+    color: var(--text-color-dark); 
+    font-size: 1.1em; 
+    font-weight: 700; 
+}
+.delay-loss { 
+    flex: 1;
+    padding-left: 20px;
+}
+.delay-loss .scenario-label { font-size: 0.9em; font-weight: 600;}
+.delay-loss strong { 
+    color: var(--danger-color); 
+    font-size: 1.3em; 
+    font-weight: 800;
+    display: block; 
+}
+
+/* Hauteur spécifique Graphique F1 */
+section#f1 .chart-container { min-height: 550px; }
+
+/* Responsivité F1 */
+@media (max-width: 1000px) {
+    .delay-results { flex-direction: column; gap: 20px; text-align: left; }
+    .delay-capital { border-right: none; padding-right: 0; border-bottom: 1px solid var(--border-light); padding-bottom: 15px; width: 100%; }
+    .delay-loss { padding-left: 0; width: 100%; }
+}
+
+/* Style pour la ligne de taxe ELT (Version neutre) */
+.info-tax-line {
+    display: flex; 
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 5px; /* Léger padding */
+    margin-top: 15px;
+    border-top: 1px dashed var(--border-light); /* Séparateur discret */
+}
+.info-tax-line label {
+    margin: 0;
+    font-weight: 600;
+    color: var(--text-color-dark);
+    font-size: 0.9em;
+}
+.info-tax-line span {
+    font-weight: 700;
+    font-size: 1em;
+    color: var(--text-color-dark); /* Couleur de texte normale */
+}
