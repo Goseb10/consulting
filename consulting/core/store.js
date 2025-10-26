@@ -72,6 +72,7 @@ const defaultState = {
 // 2. Initialiser l'état
 let state = { ...defaultState };
 const APP_STATE_KEY = 'consultingAppState';
+const boundElements = []; // NOUVEAU: Pour suivre les éléments pour le reset visiteur
 
 // 3. Fonctions de gestion du state
 function saveState() {
@@ -133,6 +134,9 @@ export function bindInput(inputId, stateKey, callback) {
         return;
     }
     
+    // NOUVEL AJOUT
+    boundElements.push({ element, stateKey, type: 'input' });
+    
     // 1. Charger la valeur du state dans l'input
     if (state[stateKey] !== undefined) {
         element.value = state[stateKey];
@@ -182,6 +186,9 @@ export function bindCheckbox(inputId, stateKey, callback) {
         return;
     }
     
+    // NOUVEL AJOUT
+    boundElements.push({ element, stateKey, type: 'checkbox' });
+    
     // 1. Charger la valeur du state
     if (state[stateKey] !== undefined) {
         element.checked = state[stateKey];
@@ -194,3 +201,33 @@ export function bindCheckbox(inputId, stateKey, callback) {
     });
 }
 
+/**
+ * NOUVELLE FONCTION:
+ * Réinitialise le state à ses valeurs par défaut et met à jour tous les éléments DOM liés.
+ */
+export function resetStateToDefault() {
+    console.log("Resetting state to default for visitor...");
+    state = { ...defaultState };
+    
+    // 1. Mettre à jour tous les éléments DOM liés (inputs, selects, checkbox)
+    boundElements.forEach(binding => {
+        const { element, stateKey, type } = binding;
+        if (state[stateKey] !== undefined) {
+            if (type === 'checkbox') {
+                element.checked = state[stateKey];
+            } else {
+                element.value = state[stateKey];
+            }
+        }
+    });
+    
+    // 2. Déclencher tous les calculateurs (F1, F2, F3...) pour mettre à jour les graphiques et les résultats
+    console.log("Reset: Triggering all module calculations...");
+    onLangChangeCallbacks.forEach(callback => {
+        try {
+            callback();
+        } catch (e) {
+            console.error("Erreur lors du rappel de recalcul :", e, callback);
+        }
+    });
+}
