@@ -11,31 +11,49 @@ import { getState, bindInput, bindCheckbox } from '../../core/store.js';
 
 /**
  * Calcule le capital final et le capital investi pour une épargne non fiscale.
- * (Fonction interne inchangée)
+ * (Fonction interne MISE À JOUR pour correspondre à F2)
  */
 function calculateNonFiscal(monthlyPayment, years) {
-    // ... (votre fonction calculateNonFiscal reste inchangée)
     const P_monthly = parseFloat(monthlyPayment);
     const t = parseInt(years);
-    const annualRatePct = 8.0; // Taux annuel en percentage
+    const annualRatePct = 8.0; // Taux annuel en percentage (cohérent avec défaut F2)
+
+    // --- NOUVELLE LOGIQUE DE FRAIS/TAXES ---
+    const fraisMensuelPct = 0.03; // 3%
+    const taxeVersamentPct = 0.02; // 2%
+    const taxePlusValuePct = 0.10; // 10%
+    const franchisePlusValue = 10000; // 10K €
 
     if (isNaN(P_monthly) || P_monthly < 0 || isNaN(t) || t <= 0) {
         return { finalCapital: 0, investedCapital: 0 };
     }
 
     const monthlyRate = Math.pow(1 + (annualRatePct / 100), 1 / 12) - 1;
-    let currentCapital = 0; 
+    let currentCapital = 0; // Suppose 0 capital initial
     const totalMonths = t * 12;
+    
+    // Capital investi (Effort brut de l'utilisateur)
     const investedCapital = P_monthly * totalMonths; 
+    
+    // Versement net après frais/taxes
+    const versementNet = P_monthly * (1 - fraisMensuelPct - taxeVersamentPct);
 
     for (let month = 1; month <= totalMonths; month++) {
-        currentCapital += P_monthly;
+        currentCapital += versementNet;
         currentCapital *= (1 + monthlyRate);
     }
 
+    // Appliquer la taxe finale sur plus-value
+    const capitalFinalBrut = currentCapital;
+    const plusValueBrute = capitalFinalBrut - investedCapital; // Plus-value brute
+    const plusValueTaxable = Math.max(0, plusValueBrute - franchisePlusValue);
+    const taxeSurPlusValue = plusValueTaxable * taxePlusValuePct;
+    
+    const capitalFinalNet = capitalFinalBrut - taxeSurPlusValue;
+
     return {
-        finalCapital: currentCapital,
-        investedCapital: investedCapital
+        finalCapital: capitalFinalNet, // Capital NET
+        investedCapital: investedCapital // Capital BRUT (effort)
     };
 }
 
@@ -93,7 +111,7 @@ export function genererEmail() {
             }).format(num);
         };
 
-        // --- Simulations (inchangées) ---
+        // --- Simulations (inchangées en structure, mais calculateNonFiscal a changé) ---
         const res10 = calculateNonFiscal(nonFiscalMensualite, 10);
         const res20 = calculateNonFiscal(nonFiscalMensualite, 20);
         const res30 = calculateNonFiscal(nonFiscalMensualite, 30);
