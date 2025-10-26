@@ -11,20 +11,57 @@ if (isset($_GET['logout'])) {
     exit;
 }
 
+// --- NOUVELLE LISTE DES UTILISATEURS (basée sur Codes.png) ---
+$user_codes = [
+    '4512' => 'Louis DEWASME',
+    '8307' => 'Cyril VAERNEWYCK',
+    '2694' => 'Noa SOUDANT',
+    '9175' => 'Paul BOUR',
+    '6823' => 'Sebastian GOGA',        // Code de l'image
+    '2828' => 'Sebastian GOGA',        // Ancien code (gardé comme alias)
+    '7450' => 'Lorenzo Pagano',
+    '3581' => 'Doryan Gouilliart',
+    '1069' => 'Hugo Letrouit',
+    '5748' => 'Vincent Pietquin',
+    '8921' => 'Nalé Declercq',
+    '4136' => 'Benjamin Debuyst',
+    '7295' => 'Louca Labella',
+    '9840' => 'Julien Sucaet',
+    '6273' => 'Théo Cappelaere',
+    '3502' => 'Ernest Andrieux',
+    '1687' => 'Maxime DESLOOVERE',
+    '4925' => 'Thibaut LEMAHIEU',
+    '8396' => 'Seraphin LEPLAE',
+    '2714' => 'Antoine DECLERCQ',
+    '5068' => 'Maxence Carion',
+    '1549' => 'Aymerick Coucq',
+    '9632' => 'Noah Debuysschere',
+    '6871' => 'Mike Moerman',
+    '3205' => 'Lenny Gaillot',
+    '7984' => 'Mattéo Opsomer',
+    '2467' => 'Anaïs Noppe'
+];
+
+$visitor_code = '1100';
 $error_message = '';
 $user_mode = null;
+
 
 // 1. VÉRIFIER SI UN CODE VIENT D'ÊTRE SOUMIS
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['passcode'])) {
     
     $submitted_pass = trim($_POST['passcode']);
 
-    // --- VOS CODES SECRETS ---
-    if ($submitted_pass == '2828') {
+    // --- LOGIQUE DE CONNEXION MISE À JOUR ---
+    if (isset($user_codes[$submitted_pass])) {
+        // C'est un utilisateur valide
         $_SESSION['mode'] = 'user';
+        $_SESSION['user_name'] = $user_codes[$submitted_pass]; // On stocke son nom
     } 
-    elseif ($submitted_pass == '1100') {
+    elseif ($submitted_pass == $visitor_code) {
+        // C'est un visiteur
         $_SESSION['mode'] = 'visitor';
+        $_SESSION['user_name'] = 'Visiteur'; // Nom par défaut pour le mode visiteur
     } 
     else {
         $error_message = 'Code incorrect.';
@@ -37,6 +74,18 @@ if (isset($_SESSION['mode'])) {
     // L'utilisateur EST connecté. On charge l'application.
     $app_html = file_get_contents('app.html');
     
+    // --- REMPLACEMENT DYNAMIQUE DU NOM ---
+    // Récupérer le nom de l'utilisateur depuis la session
+    $display_name = $_SESSION['user_name'];
+    
+    // Remplacer "Sebastian Goga Consulting" par "Nom Utilisateur Consulting"
+    $app_html = str_replace(
+        'Sebastian Goga Consulting',    // Le texte original dans app.html
+        $display_name . ' Consulting',  // Le nouveau texte
+        $app_html
+    );
+    // --- FIN DU REMPLACEMENT ---
+
     if ($_SESSION['mode'] == 'visitor') {
         $app_html = str_replace(
             '<body',
