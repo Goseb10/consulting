@@ -210,8 +210,7 @@ export function genererEmail() {
         if (includeEIP) html += t.eip;
         if (includeNonFiscal) html += t.nonfiscal(nonFiscalMensualite, nonFiscalAge, res10, res20, res30, formatMailMonetaire);
         if (includeDela) html += t.dela(delaCapital, delaPrime, formatMailMonetaire); // Les variables sont maintenant correctes
-        html += t.rdv(rdvDate, rdvTime);
-        html += `<ul style="margin-top: 10px; margin-bottom: 15px; padding-left: 20px; list-style-type: disc;">`;
+        html += t.rdv(formattedRdvDate, formattedRdvTime);        html += `<ul style="margin-top: 10px; margin-bottom: 15px; padding-left: 20px; list-style-type: disc;">`;
         html += `<li>${t.docs_base}</li>`; 
         if (includeEIP) html += `<li>${t.docs_eip}</li>`; 
         html += `</ul>`;
