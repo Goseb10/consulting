@@ -93,6 +93,50 @@ export function genererEmail() {
         const eltExtend80 = state.f5_elt_extend_80;
         const msciRate = parseFloat(state.f5_msci_rate) || 8.53;
         const mailLang = state.f5_langue || 'fr';
+        // --- NOUVEAU BLOC: Formatage de la date et de l'heure ---
+        let formattedRdvDate = state.f5_rdv_date;
+        let formattedRdvTime = state.f5_rdv_time;
+        const langLocale = mailLang === 'nl' ? 'nl-BE' : (mailLang === 'en' ? 'en-GB' : 'fr-BE');
+
+        // Formater la date
+        try {
+            if (state.f5_rdv_date) {
+                // T00:00:00 est important pour éviter les décalages de fuseau horaire
+                const dateObj = new Date(state.f5_rdv_date + 'T00:00:00'); 
+                formattedRdvDate = new Intl.DateTimeFormat(langLocale, {
+                    weekday: 'long',
+                    day: 'numeric',
+                    month: 'long'
+                }).format(dateObj);
+            }
+        } catch (e) {
+            console.warn("Date RDV invalide pour formatage:", state.f5_rdv_date);
+            formattedRdvDate = state.f5_rdv_date; // Fallback à la valeur brute
+        }
+
+        // Formater l'heure
+        try {
+             if (state.f5_rdv_time) {
+                const [hours, minutes] = state.f5_rdv_time.split(':');
+                if(mailLang === 'fr' || mailLang === 'nl') {
+                     // Format "10h00"
+                     formattedRdvTime = `${hours}h${minutes}`;
+                } else {
+                     // Format "10:00 AM/PM" pour l'anglais
+                     const timeObj = new Date();
+                     timeObj.setHours(hours, minutes, 0, 0);
+                     formattedRdvTime = timeObj.toLocaleTimeString('en-US', {
+                         hour: 'numeric',
+                         minute: '2-digit',
+                         hour12: true
+                     });
+                }
+             }
+        } catch (e) {
+             console.warn("Heure RDV invalide pour formatage:", state.f5_rdv_time);
+             formattedRdvTime = state.f5_rdv_time; // Fallback
+        }
+        // --- FIN DU NOUVEAU BLOC ---
         
         // Cases à cocher
         const includeEP = state.f5_toggle_ep;
