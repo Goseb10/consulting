@@ -7,7 +7,8 @@ export const emailTemplates = {
     // ### FRANÇAIS ###
     // =======================================================
     fr: {
-        intro: (prenom, nom) => `
+        intro: (prenom, nom, email) => `
+            <p><strong>À:</strong> ${email || ' '}</p>
             <p>Bonjour ${prenom} ${nom},</p>
             <p>J'espère que vous allez bien.</p>
             <p>Suite à notre récent entretien, au cours duquel nous avons réalisé une analyse approfondie de votre situation financière, et après évaluation par un conseiller agréé, je tiens à vous transmettre un récapitulatif des points essentiels abordés ainsi que des recommandations adaptées à vos besoins et à vos objectifs à long terme.</p>
@@ -15,21 +16,14 @@ export const emailTemplates = {
         `,
         
         ep: (data, formatMonetaire) => {
-            const montantBrut = formatMonetaire(data.versementBrutMensuel);
-            const coutNet = formatMonetaire(data.capitalNetPlaceMensuel);
-            const deductibiliteAnnuelle = formatMonetaire(data.avantageFiscalAnnuel);
-            const duree = data.dureeVersementAnnees.toFixed(0);
-            const capitalInvesti = formatMonetaire(data.capitalBrutPlaceTotal);
-            const capitalEstime = formatMonetaire(data.capitalFinalNet);
-            const avantageFiscalTotal = formatMonetaire(data.avantageFiscalTotal);
-
+            // ... (contenu inchangé)
             return `
             <h3 style="color: #0070B0; border-bottom: 2px solid #0070B0; padding-bottom: 5px; margin-top: 20px; font-family: 'Inter', sans-serif;">Épargne Pension</h3>
             <p>
-                Montants: <strong>${montantBrut} BRUTS</strong> (Les montants peuvent être adaptés en fonction de votre objectif fiscal/financier).<br>
-                Coût net mensuel: <strong>${coutNet} / mois</strong>.<br>
-                Déductibilité: <strong>${deductibiliteAnnuelle}/an</strong>.<br>
-                Durée de l'investissement - ${duree} ans âge terme - 67 ans.<br>
+                Montants: <strong>${formatMonetaire(data.versementBrutMensuel)} BRUTS</strong> (Les montants peuvent être adaptés en fonction de votre objectif fiscal/financier).<br>
+                Coût net mensuel: <strong>${formatMonetaire(data.capitalNetPlaceMensuel)} / mois</strong>.<br>
+                Déductibilité: <strong>${formatMonetaire(data.avantageFiscalAnnuel)}/an</strong>.<br>
+                Durée de l'investissement - ${data.dureeVersementAnnees.toFixed(0)} ans âge terme - 67 ans.<br>
                 Frais d'entrée: <strong>3,00%</strong><br>
                 Frais de Gestion (annuels):
                 <ul style="margin-top: 5px; margin-bottom: 10px; padding-left: 20px;">
@@ -39,28 +33,20 @@ export const emailTemplates = {
                 </ul>
                 Rendement attendu: Entre 5,00% et 10,00%. <a href="https://www.wikifin.be/fr/epargner-et-investir/produits-dinvestissement/produits-dassurances/assurance-de-la-branche-23/quest" target="_blank" rel="noopener noreferrer">Source, attentes</a>.<br>
                 <ul style="margin-top: 5px; margin-bottom: 10px; padding-left: 20px;">
-                    <li style="padding: 5px;">Dans votre cas, nous partons d'un capital investi de <strong>${capitalInvesti}</strong> pour atteindre un montant estimé de <strong>${capitalEstime}</strong> au terme du contrat, taxes et frais compris. L'avantage fiscal perçu représente quant à lui <strong>${avantageFiscalTotal}</strong></li>
+                    <li style="padding: 5px;">Dans votre cas, nous partons d'un capital investi de <strong>${formatMonetaire(data.capitalBrutPlaceTotal)}</strong> pour atteindre un montant estimé de <strong>${formatMonetaire(data.capitalFinalNet)}</strong> au terme du contrat, taxes et frais compris. L'avantage fiscal perçu représente quant à lui <strong>${formatMonetaire(data.avantageFiscalTotal)}</strong></li>
                 </ul>
             </p>
         `},
 
         elt: (data, formatMonetaire) => {
-            const montantBrut = formatMonetaire(data.versementBrutMensuel);
-            const coutNet = formatMonetaire(data.capitalNetPlaceMensuel);
-            const deductibiliteAnnuelle = formatMonetaire(data.avantageFiscalAnnuel);
-            const duree = data.dureeVersementAnnees.toFixed(0);
-            const ageTerme = data.targetAge;
-            const capitalInvesti = formatMonetaire(data.capitalBrutPlaceTotal);
-            const capitalEstime = formatMonetaire(data.capitalFinalNet);
-            const avantageFiscalTotal = formatMonetaire(data.avantageFiscalTotal);
-
+            // ... (contenu inchangé)
             return `
             <h3 style="color: #0070B0; border-bottom: 2px solid #0070B0; padding-bottom: 5px; margin-top: 20px; font-family: 'Inter', sans-serif;">Épargne à Long Terme</h3>
             <p>
-                Montants: <strong>${montantBrut} BRUTS</strong> (Les montants peuvent être adaptés en fonction de votre objectif fiscal/financier).<br>
-                Coût net mensuel: <strong>${coutNet} / mois</strong>.<br>
-                Déductibilité: <strong>${deductibiliteAnnuelle} / an</strong>.<br>
-                Durée de l'investissement - ${duree} ans âge terme - ${ageTerme} ans.<br>
+                Montants: <strong>${formatMonetaire(data.versementBrutMensuel)} BRUTS</strong> (Les montants peuvent être adaptés en fonction de votre objectif fiscal/financier).<br>
+                Coût net mensuel: <strong>${formatMonetaire(data.capitalNetPlaceMensuel)} / mois</strong>.<br>
+                Déductibilité: <strong>${formatMonetaire(data.avantageFiscalAnnuel)} / an</strong>.<br>
+                Durée de l'investissement - ${data.dureeVersementAnnees.toFixed(0)} ans âge terme - ${data.targetAge} ans.<br>
                 Frais d'entrée: <strong>3,00%</strong><br>
                 Frais de Gestion (annuels):
                 <ul style="margin-top: 5px; margin-bottom: 10px; padding-left: 20px;">
@@ -73,13 +59,14 @@ export const emailTemplates = {
                 </ul>
                 Rendement attendu: Entre 5,00% et 10,00%. <a href="https://www.google.com" target="_blank" rel="noopener noreferrer">Source, attentes et autres</a>.<br>
                 <ul style="margin-top: 5px; margin-bottom: 10px; padding-left: 20px;">
-                    <li style="padding: 5px;">Dans votre cas, nous partons d'un capital investi de <strong>${capitalInvesti}</strong> pour atteindre un montant estimé de <strong>${capitalEstime}</strong> au terme du contrat, taxes et frais compris. L'avantage fiscal perçu représente quant à lui <strong>${avantageFiscalTotal}</strong></li>
+                    <li style="padding: 5px;">Dans votre cas, nous partons d'un capital investi de <strong>${formatMonetaire(data.capitalBrutPlaceTotal)}</strong> pour atteindre un montant estimé de <strong>${formatMonetaire(data.capitalFinalNet)}</strong> au terme du contrat, taxes et frais compris. L'avantage fiscal perçu représente quant à lui <strong>${formatMonetaire(data.avantageFiscalTotal)}</strong></li>
                 </ul>
             </p>
         `},
 
         ep_elt_common: (msciRate, formatMonetaire) => {
-            const formattedMsciRate = (msciRate || 8.53).toLocaleString('fr-BE', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+            // MODIFIÉ: S'assure que 0 est une valeur valide
+            const formattedMsciRate = (typeof msciRate === 'number' ? msciRate : 8.53).toLocaleString('fr-BE', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 
             return `
             <p style="margin-top: 15px;">
@@ -174,40 +161,27 @@ export const emailTemplates = {
 
         // --- SECTION MODIFIÉE ---
         nonfiscal: (mensualite, age, res10, res20, res30, formatMonetaire) => {
-            const formattedMensualite = formatMonetaire(mensualite);
-            
-            const age10 = (parseInt(age) || 0) + 10;
-            const invested10 = formatMonetaire(res10.investedCapital);
-            const final10 = formatMonetaire(res10.finalCapital);
-
-            const age20 = (parseInt(age) || 0) + 20;
-            const invested20 = formatMonetaire(res20.investedCapital);
-            const final20 = formatMonetaire(res20.finalCapital);
-
-            const age30 = (parseInt(age) || 0) + 30;
-            const invested30 = formatMonetaire(res30.investedCapital);
-            const final30 = formatMonetaire(res30.finalCapital);
-
+            // ... (contenu inchangé)
             return `
             <h3 style="color: #0070B0; border-bottom: 2px solid #0070B0; padding-bottom: 5px; margin-top: 20px; font-family: 'Inter', sans-serif;">ÉPARGNE NON-FISCALE</h3>
             <p>
-                Montants: <strong>${formattedMensualite} BRUTS</strong> (Les montants peuvent être adaptés en fonction de votre objectif fiscal/financier).<br>
+                Montants: <strong>${formatMonetaire(mensualite)} BRUTS</strong> (Les montants peuvent être adaptés en fonction de votre objectif fiscal/financier).<br>
                 Frais sur versement: <strong>3,00% / mois</strong><br>
                 Taxe sur versement: <strong>2,00% / mois</strong><br>
                 Taxe sur plus-value: <strong>10,00%</strong> (sur la part des gains > 10.000 €)<br>
                 Rendement attendu: Entre 8,00% et 14,00%. <a href="https://www.msci.com/documents/10199/178e6643-6ae6-47b9-82be-e1fc565ededb" target="_blank" rel="noopener noreferrer">Source</a> et <a href="https://bourse101.fr/calculatrice-financiere-interet-compose/" target="_blank" rel="noopener noreferrer">calculateur</a>.<br>
             </p>
-            <p style="margin-top: 10px;">Durée de l'investissement - 10 ans âge terme - ${age10} ans.</p>
+            <p style="margin-top: 10px;">Durée de l'investissement - 10 ans âge terme - ${(parseInt(age) || 0) + 10} ans.</p>
             <ul style="margin-top: 5px; margin-bottom: 10px; padding-left: 20px;">
-                <li style="padding: 5px;">Dans votre cas, nous partons d'un capital investi de <strong>${invested10}</strong> pour atteindre un montant estimé de <strong>${final10}</strong> au terme des 10 années, taxes et frais compris.</li>
+                <li style="padding: 5px;">Dans votre cas, nous partons d'un capital investi de <strong>${formatMonetaire(res10.investedCapital)}</strong> pour atteindre un montant estimé de <strong>${formatMonetaire(res10.finalCapital)}</strong> au terme des 10 années, taxes et frais compris.</li>
             </ul>
-            <p style="margin-top: 10px;">Durée de l'investissement - 20 ans âge terme - ${age20} ans.</p>
+            <p style="margin-top: 10px;">Durée de l'investissement - 20 ans âge terme - ${(parseInt(age) || 0) + 20} ans.</p>
             <ul style="margin-top: 5px; margin-bottom: 10px; padding-left: 20px;">
-                <li style="padding: 5px;">Dans votre cas, nous partons d'un capital investi de <strong>${invested20}</strong> pour atteindre un montant estimé de <strong>${final20}</strong> au terme des 20 années, taxes et frais compris.</li>
+                <li style="padding: 5px;">Dans votre cas, nous partons d'un capital investi de <strong>${formatMonetaire(res20.investedCapital)}</strong> pour atteindre un montant estimé de <strong>${formatMonetaire(res20.finalCapital)}</strong> au terme des 20 années, taxes et frais compris.</li>
             </ul>
-            <p style="margin-top: 10px;">Durée de l'investissement - 30 ans âge terme - ${age30} ans.</p>
+            <p style="margin-top: 10px;">Durée de l'investissement - 30 ans âge terme - ${(parseInt(age) || 0) + 30} ans.</p>
             <ul style="margin-top: 5px; margin-bottom: 10px; padding-left: 20px;">
-                <li style="padding: 5px;">Dans votre cas, nous partons d'un capital investi de <strong>${invested30}</strong> pour atteindre un montant estimé de <strong>${final30}</strong> au terme des 30 années, taxes et frais compris.</li>
+                <li style="padding: 5px;">Dans votre cas, nous partons d'un capital investi de <strong>${formatMonetaire(res30.investedCapital)}</strong> pour atteindre un montant estimé de <strong>${formatMonetaire(res30.finalCapital)}</strong> au terme des 30 années, taxes et frais compris.</li>
             </ul>
             <p style="margin-top: 10px;">Vous êtes libre de retirer le capital acquis sans frais supplémentaires à partir de la 6ème année d'investissement.</p>
             <p style="font-size: 0.9em; font-style: italic; margin-top: 10px;">
@@ -234,8 +208,9 @@ export const emailTemplates = {
         // --- FIN SECTION MODIFIÉE ---
 
         dela: (capital, prime, formatMonetaire) => {
-            const formattedCapital = formatMonetaire(capital || 10000);
-            const formattedPrime = formatMonetaire(prime || 0);
+            // MODIFIÉ: Retrait des valeurs par défaut (gérées par f5.js)
+            const formattedCapital = formatMonetaire(capital);
+            const formattedPrime = formatMonetaire(prime);
 
             return `
             <h3 style="color: #0070B0; border-bottom: 2px solid #0070B0; padding-bottom: 5px; margin-top: 20px; font-family: 'Inter', sans-serif;">COUVERTURE OBSÈQUES DELA :</h3>
@@ -303,7 +278,8 @@ export const emailTemplates = {
     // ### NEDERLANDS (Dutch) ###
     // =======================================================
     nl: {
-        intro: (prenom, nom) => `
+        intro: (prenom, nom, email) => `
+            <p><strong>Aan:</strong> ${email || ' '}</p>
             <p>Beste ${prenom} ${nom},</p>
             <p>Ik hoop dat alles goed met u gaat.</p>
             <p>Naar aanleiding van ons recent gesprek, waarin we een grondige analyse van uw financiële situatie hebben uitgevoerd, en na evaluatie door een erkend adviseur, bezorg ik u graag een samenvatting van de besproken kernpunten en aanbevelingen die zijn afgestemd op uw behoeften en langetermijndoelstellingen.</p>
@@ -311,21 +287,14 @@ export const emailTemplates = {
         `,
         
         ep: (data, formatMonetaire) => {
-            const montantBrut = formatMonetaire(data.versementBrutMensuel);
-            const coutNet = formatMonetaire(data.capitalNetPlaceMensuel);
-            const deductibiliteAnnuelle = formatMonetaire(data.avantageFiscalAnnuel);
-            const duree = data.dureeVersementAnnees.toFixed(0);
-            const capitalInvesti = formatMonetaire(data.capitalBrutPlaceTotal);
-            const capitalEstime = formatMonetaire(data.capitalFinalNet);
-            const avantageFiscalTotal = formatMonetaire(data.avantageFiscalTotal);
-
+            // ... (contenu inchangé)
             return `
             <h3 style="color: #0070B0; border-bottom: 2px solid #0070B0; padding-bottom: 5px; margin-top: 20px; font-family: 'Inter', sans-serif;">Pensioensparen</h3>
             <p>
-                Bedragen: <strong>${montantBrut} BRUTO</strong> (Bedragen kunnen worden aangepast op basis van uw fiscale/financiële doelstelling).<br>
-                Netto maandelijkse kosten: <strong>${coutNet} / maand</strong>.<br>
-                Aftrekbaarheid: <strong>${deductibiliteAnnuelle}/jaar</strong>.<br>
-                Duur van de investering - ${duree} jaar eindleeftijd - 67 jaar.<br>
+                Bedragen: <strong>${formatMonetaire(data.versementBrutMensuel)} BRUTO</strong> (Bedragen kunnen worden aangepast op basis van uw fiscale/financiële doelstelling).<br>
+                Netto maandelijkse kosten: <strong>${formatMonetaire(data.capitalNetPlaceMensuel)} / maand</strong>.<br>
+                Aftrekbaarheid: <strong>${formatMonetaire(data.avantageFiscalAnnuel)}/jaar</strong>.<br>
+                Duur van de investering - ${data.dureeVersementAnnees.toFixed(0)} jaar eindleeftijd - 67 jaar.<br>
                 Instapkosten: <strong>3,00%</strong><br>
                 Beheerskosten (jaarlijks):
                 <ul style="margin-top: 5px; margin-bottom: 10px; padding-left: 20px;">
@@ -335,28 +304,20 @@ export const emailTemplates = {
                 </ul>
                 Verwacht rendement: Tussen 5,00% en 10,00%. <a href="https://www.wikifin.be/nl/sparen-en-beleggen/beleggingsproducten/verzekeringsproducten/tak-23-verzekering/wat-een" target="_blank" rel="noopener noreferrer">Bron, verwachtingen</a>.<br>
                 <ul style="margin-top: 5px; margin-bottom: 10px; padding-left: 20px;">
-                    <li style="padding: 5px;">In uw geval gaan we uit van een geïnvesteerd kapitaal van <strong>${capitalInvesti}</strong> om een geschat bedrag van <strong>${capitalEstime}</strong> te bereiken op de eindvervaldag, inclusief taksen en kosten. Het genoten fiscale voordeel bedraagt <strong>${avantageFiscalTotal}</strong></li>
+                    <li style="padding: 5px;">In uw geval gaan we uit van een geïnvesteerd kapitaal van <strong>${formatMonetaire(data.capitalBrutPlaceTotal)}</strong> om een geschat bedrag van <strong>${formatMonetaire(data.capitalFinalNet)}</strong> te bereiken op de eindvervaldag, inclusief taksen en kosten. Het genoten fiscale voordeel bedraagt <strong>${formatMonetaire(data.avantageFiscalTotal)}</strong></li>
                 </ul>
             </p>
         `},
 
         elt: (data, formatMonetaire) => {
-            const montantBrut = formatMonetaire(data.versementBrutMensuel);
-            const coutNet = formatMonetaire(data.capitalNetPlaceMensuel);
-            const deductibiliteAnnuelle = formatMonetaire(data.avantageFiscalAnnuel);
-            const duree = data.dureeVersementAnnees.toFixed(0);
-            const ageTerme = data.targetAge;
-            const capitalInvesti = formatMonetaire(data.capitalBrutPlaceTotal);
-            const capitalEstime = formatMonetaire(data.capitalFinalNet);
-            const avantageFiscalTotal = formatMonetaire(data.avantageFiscalTotal);
-
+            // ... (contenu inchangé)
             return `
             <h3 style="color: #0070B0; border-bottom: 2px solid #0070B0; padding-bottom: 5px; margin-top: 20px; font-family: 'Inter', sans-serif;">Lange Termijn Sparen</h3>
             <p>
-                Bedragen: <strong>${montantBrut} BRUTO</strong> (Bedragen kunnen worden aangepast op basis van uw fiscale/financiële doelstelling).<br>
-                Netto maandelijkse kosten: <strong>${coutNet} / maand</strong>.<br>
-                Aftrekbaarheid: <strong>${deductibiliteAnnuelle} / jaar</strong>.<br>
-                Duur van de investering - ${duree} jaar eindleeftijd - ${ageTerme} jaar.<br>
+                Bedragen: <strong>${formatMonetaire(data.versementBrutMensuel)} BRUTO</strong> (Bedragen kunnen worden aangepast op basis van uw fiscale/financiële doelstelling).<br>
+                Netto maandelijkse kosten: <strong>${formatMonetaire(data.capitalNetPlaceMensuel)} / maand</strong>.<br>
+                Aftrekbaarheid: <strong>${formatMonetaire(data.avantageFiscalAnnuel)} / jaar</strong>.<br>
+                Duur van de investering - ${data.dureeVersementAnnees.toFixed(0)} jaar eindleeftijd - ${data.targetAge} jaar.<br>
                 Instapkosten: <strong>3,00%</strong><br>
                 Beheerskosten (jaarlijks):
                 <ul style="margin-top: 5px; margin-bottom: 10px; padding-left: 20px;">
@@ -369,13 +330,14 @@ export const emailTemplates = {
                 </ul>
                 Verwacht rendement: Tussen 5,00% en 10,00%. <a href="https://www.google.com" target="_blank" rel="noopener noreferrer">Bron, verwachtingen en andere</a>.<br>
                 <ul style="margin-top: 5px; margin-bottom: 10px; padding-left: 20px;">
-                    <li style="padding: 5px;">In uw geval gaan we uit van een geïnvesteerd kapitaal van <strong>${capitalInvesti}</strong> om een geschat bedrag van <strong>${capitalEstime}</strong> te bereiken op de eindvervaldag, inclusief taksen en kosten. Het genoten fiscale voordeel bedraagt <strong>${avantageFiscalTotal}</strong></li>
+                    <li style="padding: 5px;">In uw geval gaan we uit van een geïnvesteerd kapitaal van <strong>${formatMonetaire(data.capitalBrutPlaceTotal)}</strong> om een geschat bedrag van <strong>${formatMonetaire(data.capitalFinalNet)}</strong> te bereiken op de eindvervaldag, inclusief taksen en kosten. Het genoten fiscale voordeel bedraagt <strong>${formatMonetaire(data.avantageFiscalTotal)}</strong></li>
                 </ul>
             </p>
         `},
 
         ep_elt_common: (msciRate, formatMonetaire) => {
-            const formattedMsciRate = (msciRate || 8.53).toLocaleString('nl-BE', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+            // MODIFIÉ: S'assure que 0 est une valeur valide
+            const formattedMsciRate = (typeof msciRate === 'number' ? msciRate : 8.53).toLocaleString('nl-BE', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 
             return `
             <p style="margin-top: 15px;">
@@ -470,40 +432,27 @@ export const emailTemplates = {
 
         // --- SECTION MODIFIÉE ---
         nonfiscal: (mensualite, age, res10, res20, res30, formatMonetaire) => {
-            const formattedMensualite = formatMonetaire(mensualite);
-            
-            const age10 = (parseInt(age) || 0) + 10;
-            const invested10 = formatMonetaire(res10.investedCapital);
-            const final10 = formatMonetaire(res10.finalCapital);
-
-            const age20 = (parseInt(age) || 0) + 20;
-            const invested20 = formatMonetaire(res20.investedCapital);
-            const final20 = formatMonetaire(res20.finalCapital);
-
-            const age30 = (parseInt(age) || 0) + 30;
-            const invested30 = formatMonetaire(res30.investedCapital);
-            const final30 = formatMonetaire(res30.finalCapital);
-
+            // ... (contenu inchangé)
             return `
             <h3 style="color: #0070B0; border-bottom: 2px solid #0070B0; padding-bottom: 5px; margin-top: 20px; font-family: 'Inter', sans-serif;">NIET-FISCAAL SPAREN</h3>
             <p>
-                Bedragen: <strong>${formattedMensualite} BRUTO</strong> (Bedragen kunnen worden aangepast op basis van uw fiscale/financiële doelstelling).<br>
+                Bedragen: <strong>${formatMonetaire(mensualite)} BRUTO</strong> (Bedragen kunnen worden aangepast op basis van uw fiscale/financiële doelstelling).<br>
                 Kosten op storting: <strong>3,00% / maand</strong><br>
                 Taks op storting: <strong>2,00% / maand</strong><br>
                 Taks op meerwaarde: <strong>10,00%</strong> (op de winst > 10.000 €)<br>
                 Verwacht rendement: Tussen 8,00% en 14,00%. <a href="https://www.msci.com/documents/10199/178e6643-6ae6-47b9-82be-e1fc565ededb" target="_blank" rel="noopener noreferrer">Bron</a> en <a href="https://bourse101.fr/calculatrice-financiere-interet-compose/" target="_blank" rel="noopener noreferrer">calculator</a>.<br>
             </p>
-            <p style="margin-top: 10px;">Duur van de investering - 10 jaar eindleeftijd - ${age10} jaar.</p>
+            <p style="margin-top: 10px;">Duur van de investering - 10 jaar eindleeftijd - ${(parseInt(age) || 0) + 10} jaar.</p>
             <ul style="margin-top: 5px; margin-bottom: 10px; padding-left: 20px;">
-                <li style="padding: 5px;">In uw geval gaan we uit van een geïnvesteerd kapitaal van <strong>${invested10}</strong> om een geschat bedrag van <strong>${final10}</strong> te bereiken na 10 jaar, inclusief taksen en kosten.</li>
+                <li style="padding: 5px;">In uw geval gaan we uit van een geïnvesteerd kapitaal van <strong>${formatMonetaire(res10.investedCapital)}</strong> om een geschat bedrag van <strong>${formatMonetaire(res10.finalCapital)}</strong> te bereiken na 10 jaar, inclusief taksen en kosten.</li>
             </ul>
-            <p style="margin-top: 10px;">Duur van de investering - 20 jaar eindleeftijd - ${age20} jaar.</p>
+            <p style="margin-top: 10px;">Duur van de investering - 20 jaar eindleeftijd - ${(parseInt(age) || 0) + 20} jaar.</p>
             <ul style="margin-top: 5px; margin-bottom: 10px; padding-left: 20px;">
-                <li style="padding: 5px;">In uw geval gaan we uit van een geïnvesteerd kapitaal van <strong>${invested20}</strong> om een geschat bedrag van <strong>${final20}</strong> te bereiken na 20 jaar, inclusief taksen en kosten.</li>
+                <li style="padding: 5px;">In uw geval gaan we uit van een geïnvesteerd kapitaal van <strong>${formatMonetaire(res20.investedCapital)}</strong> om een geschat bedrag van <strong>${formatMonetaire(res20.finalCapital)}</strong> te bereiken na 20 jaar, inclusief taksen en kosten.</li>
             </ul>
-            <p style="margin-top: 10px;">Duur van de investering - 30 jaar eindleeftijd - ${age30} jaar.</p>
+            <p style="margin-top: 10px;">Duur van de investering - 30 jaar eindleeftijd - ${(parseInt(age) || 0) + 30} jaar.</p>
             <ul style="margin-top: 5px; margin-bottom: 10px; padding-left: 20px;">
-                <li style="padding: 5px;">In uw geval gaan we uit van een geïnvesteerd kapitaal van <strong>${invested30}</strong> om een geschat bedrag van <strong>${final30}</strong> te bereiken na 30 jaar, inclusief taksen en kosten.</li>
+                <li style="padding: 5px;">In uw geval gaan we uit van een geïnvesteerd kapitaal van <strong>${formatMonetaire(res30.investedCapital)}</strong> om een geschat bedrag van <strong>${formatMonetaire(res30.finalCapital)}</strong> te bereiken na 30 jaar, inclusief taksen en kosten.</li>
             </ul>
             <p style="margin-top: 10px;">U bent vrij om het opgebouwde kapitaal zonder extra kosten op te nemen vanaf het 6e beleggingsjaar.</p>
             <p style="font-size: 0.9em; font-style: italic; margin-top: 10px;">
@@ -530,8 +479,9 @@ export const emailTemplates = {
         // --- FIN SECTION MODIFIÉE ---
 
         dela: (capital, prime, formatMonetaire) => {
-            const formattedCapital = formatMonetaire(capital || 10000);
-            const formattedPrime = formatMonetaire(prime || 0);
+            // MODIFIÉ: Retrait des valeurs par défaut
+            const formattedCapital = formatMonetaire(capital);
+            const formattedPrime = formatMonetaire(prime);
 
             return `
             <h3 style="color: #0070B0; border-bottom: 2px solid #0070B0; padding-bottom: 5px; margin-top: 20px; font-family: 'Inter', sans-serif;">UITVAARTVERZEKERING DELA:</h3>
@@ -599,7 +549,8 @@ export const emailTemplates = {
     // ### ENGLISH ###
     // =======================================================
     en: {
-        intro: (prenom, nom) => `
+        intro: (prenom, nom, email) => `
+            <p><strong>To:</strong> ${email || ' '}</p>
             <p>Hello ${prenom} ${nom},</p>
             <p>I hope you are doing well.</p>
             <p>Following our recent meeting, during which we conducted a thorough analysis of your financial situation, and after evaluation by a certified advisor, I am writing to provide you with a summary of the key points discussed and recommendations tailored to your needs and long-term goals.</p>
@@ -607,21 +558,14 @@ export const emailTemplates = {
         `,
         
         ep: (data, formatMonetaire) => {
-            const montantBrut = formatMonetaire(data.versementBrutMensuel);
-            const coutNet = formatMonetaire(data.capitalNetPlaceMensuel);
-            const deductibiliteAnnuelle = formatMonetaire(data.avantageFiscalAnnuel);
-            const duree = data.dureeVersementAnnees.toFixed(0);
-            const capitalInvesti = formatMonetaire(data.capitalBrutPlaceTotal);
-            const capitalEstime = formatMonetaire(data.capitalFinalNet);
-            const avantageFiscalTotal = formatMonetaire(data.avantageFiscalTotal);
-
+            // ... (contenu inchangé)
             return `
             <h3 style="color: #0070B0; border-bottom: 2px solid #0070B0; padding-bottom: 5px; margin-top: 20px; font-family: 'Inter', sans-serif;">Pension Savings</h3>
             <p>
-                Amounts: <strong>${montantBrut} GROSS</strong> (Amounts can be adjusted based on your fiscal/financial goals).<br>
-                Net monthly cost: <strong>${coutNet} / month</strong>.<br>
-                Deductibility: <strong>${deductibiliteAnnuelle}/year</strong>.<br>
-                Investment duration - ${duree} years term age - 67 years.<br>
+                Amounts: <strong>${formatMonetaire(data.versementBrutMensuel)} GROSS</strong> (Amounts can be adjusted based on your fiscal/financial goals).<br>
+                Net monthly cost: <strong>${formatMonetaire(data.capitalNetPlaceMensuel)} / month</strong>.<br>
+                Deductibility: <strong>${formatMonetaire(data.avantageFiscalAnnuel)}/year</strong>.<br>
+                Investment duration - ${data.dureeVersementAnnees.toFixed(0)} years term age - 67 years.<br>
                 Entry fees: <strong>3.00%</strong><br>
                 Management fees (annual):
                 <ul style="margin-top: 5px; margin-bottom: 10px; padding-left: 20px;">
@@ -631,28 +575,20 @@ export const emailTemplates = {
                 </ul>
                 Expected return: Between 5.00% and 10.00%. <a href="https://www.wikifin.be/en/save-and-invest/investment-products/insurance-products/branch-23-insurance/what-branch-23" target="_blank" rel="noopener noreferrer">Source, expectations</a>.<br>
                 <ul style="margin-top: 5px; margin-bottom: 10px; padding-left: 20px;">
-                    <li style="padding: 5px;">In your case, we start with an invested capital of <strong>${capitalInvesti}</strong> to reach an estimated amount of <strong>${capitalEstime}</strong> at the end of the contract, including taxes and fees. The total tax benefit received amounts to <strong>${avantageFiscalTotal}</strong></li>
+                    <li style="padding: 5px;">In your case, we start with an invested capital of <strong>${formatMonetaire(data.capitalBrutPlaceTotal)}</strong> to reach an estimated amount of <strong>${formatMonetaire(data.capitalFinalNet)}</strong> at the end of the contract, including taxes and fees. The total tax benefit received amounts to <strong>${formatMonetaire(data.avantageFiscalTotal)}</strong></li>
                 </ul>
             </p>
         `},
 
         elt: (data, formatMonetaire) => {
-            const montantBrut = formatMonetaire(data.versementBrutMensuel);
-            const coutNet = formatMonetaire(data.capitalNetPlaceMensuel);
-            const deductibiliteAnnuelle = formatMonetaire(data.avantageFiscalAnnuel);
-            const duree = data.dureeVersementAnnees.toFixed(0);
-            const ageTerme = data.targetAge;
-            const capitalInvesti = formatMonetaire(data.capitalBrutPlaceTotal);
-            const capitalEstime = formatMonetaire(data.capitalFinalNet);
-            const avantageFiscalTotal = formatMonetaire(data.avantageFiscalTotal);
-
+            // ... (contenu inchangé)
             return `
             <h3 style="color: #0070B0; border-bottom: 2px solid #0070B0; padding-bottom: 5px; margin-top: 20px; font-family: 'Inter', sans-serif;">Long-Term Savings</h3>
             <p>
-                Amounts: <strong>${montantBrut} GROSS</strong> (Amounts can be adjusted based on your fiscal/financial goals).<br>
-                Net monthly cost: <strong>${coutNet} / month</strong>.<br>
-                Deductibility: <strong>${deductibiliteAnnuelle} / year</strong>.<br>
-                Investment duration - ${duree} years term age - ${ageTerme} years.<br>
+                Amounts: <strong>${formatMonetaire(data.versementBrutMensuel)} GROSS</strong> (Amounts can be adjusted based on your fiscal/financial goals).<br>
+                Net monthly cost: <strong>${formatMonetaire(data.capitalNetPlaceMensuel)} / month</strong>.<br>
+                Deductibility: <strong>${formatMonetaire(data.avantageFiscalAnnuel)} / year</strong>.<br>
+                Investment duration - ${data.dureeVersementAnnees.toFixed(0)} years term age - ${data.targetAge} years.<br>
                 Entry fees: <strong>3.00%</strong><br>
                 Management fees (annual):
                 <ul style="margin-top: 5px; margin-bottom: 10px; padding-left: 20px;">
@@ -665,13 +601,14 @@ export const emailTemplates = {
                 </ul>
                 Expected return: Between 5.00% and 10.00%. <a href="https://www.google.com" target="_blank" rel="noopener noreferrer">Source, expectations, and others</a>.<br>
                 <ul style="margin-top: 5px; margin-bottom: 10px; padding-left: 20px;">
-                    <li style="padding: 5px;">In your case, we start with an invested capital of <strong>${capitalInvesti}</strong> to reach an estimated amount of <strong>${capitalEstime}</strong> at the end of the contract, including taxes and fees. The total tax benefit received amounts to <strong>${avantageFiscalTotal}</strong></li>
+                    <li style="padding: 5px;">In your case, we start with an invested capital of <strong>${formatMonetaire(data.capitalBrutPlaceTotal)}</strong> to reach an estimated amount of <strong>${formatMonetaire(data.capitalFinalNet)}</strong> at the end of the contract, including taxes and fees. The total tax benefit received amounts to <strong>${formatMonetaire(data.avantageFiscalTotal)}</strong></li>
                 </ul>
             </p>
         `},
 
         ep_elt_common: (msciRate, formatMonetaire) => {
-            const formattedMsciRate = (msciRate || 8.53).toLocaleString('en-IE', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+            // MODIFIÉ: S'assure que 0 est une valeur valide
+            const formattedMsciRate = (typeof msciRate === 'number' ? msciRate : 8.53).toLocaleString('en-IE', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 
             return `
             <p style="margin-top: 15px;">
@@ -766,40 +703,27 @@ export const emailTemplates = {
 
         // --- SECTION MODIFIÉE ---
         nonfiscal: (mensualite, age, res10, res20, res30, formatMonetaire) => {
-            const formattedMensualite = formatMonetaire(mensualite);
-            
-            const age10 = (parseInt(age) || 0) + 10;
-            const invested10 = formatMonetaire(res10.investedCapital);
-            const final10 = formatMonetaire(res10.finalCapital);
-
-            const age20 = (parseInt(age) || 0) + 20;
-            const invested20 = formatMonetaire(res20.investedCapital);
-            const final20 = formatMonetaire(res20.finalCapital);
-
-            const age30 = (parseInt(age) || 0) + 30;
-            const invested30 = formatMonetaire(res30.investedCapital);
-            const final30 = formatMonetaire(res30.finalCapital);
-
+            // ... (contenu inchangé)
             return `
             <h3 style="color: #0070B0; border-bottom: 2px solid #0070B0; padding-bottom: 5px; margin-top: 20px; font-family: 'Inter', sans-serif;">NON-FISCAL SAVINGS</h3>
             <p>
-                Amounts: <strong>${formattedMensualite} GROSS</strong> (Amounts can be adjusted based on your fiscal/financial goals).<br>
+                Amounts: <strong>${formatMonetaire(mensualite)} GROSS</strong> (Amounts can be adjusted based on your fiscal/financial goals).<br>
                 Fees on contribution: <strong>3.00% / month</strong><br>
                 Tax on contribution: <strong>2.00% / month</strong><br>
                 Tax on capital gains: <strong>10.00%</strong> (on gains exceeding €10,000)<br>
                 Expected return: Between 8.00% and 14.00%. <a href="https://www.msci.com/documents/10199/178e6643-6ae6-47b9-82be-e1fc565ededb" target="_blank" rel="noopener noreferrer">Source</a> and <a href="https://bourse101.fr/calculatrice-financiere-interet-compose/" target="_blank" rel="noopener noreferrer">calculator</a>.<br>
             </p>
-            <p style="margin-top: 10px;">Investment duration - 10 years term age - ${age10} years.</p>
+            <p style="margin-top: 10px;">Investment duration - 10 years term age - ${(parseInt(age) || 0) + 10} years.</p>
             <ul style="margin-top: 5px; margin-bottom: 10px; padding-left: 20px;">
-                <li style="padding: 5px;">In your case, we start with an invested capital of <strong>${invested10}</strong> to reach an estimated amount of <strong>${final10}</strong> at the end of 10 years, including taxes and fees.</li>
+                <li style="padding: 5px;">In your case, we start with an invested capital of <strong>${formatMonetaire(res10.investedCapital)}</strong> to reach an estimated amount of <strong>${formatMonetaire(res10.finalCapital)}</strong> at the end of 10 years, including taxes and fees.</li>
             </ul>
-            <p style="margin-top: 10px;">Investment duration - 20 years term age - ${age20} years.</p>
+            <p style="margin-top: 10px;">Investment duration - 20 years term age - ${(parseInt(age) || 0) + 20} years.</p>
             <ul style="margin-top: 5px; margin-bottom: 10px; padding-left: 20px;">
-                <li style="padding: 5px;">In your case, we start with an invested capital of <strong>${invested20}</strong> to reach an estimated amount of <strong>${final20}</strong> at the end of 20 years, including taxes and fees.</li>
+                <li style="padding: 5px;">In your case, we start with an invested capital of <strong>${formatMonetaire(res20.investedCapital)}</strong> to reach an estimated amount of <strong>${formatMonetaire(res20.finalCapital)}</strong> at the end of 20 years, including taxes and fees.</li>
             </ul>
-            <p style="margin-top: 10px;">Investment duration - 30 years term age - ${age30} years.</p>
+            <p style="margin-top: 10px;">Investment duration - 30 years term age - ${(parseInt(age) || 0) + 30} years.</p>
             <ul style="margin-top: 5px; margin-bottom: 10px; padding-left: 20px;">
-                <li style="padding: 5px;">In your case, we start with an invested capital of <strong>${invested30}</strong> to reach an estimated amount of <strong>${final30}</strong> at the end of 30 years, including taxes and fees.</li>
+                <li style="padding: 5px;">In your case, we start with an invested capital of <strong>${formatMonetaire(res30.investedCapital)}</strong> to reach an estimated amount of <strong>${formatMonetaire(res30.finalCapital)}</strong> at the end of 30 years, including taxes and fees.</li>
             </ul>
             <p style="margin-top: 10px;">You are free to withdraw the accumulated capital without additional fees from the 6th year of investment.</p>
             <p style="font-size: 0.9em; font-style: italic; margin-top: 10px;">
@@ -826,8 +750,9 @@ export const emailTemplates = {
         // --- FIN SECTION MODIFIÉE ---
 
         dela: (capital, prime, formatMonetaire) => {
-            const formattedCapital = formatMonetaire(capital || 10000);
-            const formattedPrime = formatMonetaire(prime || 0);
+            // MODIFIÉ: Retrait des valeurs par défaut
+            const formattedCapital = formatMonetaire(capital);
+            const formattedPrime = formatMonetaire(prime);
 
             return `
             <h3 style="color: #0070B0; border-bottom: 2px solid #0070B0; padding-bottom: 5px; margin-top: 20px; font-family: 'Inter', sans-serif;">DELA FUNERAL COVER:</h3>
