@@ -50,7 +50,7 @@ export const translations = {
         btn_calculate_f2: "Calculer",
         h3_summary_f2: "Résultats de la simulation",
         span_total_invested: "Total versé (votre effort)",
-        span_total_interest: "Intérêts gagnés",
+        span_total_interest: "Intérêts gagnés (Nets)", // Modifié
         span_final_capital_f2: "CAPITAL FINAL TOTAL",
         h4_repartition: "Répartition du capital final",
         h4_evolution_f2: "Évolution du capital", chart_x_label_f2: "Années", // Correction clé ici
@@ -59,6 +59,16 @@ export const translations = {
         h4_external_links: "Exemples de supports (ETF) :",
         link_blackrock: "iShares MSCI World SRI",
         link_msci: "Fiche d'info MSCI",
+        // NOUVELLES CLÉS F2 (Non-Fiscal)
+        h4_fees_f2: "Frais et Taxes Appliqués",
+        label_fees_monthly_f2: "Frais sur versement",
+        label_tax_monthly_f2: "Taxe sur versement",
+        label_tax_gains_f2: "Taxe sur plus-value (> 10k)",
+        span_total_invested_brut: "Total versé (Brut / votre effort)",
+        span_total_invested_net: "Capital Net Placé",
+        span_total_tax_gains: "Taxe sur Plus-Value (10%)",
+        span_final_capital_net_f2: "CAPITAL FINAL NET",
+        // FIN NOUVELLES CLÉS F2
         f3_title: "Calculateur d'Inflation",
         h3_params_f3: "Paramètres",
         label_amount_f3: "Montant actuel (€)",
@@ -162,10 +172,20 @@ export const translations = {
         label_initial: "Startbedrag (€)", label_monthly: "Maandelijkse storting (€)", h3_projection_f2: "Projectie",
         label_yield_f2: "Geschat jaarlijks rendement (%)", label_duration_f2: "Investeringsduur (jaren)",
         btn_calculate_f2: "Berekenen", h3_summary_f2: "Simulatieresultaten",
-        span_total_invested: "Totaal ingelegd (uw inspanning)", span_total_interest: "Verdiende rente", span_final_capital_f2: "TOTAAL EIND KAPITAAL",
+        span_total_invested: "Totaal ingelegd (uw inspanning)", span_total_interest: "Verdiende rente (Netto)", span_final_capital_f2: "TOTAAL EIND KAPITAAL",
         h4_repartition: "Verdeling eindkapitaal", h4_evolution_f2: "Kapitaalevolutie", chart_x_label_f2: "Jaren",
         chart_invested: "Totaal InGezet", chart_interest: "Verdiende Rente",
         h4_external_links: "Voorbeelden van fondsen (ETF) :", link_blackrock: "iShares MSCI World SRI", link_msci: "MSCI Factsheet",
+        // NOUVELLES CLÉS F2 (Non-Fiscal)
+        h4_fees_f2: "Toegepaste Kosten en Taksen",
+        label_fees_monthly_f2: "Kosten op storting",
+        label_tax_monthly_f2: "Taks op storting",
+        label_tax_gains_f2: "Taks op meerwaarde (> 10k)",
+        span_total_invested_brut: "Totaal ingelegd (Bruto / uw inspanning)",
+        span_total_invested_net: "Netto Geïnvesteerd Kapitaal",
+        span_total_tax_gains: "Taks op Meerwaarde (10%)",
+        span_final_capital_net_f2: "FINAAL NETTO KAPITAAL",
+        // FIN NOUVELLES CLÉS F2
         f3_title: "Inflatie Calculator", h3_params_f3: "Parameters",
         label_amount_f3: "Huidig bedrag (€)", label_duration_f3: "Aantal jaren", label_rate_f3: "Jaarlijkse inflatie (%)",
         btn_calculate_f3: "Impact Berekenen", h3_results_f3: "Impact van Inflatie",
@@ -262,10 +282,20 @@ export const translations = {
         label_initial: "Initial amount (€)", label_monthly: "Monthly contribution (€)", h3_projection_f2: "Projection",
         label_yield_f2: "Estimated annual yield (%)", label_duration_f2: "Investment duration (years)",
         btn_calculate_f2: "Calculate", h3_summary_f2: "Simulation Results",
-        span_total_invested: "Total invested (your effort)", span_total_interest: "Interest earned", span_final_capital_f2: "TOTAL FINAL CAPITAL",
+        span_total_invested: "Total invested (your effort)", span_total_interest: "Interest earned (Net)", span_final_capital_f2: "TOTAL FINAL CAPITAL",
         h4_repartition: "Final Capital Repartition", h4_evolution_f2: "Capital Evolution", chart_x_label_f2: "Years",
         chart_invested: "Total Invested", chart_interest: "Interest Earned",
         h4_external_links: "Example Investments (ETF) :", link_blackrock: "iShares MSCI World SRI", link_msci: "MSCI Factsheet",
+        // NOUVELLES CLÉS F2 (Non-Fiscal)
+        h4_fees_f2: "Applied Fees and Taxes",
+        label_fees_monthly_f2: "Fees on contribution",
+        label_tax_monthly_f2: "Tax on contribution",
+        label_tax_gains_f2: "Tax on capital gains (> 10k)",
+        span_total_invested_brut: "Total invested (Gross / your effort)",
+        span_total_invested_net: "Net Capital Invested",
+        span_total_tax_gains: "Tax on Capital Gains (10%)",
+        span_final_capital_net_f2: "FINAL NET CAPITAL",
+        // FIN NOUVELLES CLÉS F2
         f3_title: "Inflation Calculator", h3_params_f3: "Parameters",
         label_amount_f3: "Current amount (€)", label_duration_f3: "Number of years", label_rate_f3: "Annual inflation rate (%)",
         btn_calculate_f3: "Calculate Impact", h3_results_f3: "Impact of Inflation",
@@ -362,6 +392,18 @@ export function applyTranslations() {
         if (['chart_evolution', 'chart_avant_taxe', 'chart_apres_taxe'].includes(key)) return;
         // Exclure les labels d'âge de début F4 qui seront gérés par le calculateur
         if (['label_start_age_f4', 'label_start_age_80_f4'].includes(key)) return;
+        
+        // MODIFICATION : Exclure les clés F2 (non-fiscal) qui sont maintenant dynamiques
+        if (key === 'span_total_invested' || key === 'span_final_capital_f2') {
+             // Ces clés sont obsolètes, on les remplace par les nouvelles clés
+             if (key === 'span_total_invested' && t['span_total_invested_brut']) {
+                 el.textContent = t['span_total_invested_brut'];
+             }
+             if (key === 'span_final_capital_f2' && t['span_final_capital_net_f2']) {
+                 el.textContent = t['span_final_capital_net_f2'];
+             }
+             return; 
+        }
 
 
         const isDynamicLabelF1 = ['label_birth_year', 'span_years'].includes(key);
