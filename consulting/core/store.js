@@ -44,6 +44,7 @@ const defaultState = {
     // F5 - Mail
     f5_prenom: 'Prénom',
     f5_nom: 'Nom',
+    f5_email: 'client@email.com', // <-- AJOUTÉ
     f5_rdv_date: 'Mardi 4 mars',
     f5_rdv_time: '10h00',
     f5_langue: 'fr',
@@ -142,7 +143,8 @@ export function bindInput(inputId, stateKey, callback) {
         if (element.type === 'number') {
             // Assurer que la valeur est bien un nombre, même si le champ est vidé temporairement
              const parsedValue = parseFloat(value);
-             value = isNaN(parsedValue) ? 0 : parsedValue;
+             // MODIFIÉ: Utilise 0 si NaN, sinon la valeur parsée
+             value = isNaN(parsedValue) ? 0 : parsedValue; 
         }
         updateState(stateKey, value);
         if (callback) callback();
@@ -152,12 +154,14 @@ export function bindInput(inputId, stateKey, callback) {
      // Assure que la valeur finale est correcte si l'utilisateur quitte le champ
     if (element.type === 'number') {
          element.addEventListener('change', (e) => {
-             const value = parseFloat(e.target.value) || 0;
+             // MODIFIÉ: Utilise 0 si NaN, sinon la valeur parsée
+             const value = parseFloat(e.target.value); 
+             const finalValue = isNaN(value) ? 0 : value;
              // S'assurer que la valeur dans l'input correspond bien au nombre stocké
-             if (element.value !== value.toString()) {
-                  element.value = value;
+             if (element.value !== finalValue.toString()) {
+                  element.value = finalValue;
              }
-             updateState(stateKey, value);
+             updateState(stateKey, finalValue);
              if (callback) callback();
          });
     }
@@ -187,3 +191,4 @@ export function bindCheckbox(inputId, stateKey, callback) {
         if (callback) callback();
     });
 }
+
