@@ -10,7 +10,7 @@ import { initF5, genererEmail } from './features/f5_mail/f5.js';
 // 2. Importer la logique de base
 import { applyTranslations, setLanguage } from './core/i18n.js';
 // NOUVEAU: Importer le store
-import { loadState } from './core/store.js';
+import { loadState, resetStateToDefault } from './core/store.js';
 
 
 /**
@@ -109,6 +109,36 @@ document.addEventListener('DOMContentLoaded', () => {
     if (isVisitor) {
         console.log("Mode Visiteur détecté. Fonctionnalités limitées.");
     }
+
+    // NOUVEL AJOUT: Logique de réinitialisation pour le mode visiteur
+    if (isVisitor) {
+        let visitorResetTimer;
+        const resetDelay = 30000; // 30 secondes (en millisecondes)
+
+        function resetVisitorState() {
+            console.log("Inactivité de 30s : Réinitialisation du mode visiteur.");
+            resetStateToDefault();
+        }
+
+        function startTimer() {
+            // Si un timer existe, on le supprime
+            clearTimeout(visitorResetTimer);
+            // On lance un nouveau timer
+            visitorResetTimer = setTimeout(resetVisitorState, resetDelay);
+        }
+
+        // Réinitialiser le timer sur n'importe quelle activité de l'utilisateur
+        window.addEventListener('mousemove', startTimer, { passive: true });
+        window.addEventListener('keydown', startTimer, { passive: true });
+        window.addEventListener('click', startTimer, { passive: true });
+        window.addEventListener('scroll', startTimer, { passive: true });
+        // Pour les écrans tactiles
+        window.addEventListener('touchstart', startTimer, { passive: true });
+
+        // Démarrer le timer initial au chargement de la page
+        startTimer();
+    }
+    // FIN DU NOUVEL AJOUT
 
     // NOUVEAU: Charger l'état (le store gère s'il faut charger ou non)
     try {
