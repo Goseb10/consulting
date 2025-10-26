@@ -11,38 +11,8 @@ if (isset($_GET['logout'])) {
     exit;
 }
 
-// --- NOUVELLE LISTE DES UTILISATEURS (basée sur Codes.png) ---
-$user_codes = [
-    '4512' => 'Louis DEWASME',
-    '8307' => 'Cyril VAERNEWYCK',
-    '2694' => 'Noa SOUDANT',
-    '9175' => 'Paul BOUR',
-    '6823' => 'Sebastian GOGA',        // Code de l'image
-    '2828' => 'Sebastian GOGA',        // Ancien code (gardé comme alias)
-    '7450' => 'Lorenzo Pagano',
-    '3581' => 'Doryan Gouilliart',
-    '1069' => 'Hugo Letrouit',
-    '5748' => 'Vincent Pietquin',
-    '8921' => 'Nalé Declercq',
-    '4136' => 'Benjamin Debuyst',
-    '7295' => 'Louca Labella',
-    '9840' => 'Julien Sucaet',
-    '6273' => 'Théo Cappelaere',
-    '3502' => 'Ernest Andrieux',
-    '1687' => 'Maxime DESLOOVERE',
-    '4925' => 'Thibaut LEMAHIEU',
-    '8396' => 'Seraphin LEPLAE',
-    '2714' => 'Antoine DECLERCQ',
-    '5068' => 'Maxence Carion',
-    '1549' => 'Aymerick Coucq',
-    '9632' => 'Noah Debuysschere',
-    '6871' => 'Mike Moerman',
-    '3205' => 'Lenny Gaillot',
-    '7984' => 'Mattéo Opsomer',
-    '2467' => 'Anaïs Noppe'
-];
+require_once 'config.php';
 
-$visitor_code = '1100';
 $error_message = '';
 $user_mode = null;
 
