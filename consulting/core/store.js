@@ -45,8 +45,8 @@ const defaultState = {
     f5_prenom: 'Prénom',
     f5_nom: 'Nom',
     f5_email: 'client@email.com', // <-- AJOUTÉ
-    f5_rdv_date: 'Mardi 4 mars',
-    f5_rdv_time: '10h00',
+    f5_rdv_date: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0], // Format AAAA-MM-JJ
+    f5_rdv_time: '10:00', // Format HH:mm
     f5_langue: 'fr',
     f5_msci_rate: 8.53,
     f5_toggle_ep: true,
