@@ -10,19 +10,33 @@ let nfEvolutionChartInstance;
 let nfRepartitionChartInstance; 
 
 export function calculerProjectionF2() { 
-    console.log("calculerProjectionF2 déclenché");
+    console.log("calculerProjectionF2 déclenché avec nouveaux frais/taxes");
     try {
-        // NOUVEAU: Lire les valeurs depuis le store
+        // LIRE LES VALEURS DEPUIS LE STORE (MODIFIÉ)
         const state = getState();
         const montantInitial = parseFloat(state.f2_initial) || 0;
         const versementMensuel = parseFloat(state.f2_versement) || 0;
         const rendementAnnuelPct = parseFloat(state.f2_rendement) || 0;
         const dureeAnnees = parseInt(state.f2_duree) || 0;
+        const fraisMensuelPctInput = parseFloat(state.f2_frais_versement) || 0; // LIRE LE NOUVEAU FRAIS
 
-        // Logique de calcul (inchangée)
+        // --- NOUVELLE LOGIQUE DE CALCUL ---
+        const fraisMensuelPct = fraisMensuelPctInput / 100; // Convertir en décimal
+        const taxeVersamentPct = 0.02; // 2%
+        const taxePlusValuePct = 0.10; // 10%
+        const franchisePlusValue = 10000; // 10K €
+
         if (dureeAnnees <= 0) {
              console.warn("F2: Durée nulle.");
-             updateElement('nf-total-verse', 0); updateElement('nf-total-interets', 0); updateElement('nf-capital-final', 0); createNfEvolutionChart([]); createNfRepartitionChart(0, 0); return;
+             // Reset des anciens et nouveaux champs
+             updateElement('nf-total-verse', 0); 
+             updateElement('nf-total-net-place', 0); // NOUVEAU
+             updateElement('nf-total-interets', 0); 
+             updateElement('nf-taxe-plus-value', 0); // NOUVEAU
+             updateElement('nf-capital-final', 0);
+             createNfEvolutionChart([], []); 
+             createNfRepartitionChart(0, 0); 
+             return;
         }
 
         const rendementMensuel = Math.pow(1 + (rendementAnnuelPct / 100), 1 / 12) - 1;
@@ -30,37 +44,60 @@ export function calculerProjectionF2() {
         let capital = montantInitial;
         let evolutionData = [{ year: 0, capital: capital }]; 
         
-        let totalVerseBrut = montantInitial; // Pour le graphique
-        let evolutionVerse = [{ year: 0, verse: totalVerseBrut }]; // Pour le graphique
+        let totalVerseBrut = montantInitial; // Effort total de l'utilisateur (brut)
+        let evolutionVerse = [{ year: 0, verse: totalVerseBrut }]; 
+
+        // Calcul du versement net après frais et taxes (UTILISE fraisMensuelPct)
+        const versementNet = versementMensuel * (1 - fraisMensuelPct - taxeVersamentPct);
+        
+        // NOUVEAU: Calcul du total net placé
+        const totalNetPlace = montantInitial + (versementNet * dureeMois);
 
         for (let m = 1; m <= dureeMois; m++) {
-            capital += versementMensuel;
+            capital += versementNet; // On ajoute le versement NET
             capital *= (1 + rendementMensuel);
             
-            totalVerseBrut += versementMensuel; // Ajout pour le graphique
+            totalVerseBrut += versementMensuel; // On suit l'effort BRUT
 
             if (m % 12 === 0) {
                 evolutionData.push({ year: m / 12, capital: capital });
-                evolutionVerse.push({ year: m / 12, verse: totalVerseBrut }); // Ajout
+                evolutionVerse.push({ year: m / 12, verse: totalVerseBrut }); 
             }
         }
         if (dureeMois % 12 !== 0) {
             evolutionData.push({ year: dureeMois / 12, capital: capital });
-            evolutionVerse.push({ year: dureeMois / 12, verse: totalVerseBrut }); // Ajout
+            evolutionVerse.push({ year: dureeMois / 12, verse: totalVerseBrut });
         }
         
-        const capitalFinal = capital;
+        const capitalFinalBrut = capital;
+        // Total versé = Montant initial + (Versements mensuels BRUTS * durée)
         const totalVerse = montantInitial + (versementMensuel * dureeMois);
-        const totalInterets = capitalFinal - totalVerse;
-
-        // Mise à jour UI (inchangée)
-        updateElement('nf-total-verse', totalVerse);
-        updateElement('nf-total-interets', totalInterets);
-        updateElement('nf-capital-final', capitalFinal);
         
-        // MODIFIÉ: Envoyer les deux séries de données au graphique
+        // Calcul de la taxe finale
+        const plusValueBrute = capitalFinalBrut - totalVerse;
+        const plusValueTaxable = Math.max(0, plusValueBrute - franchisePlusValue);
+        const taxeSurPlusValue = plusValueTaxable * taxePlusValuePct;
+        
+        // Capital final net après taxe
+        const capitalFinalNet = capitalFinalBrut - taxeSurPlusValue;
+        
+        // Intérêts nets (après toutes taxes)
+        const totalInteretsNets = capitalFinalNet - totalVerse;
+
+        // Mise à jour UI (MODIFIÉE)
+        updateElement('nf-total-verse', totalVerse); // Effort brut
+        updateElement('nf-total-net-place', totalNetPlace); // NOUVEAU: Effort net
+        updateElement('nf-total-interets', totalInteretsNets); // Intérêts nets
+        updateElement('nf-taxe-plus-value', taxeSurPlusValue); // NOUVEAU: Taxe
+        updateElement('nf-capital-final', capitalFinalNet); // Capital final net
+        
+        // Mettre à jour le dernier point du graphique avec le capital NET
+        if (evolutionData.length > 0) {
+            evolutionData[evolutionData.length - 1].capital = capitalFinalNet;
+        }
+
         createNfEvolutionChart(evolutionData, evolutionVerse);
-        createNfRepartitionChart(totalVerse, totalInterets);
+        createNfRepartitionChart(totalVerse, totalInteretsNets); // Graphique (Brut vs Intérêts Nets)
 
     } catch (error) { console.error("Erreur majeure dans calculerProjectionF2:", error); }
 }
@@ -140,8 +177,9 @@ function createNfRepartitionChart(totalVerse, totalInterets) {
     const hasData = dataValues.some(v => v > 0);
     const data = hasData ? dataValues : [1];
     const labels = hasData ? [t.chart_invested, t.chart_interest] : [t.no_data];
-    // MODIFIÉ: Inverser les couleurs pour correspondre au graphique linéaire
-    const colors = hasData ? ['var(--secondary-color)', 'var(--primary-color)'] : ['#EBEBEB']; 
+    
+    // MODIFIÉ: Nouvelles couleurs
+    const colors = hasData ? ['#4BC0C0', '#9966FF'] : ['#EBEBEB']; 
 
     try {
         nfRepartitionChartInstance = new Chart(ctx, {
@@ -175,7 +213,7 @@ function createNfRepartitionChart(totalVerse, totalInterets) {
 export function initF2() {
     console.log("Initialisation F2...");
 
-    // NOUVEAU: Lier les inputs au store
+    // LIER LES INPUTS AU STORE (MODIFIÉ)
     bindInput('nf-montant-initial', 'f2_initial', calculerProjectionF2);
     bindInput('nf-versement-mensuel', 'f2_versement', () => {
         calculerProjectionF2();
@@ -183,6 +221,7 @@ export function initF2() {
     });
     bindInput('nf-rendement', 'f2_rendement', calculerProjectionF2);
     bindInput('nf-duree', 'f2_duree', calculerProjectionF2);
+    bindInput('nf-frais-versement', 'f2_frais_versement', calculerProjectionF2); // LIER LE NOUVEL INPUT
     
     // Bouton: lance juste le calcul
     document.getElementById('f2-calculate-button').addEventListener('click', calculerProjectionF2);
