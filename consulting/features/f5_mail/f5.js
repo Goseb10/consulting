@@ -4,6 +4,7 @@ import { CURRENT_YEAR, AGE_FINALE_DEFAUT, AGE_FINALE_LT, FRAIS_DEFAUT } from '..
 import { emailTemplates } from '../../core/emailTemplates.js'; 
 import { registerOnLangChange } from '../../core/i18n.js';
 import { effectuerSimulation } from '../../core/simulationEngine.js'; 
+import { updateElement } from '../../core/utils.js'; // <-- NOUVEL IMPORT
 
 // NOUVEAU: Importer le store
 import { getState, bindInput, bindCheckbox } from '../../core/store.js';
@@ -69,10 +70,16 @@ export function genererEmail() {
 
         const prenom = state.f5_prenom || "Prénom";
         const nom = state.f5_nom || "Nom";
+        const email = state.f5_email || ""; // <-- NOUVEAU
         const rdvDate = state.f5_rdv_date || "Mardi 4 mars";
         const rdvTime = state.f5_rdv_time || "10h00";
-        const delaCapital = state.f5_dela_capital || 10000;
-        const delaPrime = state.f5_dela_prime || 25.00;
+
+        // --- MODIFICATION BUG 0 ---
+        // Utilise un ternaire pour s'assurer que '0' est une valeur valide
+        const delaCapital = (typeof state.f5_dela_capital === 'number') ? state.f5_dela_capital : 10000;
+        const delaPrime = (typeof state.f5_dela_prime === 'number') ? state.f5_dela_prime : 25.00;
+        // --- FIN MODIFICATION ---
+
         const nonFiscalMensualite = state.f5_nonfiscal_mensualite || 0;
         const nonFiscalBirthYear = state.f5_nonfiscal_birthyear || CURRENT_YEAR;
         let nonFiscalAge = CURRENT_YEAR - parseInt(nonFiscalBirthYear);
@@ -150,7 +157,7 @@ export function genererEmail() {
 
         // --- Construction HTML (inchangée) ---
         let html = '';
-        html += t.intro(prenom, nom);
+        html += t.intro(prenom, nom, email); // <-- MODIFIÉ (passer email)
         if (includeEP) html += t.ep(epData, formatMailMonetaire); 
         if (includeELT) html += t.elt(eltData, formatMailMonetaire);
         if (includeEP || includeELT) html += t.ep_elt_common(msciRate, formatMailMonetaire); 
@@ -158,7 +165,7 @@ export function genererEmail() {
         if (includeINAMI) html += t.inami;
         if (includeEIP) html += t.eip;
         if (includeNonFiscal) html += t.nonfiscal(nonFiscalMensualite, nonFiscalAge, res10, res20, res30, formatMailMonetaire);
-        if (includeDela) html += t.dela(delaCapital, delaPrime, formatMailMonetaire);
+        if (includeDela) html += t.dela(delaCapital, delaPrime, formatMailMonetaire); // Les variables sont maintenant correctes
         html += t.rdv(rdvDate, rdvTime);
         html += `<ul style="margin-top: 10px; margin-bottom: 15px; padding-left: 20px; list-style-type: disc;">`;
         html += `<li>${t.docs_base}</li>`; 
@@ -173,6 +180,15 @@ export function genererEmail() {
         } else {
             console.error("Conteneur d'aperçu 'email-preview-container' non trouvé.");
         }
+
+        // --- NOUVEL AJOUT: Mettre à jour Sujet et À ---
+        const sujet = (t.email_subject || "Synthèse d’analyse financière : {nom} {prenom}")
+                        .replace('{nom}', nom)
+                        .replace('{prenom}', prenom);
+        updateElement('email-subject-display', sujet, false);
+        updateElement('email-to-display', email, false);
+        // --- FIN AJOUT ---
+
 
     } catch (e) {
         console.error("Erreur lors de la génération de l'email:", e);
@@ -239,6 +255,7 @@ export function initF5() {
     // Le callback `genererEmail` est appelé à chaque fois
     bindInput('mail-client-prenom', 'f5_prenom', genererEmail);
     bindInput('mail-client-nom', 'f5_nom', genererEmail);
+    bindInput('mail-client-email', 'f5_email', genererEmail); // <-- NOUVEAU
     bindInput('mail-rdv-date', 'f5_rdv_date', genererEmail);
     bindInput('mail-rdv-time', 'f5_rdv_time', genererEmail);
     bindInput('mail-langue', 'f5_langue', genererEmail);
