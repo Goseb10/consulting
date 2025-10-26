@@ -126,3 +126,43 @@ label.toggle-group input[type="checkbox"] {
     border-color: var(--primary-color);
     box-shadow: 0 0 5px rgba(0,112,176, 0.3);
 }
+
+/* NOUVEAU: Styles pour les méta-données de l'email (Sujet, À) */
+.email-meta-container {
+    border: 1px solid var(--border-light);
+    border-bottom: none; /* Le conteneur principal a déjà une bordure */
+    border-top-left-radius: var(--border-radius-base);
+    border-top-right-radius: var(--border-radius-base);
+    padding: 15px 25px;
+    background-color: #fcfcfc;
+    font-size: 0.9em;
+    color: #333;
+}
+.email-meta-line {
+    display: flex;
+    gap: 10px;
+    padding: 5px 0;
+}
+.email-meta-line strong {
+    color: var(--text-color-light);
+    font-weight: 600;
+    flex-shrink: 0;
+}
+.email-meta-line span {
+    font-weight: 500;
+    color: var(--text-color-dark);
+}
+
+/* Ajuster le conteneur d'aperçu pour coller */
+#email-preview-container {
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
+    border-top-color: #f0f0f0; /* Ligne fine de séparation */
+}
+
+/* Responsive */
+@media (max-width: 480px) {
+     .email-meta-container { padding: 10px 15px; }
+     #email-preview-container { padding: 15px; }
+     .email-meta-line { flex-direction: column; gap: 2px; }
+}
