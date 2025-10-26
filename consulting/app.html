@@ -529,6 +529,14 @@
                             <label for="mail-client-nom" data-key="f4_label_lastname">Nom</label>
                             <input type="text" id="mail-client-nom" value="Nom">
                         </div>
+                        
+                        <!-- NOUVEL AJOUT: Champ Email -->
+                        <div style="grid-column: 1 / -1;">
+                            <label for="mail-client-email" data-key="f4_label_email">Email</label>
+                            <input type="text" id="mail-client-email" value="client@email.com">
+                        </div>
+                        <!-- FIN AJOUT -->
+                        
                         <div>
                             <label for="mail-rdv-date" data-key="f4_label_rdv_date">Date prochain RDV</label>
                             <input type="text" id="mail-rdv-date" value="Mardi 4 mars">
@@ -665,6 +673,19 @@
                         </div>
                     </div>
                     
+                    <!-- NOUVEAU BLOC AJOUTÉ: Affichage Sujet / À -->
+                    <div class="email-meta-container">
+                        <div class="email-meta-line">
+                            <strong>Sujet:</strong>
+                            <span id="email-subject-display"></span>
+                        </div>
+                        <div class="email-meta-line">
+                            <strong>À:</strong>
+                            <span id="email-to-display"></span>
+                        </div>
+                    </div>
+                    <!-- FIN AJOUT -->
+                    
                     <div id="email-preview-container">
                         </div>
 
@@ -677,3 +698,4 @@
     <script type="module" src="main.js"></script>
 </body>
 </html>
+
