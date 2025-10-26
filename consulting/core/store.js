@@ -1,5 +1,7 @@
 // core/store.js
 
+import { onLangChangeCallbacks } from './i18n.js';
+
 // 1. Définir l'état par défaut de tous les inputs de l'application
 const defaultState = {
     // F1 - Pension / LT
