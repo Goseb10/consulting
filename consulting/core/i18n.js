@@ -366,8 +366,7 @@ export const translations = {
 
 // 2. LOGIQUE DE TRADUCTION (Adaptée pour les labels dynamiques F4)
 export let currentLang = 'fr'; // Langue par défaut
-const onLangChangeCallbacks = []; // Fonctions à appeler lors du changement de langue
-
+export const onLangChangeCallbacks = []; // Fonctions à appeler lors du changement de langue
 /**
  * Enregistre une fonction à appeler après un changement de langue.
  * @param {function} callback
