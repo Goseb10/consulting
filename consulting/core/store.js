@@ -143,8 +143,7 @@ export function bindInput(inputId, stateKey, callback) {
     }
     
     // 2. Écouter les changements de l'input pour mettre à jour le state
-    const eventType = (element.tagName === 'SELECT') ? 'change' : 'input';
-    element.addEventListener(eventType, (e) => {
+        const eventType = (element.tagName === 'SELECT' || element.type === 'number') ? 'change' : 'input';    element.addEventListener(eventType, (e) => {
         let value = e.target.value;
         if (element.type === 'number') {
             // Assurer que la valeur est bien un nombre, même si le champ est vidé temporairement
