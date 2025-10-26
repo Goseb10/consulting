@@ -172,6 +172,7 @@ export const emailTemplates = {
             </p>
         `,
 
+        // --- SECTION MODIFIÉE ---
         nonfiscal: (mensualite, age, res10, res20, res30, formatMonetaire) => {
             const formattedMensualite = formatMonetaire(mensualite);
             
@@ -191,8 +192,9 @@ export const emailTemplates = {
             <h3 style="color: #0070B0; border-bottom: 2px solid #0070B0; padding-bottom: 5px; margin-top: 20px; font-family: 'Inter', sans-serif;">ÉPARGNE NON-FISCALE</h3>
             <p>
                 Montants: <strong>${formattedMensualite} BRUTS</strong> (Les montants peuvent être adaptés en fonction de votre objectif fiscal/financier).<br>
-                Frais d'entrée: <strong>3,00%</strong><br>
-                Frais de Gestion (annuels): <strong>1,25%</strong> (Fonds P&V)<br>
+                Frais sur versement: <strong>3,00% / mois</strong><br>
+                Taxe sur versement: <strong>2,00% / mois</strong><br>
+                Taxe sur plus-value: <strong>10,00%</strong> (sur la part des gains > 10.000 €)<br>
                 Rendement attendu: Entre 8,00% et 14,00%. <a href="https://www.msci.com/documents/10199/178e6643-6ae6-47b9-82be-e1fc565ededb" target="_blank" rel="noopener noreferrer">Source</a> et <a href="https://bourse101.fr/calculatrice-financiere-interet-compose/" target="_blank" rel="noopener noreferrer">calculateur</a>.<br>
             </p>
             <p style="margin-top: 10px;">Durée de l'investissement - 10 ans âge terme - ${age10} ans.</p>
@@ -229,6 +231,7 @@ export const emailTemplates = {
                 </ul>
             </p>
         `},
+        // --- FIN SECTION MODIFIÉE ---
 
         dela: (capital, prime, formatMonetaire) => {
             const formattedCapital = formatMonetaire(capital || 10000);
@@ -465,6 +468,7 @@ export const emailTemplates = {
             </p>
         `,
 
+        // --- SECTION MODIFIÉE ---
         nonfiscal: (mensualite, age, res10, res20, res30, formatMonetaire) => {
             const formattedMensualite = formatMonetaire(mensualite);
             
@@ -484,8 +488,9 @@ export const emailTemplates = {
             <h3 style="color: #0070B0; border-bottom: 2px solid #0070B0; padding-bottom: 5px; margin-top: 20px; font-family: 'Inter', sans-serif;">NIET-FISCAAL SPAREN</h3>
             <p>
                 Bedragen: <strong>${formattedMensualite} BRUTO</strong> (Bedragen kunnen worden aangepast op basis van uw fiscale/financiële doelstelling).<br>
-                Instapkosten: <strong>3,00%</strong><br>
-                Beheerskosten (jaarlijks): <strong>1,25%</strong> (P&V Fonds)<br>
+                Kosten op storting: <strong>3,00% / maand</strong><br>
+                Taks op storting: <strong>2,00% / maand</strong><br>
+                Taks op meerwaarde: <strong>10,00%</strong> (op de winst > 10.000 €)<br>
                 Verwacht rendement: Tussen 8,00% en 14,00%. <a href="https://www.msci.com/documents/10199/178e6643-6ae6-47b9-82be-e1fc565ededb" target="_blank" rel="noopener noreferrer">Bron</a> en <a href="https://bourse101.fr/calculatrice-financiere-interet-compose/" target="_blank" rel="noopener noreferrer">calculator</a>.<br>
             </p>
             <p style="margin-top: 10px;">Duur van de investering - 10 jaar eindleeftijd - ${age10} jaar.</p>
@@ -522,6 +527,7 @@ export const emailTemplates = {
                 </ul>
             </p>
         `},
+        // --- FIN SECTION MODIFIÉE ---
 
         dela: (capital, prime, formatMonetaire) => {
             const formattedCapital = formatMonetaire(capital || 10000);
@@ -758,6 +764,7 @@ export const emailTemplates = {
             </p>
         `,
 
+        // --- SECTION MODIFIÉE ---
         nonfiscal: (mensualite, age, res10, res20, res30, formatMonetaire) => {
             const formattedMensualite = formatMonetaire(mensualite);
             
@@ -777,8 +784,9 @@ export const emailTemplates = {
             <h3 style="color: #0070B0; border-bottom: 2px solid #0070B0; padding-bottom: 5px; margin-top: 20px; font-family: 'Inter', sans-serif;">NON-FISCAL SAVINGS</h3>
             <p>
                 Amounts: <strong>${formattedMensualite} GROSS</strong> (Amounts can be adjusted based on your fiscal/financial goals).<br>
-                Entry fees: <strong>3.00%</strong><br>
-                Management fees (annual): <strong>1.25%</strong> (P&V Fund)<br>
+                Fees on contribution: <strong>3.00% / month</strong><br>
+                Tax on contribution: <strong>2.00% / month</strong><br>
+                Tax on capital gains: <strong>10.00%</strong> (on gains exceeding €10,000)<br>
                 Expected return: Between 8.00% and 14.00%. <a href="https://www.msci.com/documents/10199/178e6643-6ae6-47b9-82be-e1fc565ededb" target="_blank" rel="noopener noreferrer">Source</a> and <a href="https://bourse101.fr/calculatrice-financiere-interet-compose/" target="_blank" rel="noopener noreferrer">calculator</a>.<br>
             </p>
             <p style="margin-top: 10px;">Investment duration - 10 years term age - ${age10} years.</p>
@@ -815,6 +823,7 @@ export const emailTemplates = {
                 </ul>
             </p>
         `},
+        // --- FIN SECTION MODIFIÉE ---
 
         dela: (capital, prime, formatMonetaire) => {
             const formattedCapital = formatMonetaire(capital || 10000);
