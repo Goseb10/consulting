@@ -138,6 +138,7 @@ export const translations = {
         f4_preview_title: "Aperçu de l'email",
         f4_btn_copy: "Copier l'email",
         f4_feedback_copied: "Copié !",
+        email_subject: "Synthèse d’analyse financière : {prenom} {nom}", // AJOUTÉ
     },
      nl: {
         meta_title: "Goga Sebastian - Spaar- & Inflatie Simulator",
@@ -248,6 +249,7 @@ export const translations = {
         f4_preview_title: "E-mail voorbeeld",
         f4_btn_copy: "Kopieer e-mail",
         f4_feedback_copied: "Gekopieerd!",
+        email_subject: "Synthese financiële analyse: {prenom} {nom}", // AJOUTÉ
     },
     en: {
         meta_title: "Goga Sebastian - Savings & Inflation Simulator",
@@ -358,6 +360,7 @@ export const translations = {
         f4_preview_title: "Email Preview",
         f4_btn_copy: "Copy Email",
         f4_feedback_copied: "Copied!",
+        email_subject: "Financial Analysis Summary: {prenom} {nom}", // AJOUTÉ
     }
 };
 
@@ -479,3 +482,4 @@ export function setLanguage(lang) {
         }
     });
 }
+
