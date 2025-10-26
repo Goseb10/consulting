@@ -219,9 +219,22 @@
                         
                         <label for="nf-duree" data-key="label_duration_f2">Durée de l'investissement (années)</label>
                         <input type="number" id="nf-duree" value="10" min="1">
-
                     </div>
-                    
+
+                    <div class="input-group-section">
+                        <h4 data-key="h4_fees_f2">Frais et Taxes Appliqués</h4>
+                        
+                        <label for="nf-frais-versement" data-key="label_fees_monthly_f2">Frais sur versement (%)</label>
+                        <input type="number" id="nf-frais-versement" value="3.0" step="0.1" min="0">
+                        <div class="info-tax-line" style="margin-top: 10px;">
+                            <label data-key="label_tax_monthly_f2">Taxe sur versement</label>
+                            <span>2,00 %</span>
+                        </div>
+                        <div class="info-tax-line" style="margin-top: 5px;">
+                            <label data-key="label_tax_gains_f2">Taxe sur plus-value (> 10k)</label>
+                            <span>10,00 %</span>
+                        </div>
+                    </div>
                     <button class="main-button" id="f2-calculate-button" data-key="btn_calculate_f2">Calculer</button>
                 </div>
                 
@@ -230,15 +243,28 @@
                     
                     <div class="data-summary-table">
                         <div class="table-group">
-                             <div class="data-line"><span data-key="span_total_invested">Total versé (votre effort)</span> <strong class="data-value" id="nf-total-verse">0,00 €</strong></div>
-                             <div class="data-line highlight-tax"><span data-key="span_total_interest">Intérêts gagnés</span> <strong class="data-value" id="nf-total-interets">0,00 €</strong></div>
+                             <div class="data-line">
+                                 <span data-key="span_total_invested_brut">Total versé (Brut / votre effort)</span> 
+                                 <strong class="data-value" id="nf-total-verse">0,00 €</strong>
+                             </div>
+                             <div class="data-line highlight-green">
+                                 <span data-key="span_total_invested_net">Capital Net Placé</span> 
+                                 <strong class="data-value" id="nf-total-net-place">0,00 €</strong>
+                             </div>
+                             <div class="data-line highlight-tax">
+                                 <span data-key="span_total_interest">Intérêts gagnés (Nets)</span> 
+                                 <strong class="data-value" id="nf-total-interets">0,00 €</strong>
+                             </div>
+                             <div class="data-line highlight-tax-final">
+                                 <span data-key="span_total_tax_gains">Taxe sur Plus-Value (10%)</span> 
+                                 <strong class="data-value" id="nf-taxe-plus-value">0,00 €</strong>
+                             </div>
                              <div class="data-line highlight-final">
-                                <span data-key="span_final_capital_f2">CAPITAL FINAL TOTAL</span> 
+                                <span data-key="span_final_capital_net_f2">CAPITAL FINAL NET</span> 
                                 <strong class="data-value" id="nf-capital-final">0,00 €</strong>
                             </div>
                         </div>
                     </div>
-
                     <div class="external-links-container">
                         <h4 data-key="h4_external_links">Exemples de supports (ETF) :</h4>
                         <div class="links-wrapper">
@@ -269,7 +295,6 @@
                 </div>
             </div>
         </section>
-        
         <section id="f2" class="calculator-section">
             <h2 data-key="f3_title">Calculateur d'Inflation</h2>
              
