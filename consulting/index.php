@@ -17,9 +17,9 @@ if (isset($_GET['logout'])) {
     exit;
 }
 
-// MODIFICATION : Le 'require_once' pointe maintenant un niveau au-dessus
-// Assurez-vous que config.php est bien dans le dossier PARENT de public_html
-require_once '../config.php';
+// MODIFICATION : Le 'require_once' pointe maintenant deux niveaux au-dessus
+// Assurez-vous que config.php est bien DEUX dossiers PARENTS au-dessus de public_html
+require_once '../../config.php';
 
 $error_message = '';
 $user_mode = null;
@@ -139,7 +139,7 @@ else {
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale-1.0">
     <title>Accès au Simulateur</title>
     <link rel="stylesheet" href="style.css"> 
 </head>
@@ -169,3 +169,4 @@ else {
 <?php
 } // Fin du 'else'
 ?>
+
