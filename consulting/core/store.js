@@ -16,6 +16,7 @@ const defaultState = {
     f2_versement: 75,
     f2_rendement: 8,
     f2_duree: 10,
+    f2_frais_versement: 3.0, // NOUVELLE CLÉ AJOUTÉE
 
     // F3 - Inflation
     f3_montant: 1000,
@@ -139,16 +140,23 @@ export function bindInput(inputId, stateKey, callback) {
     element.addEventListener(eventType, (e) => {
         let value = e.target.value;
         if (element.type === 'number') {
-            value = parseFloat(value) || 0;
+            // Assurer que la valeur est bien un nombre, même si le champ est vidé temporairement
+             const parsedValue = parseFloat(value);
+             value = isNaN(parsedValue) ? 0 : parsedValue;
         }
         updateState(stateKey, value);
         if (callback) callback();
     });
     
     // 3. Gérer le 'change' (pour les inputs number qui perdent le focus ou "Enter")
+     // Assure que la valeur finale est correcte si l'utilisateur quitte le champ
     if (element.type === 'number') {
          element.addEventListener('change', (e) => {
              const value = parseFloat(e.target.value) || 0;
+             // S'assurer que la valeur dans l'input correspond bien au nombre stocké
+             if (element.value !== value.toString()) {
+                  element.value = value;
+             }
              updateState(stateKey, value);
              if (callback) callback();
          });
