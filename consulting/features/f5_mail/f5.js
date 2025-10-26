@@ -259,7 +259,7 @@ export function initF5() {
     bindInput('mail-rdv-date', 'f5_rdv_date', genererEmail);
     bindInput('mail-rdv-time', 'f5_rdv_time', genererEmail);
     bindInput('mail-langue', 'f5_langue', genererEmail);
-    bindInput('mail-common-mci-rate', 'f5_msci_rate', genererEmail);
+    bindInput('mail-common-msci-rate', 'f5_msci_rate', genererEmail);
 
     // Toggles de section
     bindCheckbox('toggle-ep', 'f5_toggle_ep', genererEmail);
