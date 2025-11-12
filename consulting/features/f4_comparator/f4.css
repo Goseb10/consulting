@@ -8,8 +8,7 @@
     justify-content: center;
 }
 .comparison-column {
-    flex: 1; 
-    min-width: 420px; 
+    flex: 1 1 420px; /* MODIFIÉ: Devient flexible */
     max-width: 600px;
     display: flex;
     flex-direction: column;
@@ -83,7 +82,8 @@
 
 /* Reponsivité F3 */
 @media (max-width: 1000px) {
-    .comparison-column { min-width: 100%; }
+    /* SUPPRIMÉ: Géré par flex-wrap et flex-basis */
+    /* .comparison-column { min-width: 100%; } */
 }
 
 /* Style pour la ligne de taxe (copié de f1.css pour F3) */
