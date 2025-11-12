@@ -5,7 +5,8 @@
 /* Grille pour les infos client */
 .mail-inputs-grid {
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    /* MODIFIÉ: Utilise auto-fit pour s'adapter, comme la grille globale */
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
     gap: 15px;
 }
 /* Grille pour les toggles */
@@ -86,7 +87,7 @@ label.toggle-group input[type="checkbox"] {
 
 /* Responsive F4 */
 @media (max-width: 480px) {
-    .mail-inputs-grid { grid-template-columns: 1fr; }
+    /* MODIFIÉ: .mail-inputs-grid est maintenant auto-fit, plus besoin de media query */
     .mail-toggles-grid { grid-template-columns: 1fr; }
     #email-preview-container { padding: 15px; }
 }
