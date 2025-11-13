@@ -1,5 +1,4 @@
 // core/simulationEngine.js
-// VERSION MISE À JOUR AVEC LES NOUVELLES RÈGLES DE TAXE ET D'ÂGE DE VERSEMENT
 
 import { CURRENT_YEAR, AGE_TAXE, AGE_FINALE_DEFAUT, AGE_MAX_VERSEMENT_EP } from './constants.js'; // Import de la nouvelle constante
 
@@ -22,7 +21,6 @@ export function effectuerSimulation(params, startYear = CURRENT_YEAR) {
     const dureeAnnees = Math.max(0, anneeFinale - startYear); 
     const dureeMois = Math.floor(dureeAnnees * 12); 
     
-    // --- LOGIQUE DE TAXATION MISE À JOUR ---
     // Règle 1: La taxe est à 60 ans (AGE_TAXE)
     const anneeTaxeStandard = anneeNaissance + AGE_TAXE;
     // Règle 2: Mais au minimum 10 ans après le début du contrat

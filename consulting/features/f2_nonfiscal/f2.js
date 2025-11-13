@@ -1,9 +1,9 @@
-// features/f2_nonfiscal/f2.js - VERSION MISE À JOUR
+// features/f2_nonfiscal/f2.js
 
 import { formatMonetaire, updateElement, updateInputElement } from '../../core/utils.js';
 import { translations, currentLang, registerOnLangChange } from '../../core/i18n.js';
 
-// NOUVEAU: Importer le store
+// Importer le store
 import { getState, bindInput, updateState } from '../../core/store.js';
 
 let nfEvolutionChartInstance; 
@@ -12,7 +12,7 @@ let nfRepartitionChartInstance;
 export function calculerProjectionF2() { 
     console.log("calculerProjectionF2 déclenché avec nouveaux frais/taxes");
     try {
-        // LIRE LES VALEURS DEPUIS LE STORE (MODIFIÉ)
+        // LIRE LES VALEURS DEPUIS LE STORE
         const state = getState();
         const montantInitial = parseFloat(state.f2_initial) || 0;
         const versementMensuel = parseFloat(state.f2_versement) || 0;
@@ -22,21 +22,21 @@ export function calculerProjectionF2() {
         
         // --- NOUVELLE LOGIQUE DE CALCUL ---
         const fraisMensuelPct = fraisMensuelPctInput / 100; // Convertir en décimal
-        const fraisGestionAnnuelPct = (parseFloat(state.f2_frais_gestion) || 0) / 100; // <-- NOUVEAU FRAIS DE GESTION
+        const fraisGestionAnnuelPct = (parseFloat(state.f2_frais_gestion) || 0) / 100; // <-- FRAIS DE GESTION
         const taxeVersamentPct = 0.02; // 2%
         const taxePlusValuePct = 0.10; // 10%
         const franchisePlusValue = 10000; // 10K €
 
         if (dureeAnnees <= 0) {
              console.warn("F2: Durée nulle.");
-             // Reset des anciens et nouveaux champs
-             updateElement('nf-total-verse', 0); 
-             updateElement('nf-total-net-place', 0); // NOUVEAU
+             // Reset des nouveaux champs du récap
+             updateElement('nf-recap-initial', 0); 
+             updateElement('nf-recap-contributions', 0); 
              updateElement('nf-total-interets', 0); 
              updateElement('nf-taxe-plus-value', 0); // NOUVEAU
              updateElement('nf-capital-final', 0);
              createNfEvolutionChart([], []); 
-             createNfRepartitionChart(0, 0); 
+             createNfRepartitionChart(0, 0, 0); // 3 params
              return;
         }
 
@@ -51,8 +51,10 @@ export function calculerProjectionF2() {
         // Calcul du versement net après frais et taxes (UTILISE fraisMensuelPct)
         const versementNet = versementMensuel * (1 - fraisMensuelPct - taxeVersamentPct);
         
-        // NOUVEAU: Calcul du total net placé
+        // Calcul du total net placé
         const totalNetPlace = montantInitial + (versementNet * dureeMois);
+        // Calcul du total des versements mensuels (bruts)
+        const totalVerseMensuel = versementMensuel * dureeMois;
 
         for (let m = 1; m <= dureeMois; m++) {
             capital += versementNet; // On ajoute le versement NET
@@ -86,7 +88,7 @@ export function calculerProjectionF2() {
         
         const capitalFinalBrut = capital;
         // Total versé = Montant initial + (Versements mensuels BRUTS * durée)
-        const totalVerse = montantInitial + (versementMensuel * dureeMois);
+        const totalVerse = montantInitial + totalVerseMensuel;
         
         // Calcul de la taxe finale
         const plusValueBrute = capitalFinalBrut - totalVerse;
@@ -99,9 +101,9 @@ export function calculerProjectionF2() {
         // Intérêts nets (après toutes taxes)
         const totalInteretsNets = capitalFinalNet - totalVerse;
 
-        // Mise à jour UI (MODIFIÉE)
-        updateElement('nf-total-verse', totalVerse); // Effort brut
-        updateElement('nf-total-net-place', totalNetPlace); // NOUVEAU: Effort net
+        // Mise à jour UI (MODIFIÉE pour le nouveau récap)
+        updateElement('nf-recap-initial', montantInitial);
+        updateElement('nf-recap-contributions', totalVerseMensuel);
         updateElement('nf-total-interets', totalInteretsNets); // Intérêts nets
         updateElement('nf-taxe-plus-value', taxeSurPlusValue); // NOUVEAU: Taxe
         updateElement('nf-capital-final', capitalFinalNet); // Capital final net
@@ -112,12 +114,13 @@ export function calculerProjectionF2() {
         }
 
         createNfEvolutionChart(evolutionData, evolutionVerse);
-        createNfRepartitionChart(totalVerse, totalInteretsNets); // Graphique (Brut vs Intérêts Nets)
+        // Passe les 3 parts au graphique
+        createNfRepartitionChart(montantInitial, totalVerseMensuel, totalInteretsNets); 
 
     } catch (error) { console.error("Erreur majeure dans calculerProjectionF2:", error); }
 }
 
-// MODIFIÉ: Accepte dataVerse en plus
+// Accepte dataVerse en plus
 function createNfEvolutionChart(dataCapital, dataVerse) { 
     const ctx = document.getElementById('nfEvolutionChart')?.getContext('2d');
     if (!ctx) { console.warn("Canvas F_NonFiscal Évolution non trouvé"); return; }
@@ -133,8 +136,7 @@ function createNfEvolutionChart(dataCapital, dataVerse) {
     
     const labels = dataCapital.map(d => d.year);
     const capitalValues = dataCapital.map(d => d.capital);
-    const verseValues = dataVerse.map(d => d.verse); // Ajout
-
+    const verseValues = dataVerse.map(d => d.verse);
     try {
         nfEvolutionChartInstance = new Chart(ctx, {
             type: 'line',
@@ -182,19 +184,21 @@ function createNfEvolutionChart(dataCapital, dataVerse) {
 }
 
 
-function createNfRepartitionChart(totalVerse, totalInterets) { 
+// Accepte 3 parts (initial, versements, interets)
+function createNfRepartitionChart(montantInitial, totalVerseMensuel, totalInterets) { 
     const ctx = document.getElementById('nfRepartitionChart')?.getContext('2d');
     if (!ctx) { console.warn("Canvas F_NonFiscal Répartition non trouvé"); return; }
     const t = translations[currentLang] || translations.fr;
     if (nfRepartitionChartInstance) { nfRepartitionChartInstance.destroy(); }
 
-    const dataValues = [Math.max(0, totalVerse), Math.max(0, totalInterets)]; 
+    const dataValues = [Math.max(0, montantInitial), Math.max(0, totalVerseMensuel), Math.max(0, totalInterets)]; 
     const hasData = dataValues.some(v => v > 0);
     const data = hasData ? dataValues : [1];
-    const labels = hasData ? [t.chart_invested, t.chart_interest] : [t.no_data];
+    // Utilise 3 labels, dont la nouvelle clé 'chart_initial'
+    const labels = hasData ? [t.chart_initial, t.chart_invested, t.chart_interest] : [t.no_data];
     
-    // MODIFIÉ: Nouvelles couleurs
-    const colors = hasData ? ['#4BC0C0', '#9966FF'] : ['#EBEBEB']; 
+    // 3 couleurs
+    const colors = hasData ? ['#36A2EB', '#4BC0C0', '#9966FF'] : ['#EBEBEB']; 
 
     try {
         nfRepartitionChartInstance = new Chart(ctx, {
@@ -228,7 +232,7 @@ function createNfRepartitionChart(totalVerse, totalInterets) {
 export function initF2() {
     console.log("Initialisation F2...");
 
-    // LIER LES INPUTS AU STORE (MODIFIÉ)
+    // LIER LES INPUTS AU STORE
     bindInput('nf-montant-initial', 'f2_initial', calculerProjectionF2);
     bindInput('nf-versement-mensuel', 'f2_versement', () => {
         calculerProjectionF2();
@@ -237,7 +241,7 @@ export function initF2() {
     bindInput('nf-rendement', 'f2_rendement', calculerProjectionF2);
     bindInput('nf-duree', 'f2_duree', calculerProjectionF2);
     bindInput('nf-frais-versement', 'f2_frais_versement', calculerProjectionF2);
-    bindInput('nf-frais-gestion', 'f2_frais_gestion', calculerProjectionF2); // <-- NOUVEAU BINDING
+    bindInput('nf-frais-gestion', 'f2_frais_gestion', calculerProjectionF2); 
     
     // Bouton: lance juste le calcul
     document.getElementById('f2-calculate-button').addEventListener('click', calculerProjectionF2);
@@ -245,7 +249,7 @@ export function initF2() {
     // Enregistrer pour les changements de langue
     registerOnLangChange(calculerProjectionF2);
     
-    // NOUVEAU: Synchro vers le mail (CORRECTION BUG #4)
+    // Synchro vers le mail 
     const syncF2ToMail = () => {
         // Ne pas synchroniser en mode visiteur
         if (document.body.classList.contains('mode-visitor')) return;
@@ -253,13 +257,13 @@ export function initF2() {
         const state = getState();
         const montant = state.f2_versement;
         
-        // --- MODIFICATION : Récupérer aussi l'année de naissance de F1 ---
+        // --- Récupérer aussi l'année de naissance de F1 ---
         const birthYear = state.f1_birth_year; // Lire l'état de F1
         
         updateInputElement('mail-nonfiscal-mensualite', montant);
         updateState('f5_nonfiscal_mensualite', montant);
         
-        // --- AJOUT : Mettre à jour l'année de naissance dans l'onglet mail ---
+        // --- Mettre à jour l'année de naissance dans l'onglet mail ---
         updateInputElement('mail-nonfiscal-birthyear', birthYear);
         updateState('f5_nonfiscal_birthyear', birthYear);
     };

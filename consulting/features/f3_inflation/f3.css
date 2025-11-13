@@ -8,3 +8,27 @@
     font-weight: 500;
     line-height: 1.7;
 }
+
+/* --- Ajout de style "box" pour les groupes de paramètres F3 --- */
+/* Note: L'ID HTML de cette section est #f2 */
+section#f2 .parameters-card .input-group-section {
+    background-color: var(--background-light); /* Couleur de fond légère */
+    border: 1px solid var(--border-light);
+    border-radius: var(--border-radius-base);
+    padding: 20px; /* Plus de padding */
+    margin-bottom: 20px; /* Plus d'espace entre les boîtes */
+}
+
+section#f2 .parameters-card .input-group-section:first-of-type {
+    padding-top: 20px;
+}
+
+section#f2 .parameters-card .input-group-section h4 {
+    margin-bottom: 15px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--border-light);
+}
+
+section#f2 .parameters-card .input-group-section:last-of-type {
+    margin-bottom: 0;
+}

@@ -1,4 +1,4 @@
-// features/f5_mail/f5.js - VERSION MODIFIÉE (Dynamique + 3 Sims + Majuscules Date + Frais Gestion F2)
+// features/f5_mail/f5.js 
 
 import { CURRENT_YEAR, AGE_FINALE_DEFAUT, AGE_FINALE_LT, FRAIS_DEFAUT } from '../../core/constants.js';
 import { emailTemplates } from '../../core/emailTemplates.js'; 
@@ -13,7 +13,7 @@ import { getState, bindInput, bindCheckbox, updateState } from '../../core/store
 
 /**
  * Calcule le capital final et le capital investi pour une épargne non fiscale.
- * MISE À JOUR : Inclut les frais de gestion annuels de 0.85%
+ * Inclut les frais de gestion annuels de 0.85%
  */
 function calculateNonFiscal(monthlyPayment, years) {
     const P_monthly = parseFloat(monthlyPayment);
@@ -99,7 +99,7 @@ export function genererEmail() {
         let formattedRdvTime = state.f5_rdv_time;
         const langLocale = mailLang === 'nl' ? 'nl-BE' : (mailLang === 'en' ? 'en-GB' : 'fr-BE');
 
-        // --- AJOUT : Fonction pour mettre la première lettre en majuscule ---
+        // --- Fonction pour mettre la première lettre en majuscule ---
         const capitalize = (s) => {
             if (typeof s !== 'string' || s.length === 0) return '';
             return s.charAt(0).toUpperCase() + s.slice(1);
@@ -116,7 +116,6 @@ export function genererEmail() {
                         month: 'long'
                     }).format(dateObj);
                     
-                    // --- MODIFICATION MAJUSCULES ---
                     // Sépare la chaîne (ex: "lundi 10 novembre") en mots
                     const parts = dateString.split(' ');
                     if (parts.length > 0) {
@@ -184,8 +183,8 @@ export function genererEmail() {
         const includeEIP = state.f5_toggle_eip;
         const includeNonFiscal = state.f5_toggle_nonfiscal;
         const includeDela = state.f5_toggle_dela;
-        const includeEnfant = state.f5_toggle_enfant; // NOUVEAU
-        const childrenData = state.f5_children_data || []; // NOUVEAU
+        const includeEnfant = state.f5_toggle_enfant; 
+        const childrenData = state.f5_children_data || [];
         
         // --- Simulations ---
         const res10 = calculateNonFiscal(nonFiscalMensualite, 10);
@@ -226,13 +225,13 @@ export function genererEmail() {
 
         // --- Construction HTML ---
         
-        // MODIFIÉ : Définition du sujet déplacée ici
+        // Définition du sujet déplacée ici
         const sujet = (t('email_subject') || "Synthèse : {nom} {prenom}")
                         .replace('{nom}', nom)
                         .replace('{prenom}', prenom);
         
         let html = '';
-        html += emailTemplates.intro(t, prenom, nom, email, sujet); // MODIFIÉ : 'sujet' est passé en paramètre
+        html += emailTemplates.intro(t, prenom, nom, email, sujet); // 'sujet' est passé en paramètre
         
         if (includeEP) html += emailTemplates.ep(t, epData, formatMonetaire); 
         if (includeELT) html += emailTemplates.elt(t, eltData, formatMonetaire);
@@ -286,7 +285,6 @@ export function genererEmail() {
             console.error("Conteneur d'aperçu 'email-preview-container' non trouvé.");
         }
 
-        // --- Mettre à jour Sujet et À ---
         // 'sujet' est déjà défini plus haut
         updateElement('email-subject-display', sujet, false);
         updateElement('email-to-display', email, false);
@@ -470,7 +468,7 @@ export function initF5() {
     bindCheckbox('toggle-eip', 'f5_toggle_eip', genererEmail);
     bindCheckbox('toggle-nonfiscal', 'f5_toggle_nonfiscal', genererEmail);
     bindCheckbox('toggle-dela', 'f5_toggle_dela', genererEmail);
-    bindCheckbox('toggle-enfant', 'f5_toggle_enfant', genererEmail); // MODIFIÉ
+    bindCheckbox('toggle-enfant', 'f5_toggle_enfant', genererEmail);
     
     // Options EP
     bindInput('mail-ep-mensualite', 'f5_ep_mensualite', genererEmail);
@@ -489,7 +487,7 @@ export function initF5() {
     bindInput('mail-nonfiscal-mensualite', 'f5_nonfiscal_mensualite', genererEmail);
     bindInput('mail-nonfiscal-birthyear', 'f5_nonfiscal_birthyear', genererEmail);
 
-    // --- NOUVEAU : Bindings Enfants (Dynamique) ---
+    // --- Bindings Enfants (Dynamique) ---
     bindInput('mail-children-count', 'f5_children_count', renderChildrenInputs);
     
     // Ajout d'un écouteur délégué pour les champs enfants dynamiques
@@ -520,7 +518,7 @@ export function initF5() {
     setupConditionalDisplay('toggle-elt', 'elt-options-container');
     setupConditionalDisplay('toggle-dela', 'dela-options-container');
     setupConditionalDisplay('toggle-nonfiscal', 'nonfiscal-options-container');
-    setupConditionalDisplay('toggle-enfant', 'children-main-container'); // MODIFIÉ
+    setupConditionalDisplay('toggle-enfant', 'children-main-container');
 
     // Boutons
     document.getElementById('f5-generate-button').addEventListener('click', () => {

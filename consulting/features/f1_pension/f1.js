@@ -1,17 +1,17 @@
-// features/f1_pension/f1.js - VERSION MISE À JOUR
+// features/f1_pension/f1.js
 
 import { formatMonetaire, updateElement, updateInputElement } from '../../core/utils.js';
 import { translations, currentLang, registerOnLangChange } from '../../core/i18n.js';
 import { CURRENT_YEAR, AGE_TAXE, AGE_FINALE_DEFAUT, AGE_FINALE_LT, FRAIS_DEFAUT, LIMITES_VERSEMENT } from '../../core/constants.js';
 import { effectuerSimulation } from '../../core/simulationEngine.js';
 
-// NOUVEAU: Importer le store
+// Importer le store
 import { getState, bindInput, bindCheckbox, updateState } from '../../core/store.js';
 
 let myChart; // Instance du graphique F1
 
 function changerFraisDefaut() {
-    // NOUVEAU: Lire l'état depuis le store
+    // Lire l'état depuis le store
     const state = getState();
     const typeEpargne = state.f1_type;
     
@@ -20,7 +20,7 @@ function changerFraisDefaut() {
     const courantEl = document.getElementById('frais-courant');
 
     if (frais && entreeEl && courantEl) {
-        // NOUVEAU: Mettre à jour le DOM et le state
+        // Mettre à jour le DOM et le state
         entreeEl.value = frais.fraisEntree;
         courantEl.value = frais.fraisCourant;
         updateState('f1_frais_entree', frais.fraisEntree);
@@ -40,7 +40,7 @@ function changerFraisDefaut() {
             ltExtensionContainer.style.display = 'none';
             const checkbox = document.getElementById('extension-80ans-toggle');
             if (checkbox && checkbox.checked) { // Ne décocher que si c'est coché
-                // NOUVEAU: Mettre à jour le DOM et le state
+                // Mettre à jour le DOM et le state
                 checkbox.checked = false; 
                 updateState('f1_extend_80', false);
             }
@@ -53,7 +53,7 @@ function changerFraisDefaut() {
 export function calculerProjectionF1() { 
     console.log("calculerProjectionF1 déclenché");
     try {
-        // NOUVEAU: Lire toutes les valeurs depuis le store
+        // Lire toutes les valeurs depuis le store
         const state = getState();
         const anneeNaissance = parseInt(state.f1_birth_year) || 0;
         let versementBrutMensuel = parseFloat(state.f1_versement) || 0; 
@@ -77,7 +77,7 @@ export function calculerProjectionF1() {
             }
             
             if(versementModifie && !document.body.classList.contains('mode-visitor')) {
-                // NOUVEAU: Si on corrige le montant, on met à jour le DOM et le store
+                // Si on corrige le montant, on met à jour le DOM et le store
                 // Ne pas le faire en mode visiteur pour éviter une boucle
                 const inputVersement = document.getElementById('versement-brut');
                 if (inputVersement) inputVersement.value = versementBrutMensuel.toFixed(2); 
@@ -102,7 +102,7 @@ export function calculerProjectionF1() {
         const result = effectuerSimulation(params, CURRENT_YEAR);
         const resultRetard = effectuerSimulation(params, CURRENT_YEAR + 1);
 
-        // NOUVEAU: Récupérer l'âge de taxation et créer le label dynamique
+        // Récupérer l'âge de taxation et créer le label dynamique
         const ageTaxe = result.ageTaxe || AGE_TAXE;
         const labelTaxe = t.span_tax_levied.replace('{age}', ageTaxe.toFixed(0));
 
@@ -110,7 +110,7 @@ export function calculerProjectionF1() {
         if (!result || result.dureeAnnees <= 0 || isNaN(result.capitalFinalNet)) {
             console.warn("F1: Durée nulle ou résultat invalide.");
              updateElement('duree-ans-info', "0", false); updateElement('versement-brut-mois', 0); updateElement('avantage-mois', 0); updateElement('net-place-mois', 0); updateElement('versement-brut-annuel', 0); updateElement('avantage-annuel-calcule', 0); updateElement('capital-net-annuel', 0); updateElement('versement-brut-total', 0); updateElement('avantage-total', 0); updateElement('capital-net-total', 0); updateElement('total-duree-annees', "0", false); updateInputElement('capital-avant-taxe-value', 0); updateInputElement('taxe-liberatoire-value', 0); updateElement('taxe-liberatoire', 0); updateElement('taxe-liberatoire-80', 0); updateElement('capital-final', 0); updateElement('capital-final-80', 0); updateElement('capital-retard', 0); updateElement('perte-estimee', 0); 
-             // NOUVEAU: Mettre à jour le label de taxe même en cas d'échec
+             // Mettre à jour le label de taxe même en cas d'échec
              const labelTaxeEchec = t.span_tax_levied.replace('{age}', AGE_TAXE.toFixed(0));
              updateElement('f1-tax-label', labelTaxeEchec, false);
              updateElement('f1-tax-label-80', labelTaxeEchec, false);
@@ -138,7 +138,7 @@ export function calculerProjectionF1() {
         updateInputElement('capital-avant-taxe-value', result.capitalAuMomentTaxe);
         updateInputElement('taxe-liberatoire-value', result.taxeLiberatoire);
         
-        // NOUVEAU: Mettre à jour les labels de taxe dynamiques
+        // Mettre à jour les labels de taxe dynamiques
         updateElement('f1-tax-label', labelTaxe, false); // Pour le bloc 67 ans
         updateElement('f1-tax-label-80', labelTaxe, false); // Pour le bloc 80 ans
         
@@ -158,7 +158,7 @@ export function calculerProjectionF1() {
     }
 }
 
-// NOUVEAU: Ajout de 'ageTaxe' pour les labels du graphique
+// Ajout de 'ageTaxe' pour les labels du graphique
 function createChartF1(data, annee60Ans, capitalAuMomentTaxe, taxeLiberatoire, capitalRetardValue, finalAge, ageTaxe) { 
     const ctx = document.getElementById('capitalChart')?.getContext('2d'); 
     if (!ctx) { console.warn("Canvas F1 non trouvé"); return;} 
@@ -206,7 +206,7 @@ function createChartF1(data, annee60Ans, capitalAuMomentTaxe, taxeLiberatoire, c
     const pointFinalNet = labels.map((_, i) => i === finalIndex ? capitalFinalNet : null);
     const pointRetard = labels.map((_, i) => i === finalIndex ? capitalRetard : null);
     
-    // NOUVEAU: Labels de graphique dynamiques
+    // Labels de graphique dynamiques
     const finalAgeKey = (finalAge === 80) ? 'chart_final_net_80' : 'chart_final_net';
     const finalLabel = t[finalAgeKey] || t.chart_final_net;
     const ageTaxeStr = ageTaxe.toFixed(0);
@@ -293,7 +293,7 @@ function createChartF1(data, annee60Ans, capitalAuMomentTaxe, taxeLiberatoire, c
 export function initF1() {
     console.log("Initialisation F1...");
     
-    // NOUVEAU: Lier les inputs au store
+    // Lier les inputs au store
     // Le callback `calculerProjectionF1` est appelé à chaque changement
     bindInput('type-epargne', 'f1_type', () => {
         changerFraisDefaut(); // Celui-ci doit être appelé en premier
@@ -319,7 +319,7 @@ export function initF1() {
     // Enregistrer pour les changements de langue
     registerOnLangChange(calculerProjectionF1);
 
-    // NOUVEAU: La synchro vers le mail lit aussi le store
+    // La synchro vers le mail lit aussi le store
     const syncF1ToMail = () => {
         // Ne pas synchroniser en mode visiteur
         if (document.body.classList.contains('mode-visitor')) return;

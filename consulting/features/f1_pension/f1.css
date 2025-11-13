@@ -10,23 +10,23 @@ label#lt-extension-container {
     display: flex;
     align-items: center;
     gap: 10px;
-    cursor: pointer; /* Ajouté */
-    transition: border-color 0.2s ease; /* Ajouté */
+    cursor: pointer; 
+    transition: border-color 0.2s ease;
 }
 label#lt-extension-container:hover {
-    border-color: var(--primary-color); /* Ajouté */
+    border-color: var(--primary-color);
 }
 label#lt-extension-container input[type="checkbox"] {
     width: auto;
     accent-color: var(--primary-color);
 }
-/* MODIFIÉ: Cible le <span> à l'intérieur de la label */
+/* Cible le <span> à l'intérieur de la label */
 label#lt-extension-container span {
     margin: 0;
     font-weight: 600;
     color: var(--text-color-dark);
     font-size: 0.9em;
-    user-select: none; /* Ajouté */
+    user-select: none;
 }
 
 .info-calculated-duration { 
@@ -111,4 +111,30 @@ section#f1 .chart-container { min-height: 550px; }
     font-weight: 700;
     font-size: 1em;
     color: var(--text-color-dark); /* Couleur de texte normale */
+}
+
+/* --- Ajout de style "box" pour les groupes de paramètres F1 --- */
+section#f1 .parameters-card .input-group-section {
+    background-color: var(--background-light); /* Couleur de fond légère */
+    border: 1px solid var(--border-light);
+    border-radius: var(--border-radius-base);
+    padding: 20px; /* Plus de padding */
+    margin-bottom: 20px; /* Plus d'espace entre les boîtes */
+}
+
+/* Ajustement du premier groupe (pas de padding en haut) */
+section#f1 .parameters-card .input-group-section:first-of-type {
+    padding-top: 20px;
+}
+
+/* Ajustement des H4 dans les nouvelles boîtes */
+section#f1 .parameters-card .input-group-section h4 {
+    margin-bottom: 15px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--border-light);
+}
+
+/* Ajustement du dernier groupe pour coller au bouton */
+section#f1 .parameters-card .input-group-section:last-of-type {
+    margin-bottom: 0;
 }

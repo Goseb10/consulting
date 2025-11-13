@@ -1,4 +1,4 @@
-// main.js - VERSION MISE À JOUR
+// main.js
 
 // 1. Importer les modules de fonctionnalités
 import { initF1 } from './features/f1_pension/f1.js';
@@ -9,7 +9,7 @@ import { initF5, genererEmail } from './features/f5_mail/f5.js';
 
 // 2. Importer la logique de base
 import { applyTranslations, setLanguage } from './core/i18n.js';
-// NOUVEAU: Importer le store
+// Importer le store
 import { loadState, resetStateToDefault } from './core/store.js';
 
 
@@ -100,7 +100,7 @@ function setupLanguageSwitcher() {
 // =======================================================
 // POINT D'ENTRÉE PRINCIPAL
 // =======================================================
-document.addEventListener('DOMContentLoaded', async () => { // <-- MODIFICATION : ajout de 'async'
+document.addEventListener('DOMContentLoaded', async () => { // <-- ajout de 'async'
     console.log("DOM prêt. Initialisation de l'application...");
     
     // 2. Vérifier si on est en mode visiteur AVANT de charger le state
@@ -110,7 +110,7 @@ document.addEventListener('DOMContentLoaded', async () => { // <-- MODIFICATION 
         console.log("Mode Visiteur détecté. Fonctionnalités limitées.");
     }
 
-    // NOUVEL AJOUT: Logique de réinitialisation pour le mode visiteur
+    // Logique de réinitialisation pour le mode visiteur
     if (isVisitor) {
         let visitorResetTimer;
         const resetDelay = 30000; // 30 secondes (en millisecondes)
@@ -140,7 +140,7 @@ document.addEventListener('DOMContentLoaded', async () => { // <-- MODIFICATION 
     }
     // FIN DU NOUVEL AJOUT
 
-    // NOUVEAU: Charger l'état (le store gère s'il faut charger ou non)
+    // Charger l'état (le store gère s'il faut charger ou non)
     try {
         loadState();
         console.log("État initialisé.");
@@ -177,7 +177,7 @@ document.addEventListener('DOMContentLoaded', async () => { // <-- MODIFICATION 
     try { initF2(); } catch (e) { console.error("Erreur à l'initialisation de F2:", e); }
     try { initF3(); } catch (e) { console.error("Erreur à l'initialisation de F3:", e); }
     
-    // MODIFIÉ: F4 (Comparateur) est initialisé pour tout le monde (pour la démo)
+    // F4 (Comparateur) est initialisé pour tout le monde (pour la démo)
     try { initF4(); } catch (e) { console.error("Erreur à l'initialisation de F4:", e); }
     
     // F5 (Mail) n'est initialisé QUE si on N'EST PAS visiteur

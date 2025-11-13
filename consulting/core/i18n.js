@@ -1,6 +1,5 @@
 // core/i18n.js - VERSION PURIFIÉE
 
-// 1. L'objet des traductions est maintenant chargé dynamiquement
 export let translations = {};
 export let currentLang = 'fr'; // Langue par défaut
 export const onLangChangeCallbacks = []; // Fonctions à appeler lors du changement de langue

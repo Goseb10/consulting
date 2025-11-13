@@ -8,7 +8,7 @@
     justify-content: center;
 }
 .comparison-column {
-    flex: 1 1 420px; /* MODIFIÉ: Devient flexible */
+    flex: 1 1 420px; /* Devient flexible */
     max-width: 600px;
     display: flex;
     flex-direction: column;
@@ -82,7 +82,6 @@
 
 /* Reponsivité F3 */
 @media (max-width: 1000px) {
-    /* SUPPRIMÉ: Géré par flex-wrap et flex-basis */
     /* .comparison-column { min-width: 100%; } */
 }
 
@@ -107,7 +106,7 @@
     color: var(--text-color-dark); /* Couleur de texte normale */
 }
 
-/* --- NOUVEAU: Style for F3 Toggle Box (copié de f1.css) --- */
+/* --- Style for F3 Toggle Box (copié de f1.css) --- */
 .lt-extension-container-f3 {
     display: none; /* Caché par défaut */
     background-color: #fdfae6;
@@ -134,4 +133,27 @@
     color: var(--text-color-dark);
     font-size: 0.9em;
     user-select: none;
+}
+
+/* --- Ajout de style "box" pour les groupes de paramètres F3 (Comparateur) --- */
+section#f3 .comparison-card .input-group-section {
+    background-color: var(--background-light); /* Couleur de fond légère */
+    border: 1px solid var(--border-light);
+    border-radius: var(--border-radius-base);
+    padding: 20px; /* Plus de padding */
+    margin-bottom: 20px; /* Plus d'espace entre les boîtes */
+}
+
+section#f3 .comparison-card .input-group-section:first-of-type {
+    padding-top: 20px;
+}
+
+section#f3 .comparison-card .input-group-section h4 {
+    margin-bottom: 15px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--border-light);
+}
+
+section#f3 .comparison-card .input-group-section:last-of-type {
+    margin-bottom: 0;
 }

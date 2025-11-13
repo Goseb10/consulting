@@ -1,9 +1,9 @@
-// features/f3_inflation/f3.js - VERSION MISE À JOUR
+// features/f3_inflation/f3.js
 
 import { formatMonetaire, updateElement } from '../../core/utils.js';
 import { translations, currentLang, registerOnLangChange } from '../../core/i18n.js';
 
-// NOUVEAU: Importer le store
+// Importer le store
 import { getState, bindInput } from '../../core/store.js';
 
 let inflationChartInstance; 
@@ -12,7 +12,7 @@ export function calculerInflation() {
     console.log("calculerInflation déclenché");
     const t = translations[currentLang] || translations.fr;
     try {
-        // NOUVEAU: Lire les valeurs depuis le store
+        // Lire les valeurs depuis le store
         const state = getState();
         const montantActuel = parseFloat(state.f3_montant) || 0;
         const dureeAnnees = parseInt(state.f3_duree) || 0;
@@ -36,7 +36,7 @@ export function calculerInflation() {
         const valeurFutureReelle = montantActuel / Math.pow(1 + tauxInflation, dureeAnnees);
         const perteDeValeur = montantActuel - valeurFutureReelle;
 
-        // Mise à jour UI (inchangée)
+        // Mise à jour UI
         updateElement('inflation-future-needed', montantFuturEquivalent);
         updateElement('inflation-future-value', valeurFutureReelle);
         updateElement('inflation-loss', perteDeValeur);
@@ -73,7 +73,7 @@ export function calculerInflation() {
     }
 }
 
-// Fonction createInflationChart (inchangée)
+// Fonction createInflationChart
 function createInflationChart(data) {
     const ctx = document.getElementById('inflationChart')?.getContext('2d');
     if (!ctx) { console.warn("Canvas F2 (Inflation) non trouvé"); return; }
@@ -166,7 +166,7 @@ function createInflationChart(data) {
 export function initF3() {
     console.log("Initialisation F3...");
 
-    // NOUVEAU: Lier les inputs au store
+    // Lier les inputs au store
     bindInput('inflation-montant', 'f3_montant', calculerInflation);
     bindInput('inflation-duree', 'f3_duree', calculerInflation);
     bindInput('inflation-taux', 'f3_taux', calculerInflation);

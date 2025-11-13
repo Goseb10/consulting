@@ -1,4 +1,4 @@
-// core/emailTemplates.js - VERSION MISE À JOUR
+// core/emailTemplates.js
 
 /**
  * Note : Ce fichier est "pur" et ne contient pas de logique métier.
@@ -14,7 +14,7 @@ export const emailTemplates = {
      * @param {string} prenom
      * @param {string} nom
      * @param {string} email
-     * @param {string} subject - NOUVEAU PARAMÈTRE
+     * @param {string} subject
      */
     intro: (t, prenom, nom, email, subject) => `
         <p><strong>${t('email_intro_to')}:</strong> ${email || ' '}</p>
@@ -231,9 +231,6 @@ export const emailTemplates = {
         </p>
     `,
 
-    /**
-     * MODIFIÉ: La signature accepte maintenant l'objet 'child'
-     */
     enfant: (t, child, res18, res21, res25, formatMonetaire) => `
         <h3 style="color: #0070B0; border-bottom: 2px solid #0070B0; padding-bottom: 5px; margin-top: 35px; font-family: 'Inter', sans-serif;">${t('email_enfant_title').replace('{name}', child.name)}</h3>
         

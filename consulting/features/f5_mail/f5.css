@@ -5,7 +5,7 @@
 /* Grille pour les infos client */
 .mail-inputs-grid {
     display: grid;
-    /* MODIFIÉ: Utilise auto-fit pour s'adapter, comme la grille globale */
+    /* Utilise auto-fit pour s'adapter, comme la grille globale */
     grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
     gap: 15px;
 }
@@ -87,12 +87,12 @@ label.toggle-group input[type="checkbox"] {
 
 /* Responsive F4 */
 @media (max-width: 480px) {
-    /* MODIFIÉ: .mail-inputs-grid est maintenant auto-fit, plus besoin de media query */
+    /* .mail-inputs-grid est maintenant auto-fit, plus besoin de media query */
     .mail-toggles-grid { grid-template-columns: 1fr; }
     #email-preview-container { padding: 15px; }
 }
 
-/* --- NOUVEAU: Styles pour le lien-image MSCI --- */
+/* --- Styles pour le lien-image MSCI --- */
 
 /* Wrapper for label + info link */
 .label-with-link {
@@ -128,7 +128,7 @@ label.toggle-group input[type="checkbox"] {
     box-shadow: 0 0 5px rgba(0,112,176, 0.3);
 }
 
-/* NOUVEAU: Styles pour les méta-données de l'email (Sujet, À) */
+/* Styles pour les méta-données de l'email (Sujet, À) */
 .email-meta-container {
     border: 1px solid var(--border-light);
     border-bottom: none; /* Le conteneur principal a déjà une bordure */
@@ -169,7 +169,7 @@ label.toggle-group input[type="checkbox"] {
 }
 
 
-/* --- NOUVEAU: Surcharge pour la mise en page (Req 5) --- */
+/* --- Surcharge pour la mise en page (Req 5) --- */
 /* Cible le conteneur principal de la section F4 (Mail) */
 section#f4 .calculator-content {
     display: block; /* Annule le 'display: flex' de style.css */

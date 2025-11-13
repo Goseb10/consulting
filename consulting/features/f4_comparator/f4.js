@@ -1,11 +1,11 @@
-// features/f4_comparator/f4.js - VERSION MISE À JOUR (AGE DE DEBUT)
+// features/f4_comparator/f4.js
 
 import { updateElement } from '../../core/utils.js';
 import { translations, currentLang, registerOnLangChange } from '../../core/i18n.js';
 import { AGE_FINALE_DEFAUT, AGE_FINALE_LT, CURRENT_YEAR, AGE_TAXE } from '../../core/constants.js';
 import { effectuerSimulation } from '../../core/simulationEngine.js';
 
-// NOUVEAU: Importer le store
+// Importer le store
 import { getState, bindInput, bindCheckbox, updateState } from '../../core/store.js';
 
 /**
@@ -22,7 +22,7 @@ function updateComparatorTaxInfo() {
     const epTax1 = document.getElementById('f3-c1-ep-taxe-info');
     const ltToggleContainer1 = document.getElementById('f3-c1-lt-extension-container'); 
     const isExtended1 = state.f4_c1_extend_80; 
-    const startAgeLabel1 = document.querySelector('#f3-col-1 label[for="f3-c1-start-age"]'); // MODIFIÉ: Cible le label d'âge de début
+    const startAgeLabel1 = document.querySelector('#f3-col-1 label[for="f3-c1-start-age"]'); // Cible le label d'âge de début
     const yearsSpan1 = document.getElementById('f3-c1-duree-ans-text'); 
     
     if (type1 === 'long-terme') {
@@ -30,7 +30,7 @@ function updateComparatorTaxInfo() {
         if (epTax1) epTax1.style.display = 'none';
         if (ltToggleContainer1) ltToggleContainer1.style.display = 'flex'; 
 
-        // MODIFIÉ: Utilise les nouvelles clés de traduction pour l'âge de début
+        // Utilise les nouvelles clés de traduction pour l'âge de début
         if (startAgeLabel1) startAgeLabel1.textContent = isExtended1 ? t.label_start_age_80_f4 : t.label_start_age_f4; 
         if (yearsSpan1) yearsSpan1.textContent = isExtended1 ? " " + t.span_years_80 : " " + t.span_years;
 
@@ -45,7 +45,7 @@ function updateComparatorTaxInfo() {
                  updateState('f4_c1_extend_80', false); 
              }
         }
-        // MODIFIÉ: Utilise la clé standard pour l'âge de début (cible 67 ans)
+        // Utilise la clé standard pour l'âge de début (cible 67 ans)
         if (startAgeLabel1) startAgeLabel1.textContent = t.label_start_age_f4; 
         if (yearsSpan1) yearsSpan1.textContent = " " + t.span_years;
     }
@@ -56,7 +56,7 @@ function updateComparatorTaxInfo() {
     const epTax2 = document.getElementById('f3-c2-ep-taxe-info');
     const ltToggleContainer2 = document.getElementById('f3-c2-lt-extension-container'); 
     const isExtended2 = state.f4_c2_extend_80; 
-    const startAgeLabel2 = document.querySelector('#f3-col-2 label[for="f3-c2-start-age"]'); // MODIFIÉ: Cible le label d'âge de début
+    const startAgeLabel2 = document.querySelector('#f3-col-2 label[for="f3-c2-start-age"]'); // Cible le label d'âge de début
     const yearsSpan2 = document.getElementById('f3-c2-duree-ans-text'); 
 
     if (type2 === 'long-terme') {
@@ -64,7 +64,7 @@ function updateComparatorTaxInfo() {
         if (epTax2) epTax2.style.display = 'none';
         if (ltToggleContainer2) ltToggleContainer2.style.display = 'flex'; 
 
-        // MODIFIÉ: Utilise les nouvelles clés de traduction pour l'âge de début
+        // Utilise les nouvelles clés de traduction pour l'âge de début
         if (startAgeLabel2) startAgeLabel2.textContent = isExtended2 ? t.label_start_age_80_f4 : t.label_start_age_f4;
         if (yearsSpan2) yearsSpan2.textContent = isExtended2 ? " " + t.span_years_80 : " " + t.span_years;
 
@@ -79,7 +79,7 @@ function updateComparatorTaxInfo() {
                 updateState('f4_c2_extend_80', false); 
             }
         }
-        // MODIFIÉ: Utilise la clé standard pour l'âge de début (cible 67 ans)
+        // Utilise la clé standard pour l'âge de début (cible 67 ans)
         if (startAgeLabel2) startAgeLabel2.textContent = t.label_start_age_f4; 
         if (yearsSpan2) yearsSpan2.textContent = " " + t.span_years;
     }
@@ -98,8 +98,8 @@ export function calculerComparaisonF3() {
 
         // --- Compagnie 1 ---
         const type1 = state.f4_c1_type;
-        const startAge1 = parseInt(state.f4_c1_start_age) || 0; // MODIFIÉ: Lire l'âge de début
-        const annee1 = CURRENT_YEAR - startAge1; // MODIFIÉ: Calculer l'année de naissance
+        const startAge1 = parseInt(state.f4_c1_start_age) || 0; // Lire l'âge de début
+        const annee1 = CURRENT_YEAR - startAge1; // Calculer l'année de naissance
         const versement1 = parseFloat(state.f4_c1_versement) || 0;
         const rendement1 = parseFloat(state.f4_c1_rendement) || 0;
         const fraisEntree1 = parseFloat(state.f4_c1_frais_entree) || 0;
@@ -109,8 +109,8 @@ export function calculerComparaisonF3() {
         
         // --- Compagnie 2 ---
         const type2 = state.f4_c2_type;
-        const startAge2 = parseInt(state.f4_c2_start_age) || 0; // MODIFIÉ: Lire l'âge de début
-        const annee2 = CURRENT_YEAR - startAge2; // MODIFIÉ: Calculer l'année de naissance
+        const startAge2 = parseInt(state.f4_c2_start_age) || 0; // Lire l'âge de début
+        const annee2 = CURRENT_YEAR - startAge2; // Calculer l'année de naissance
         const versement2 = parseFloat(state.f4_c2_versement) || 0;
         const rendement2 = parseFloat(state.f4_c2_rendement) || 0;
         const fraisEntree2 = parseFloat(state.f4_c2_frais_entree) || 0;

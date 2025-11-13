@@ -65,8 +65,6 @@ const defaultState = {
     f5_toggle_enfant: false,      // Toggle pour la section entière
     f5_children_count: 0,         // Nombre d'enfants à afficher
     f5_children_data: [],         // Tableau d'objets { name, mensualite, birthyear }
-    // --- FIN MODIFIÉ ---
-
     f5_ep_mensualite: 87.50,
     f5_ep_birthyear: 2000,
     f5_elt_mensualite: 100.00,

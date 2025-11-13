@@ -107,7 +107,7 @@ main { max-width: 1400px; margin: 40px auto; padding: 0 20px; }
 /* --- Structure en Cartes (Global) --- */
 .calculator-content { display: flex; gap: 30px; flex-wrap: wrap; }
 .parameters-card {
-    flex: 1 1 350px; /* MODIFIÉ: Devient flexible */
+    flex: 1 1 350px; /* Devient flexible */
     max-width: 450px;
     padding: 25px; 
     border-radius: var(--border-radius-base); 
@@ -116,7 +116,7 @@ main { max-width: 1400px; margin: 40px auto; padding: 0 20px; }
     background-color: var(--background-card);
 }
 .results-card {
-    flex: 2 1 450px; /* MODIFIÉ: Devient flexible */
+    flex: 2 1 450px; /* Devient flexible */
     min-width: 450px; /* Gardé pour donner plus de poids au début */
     padding: 25px; 
     border-radius: var(--border-radius-base); 
@@ -139,7 +139,7 @@ main { max-width: 1400px; margin: 40px auto; padding: 0 20px; }
 .input-group-section h4 { font-size: 1.1em; color: var(--text-color-dark); margin-bottom: 10px; font-weight: 600; }
 .input-group-grid { 
     display: grid; 
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); /* MODIFIÉ: Grille auto-adaptative */
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); /* Grille auto-adaptative */
     gap: 15px; 
 }
 label { display: block; font-size: 0.95em; color: var(--text-color-dark); margin-top: 10px; margin-bottom: 5px; font-weight: 600; } 
@@ -280,18 +280,15 @@ input:focus, select:focus {
 
 /* --- Responsivité (Globale) --- */
 @media (max-width: 1000px) {
-    /* AJOUTÉ: Réduit la taille de police de base, tout le site (en 'em') suivra */
+    /* Réduit la taille de police de base, tout le site (en 'em') suivra */
     body { font-size: 16px; }
 
-    /* SUPPRIMÉ: flex-direction: column n'est plus nécessaire grâce au flex-wrap */
     /* .calculator-content { flex-direction: column; } */
     
-    /* SUPPRIMÉ: Géré par flex-wrap et flex-basis */
     /* .parameters-card, .results-card { min-width: unset; width: 100%; max-width: 100%; } */
     
     .chart-container { min-height: 350px; }
     
-    /* SUPPRIMÉ: Géré par la grille auto-fit */
     /* .input-group-grid { grid-template-columns: 1fr; gap: 0; } */
     
     .results-card { min-width: unset; }
@@ -331,7 +328,7 @@ input:focus, select:focus {
     }
 }
 @media (max-width: 480px) {
-    /* AJOUTÉ: Réduit encore la taille de police pour petits écrans */
+    /* Réduit encore la taille de police pour petits écrans */
     body { font-size: 15px; }
 
     .chart-container { min-height: 300px; }
@@ -408,7 +405,7 @@ input:focus, select:focus {
 /* STYLES POUR LE MODE VISITEUR        */
 /* =================================== */
 
-/* NOUVEAU: Style "bandeau" pour mode visiteur */
+/* Style "bandeau" pour mode visiteur */
 body.mode-visitor::before {
     content: 'MODE VISITEUR - Fonctionnalités limitées (calcul et copie désactivés).';
     display: block;
@@ -428,14 +425,14 @@ body.mode-visitor header {
     top: 45px; /* Hauteur du bandeau */
 }
 
-/* MODIFIÉ: Grise visuellement les inputs, mais les laisse interactifs */
+/* Grise visuellement les inputs, mais les laisse interactifs */
 .mode-visitor main input,
 .mode-visitor main select {
     opacity: 0.8;
     background-color: #f8f8f8;
 }
 
-/* MODIFIÉ: Désactive UNIQUEMENT les boutons d'action critiques */
+/* Désactive UNIQUEMENT les boutons d'action critiques */
 .mode-visitor main #f5-copy-button,
 .mode-visitor main #f5-generate-button,
 .mode-visitor main .main-button { /* Cible tous les gros boutons "Calculer" */

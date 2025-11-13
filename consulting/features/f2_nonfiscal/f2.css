@@ -10,3 +10,26 @@
 @media (max-width: 480px) {
     .chart-container-donut { height: 200px; } 
 }
+
+/* --- Ajout de style "box" pour les groupes de paramètres F2 --- */
+section#f_nonfiscal .parameters-card .input-group-section {
+    background-color: var(--background-light); /* Couleur de fond légère */
+    border: 1px solid var(--border-light);
+    border-radius: var(--border-radius-base);
+    padding: 20px; 
+    margin-bottom: 20px; /* Plus d'espace entre les boîtes */
+}
+
+section#f_nonfiscal .parameters-card .input-group-section:first-of-type {
+    padding-top: 20px;
+}
+
+section#f_nonfiscal .parameters-card .input-group-section h4 {
+    margin-bottom: 15px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--border-light);
+}
+
+section#f_nonfiscal .parameters-card .input-group-section:last-of-type {
+    margin-bottom: 0;
+}

@@ -8,7 +8,6 @@ define('LOCKOUT_TIME', 300); // Temps de blocage en secondes (300s = 5 minutes)
 // --------------------------------------------------
 
 
-// NOUVEAU BLOC DE DÉCONNEXION
 // Si l'utilisateur clique sur le lien ?logout=true
 if (isset($_GET['logout'])) {
     session_unset();    // Libère toutes les variables de session
@@ -17,7 +16,7 @@ if (isset($_GET['logout'])) {
     exit;
 }
 
-// MODIFICATION : Le 'require_once' pointe maintenant un niveau au-dessus
+// Le 'require_once' pointe maintenant un niveau au-dessus
 // Assurez-vous que config.php est bien dans le dossier PARENT de public_html
 require_once '../../config.php';
 
