@@ -189,8 +189,7 @@ input:focus, select:focus {
 .highlight-net .data-value { color: var(--secondary-color); font-weight: 800; font-size: 1.1em; } 
 .highlight-tax { border-left: 4px solid var(--accent-color); padding-left: 15px; }
 .highlight-tax .data-value { color: var(--accent-color); }
-.highlight-green { background-color: #E5F3F2; border-radius: 6px; padding: 10px 15px !important; margin-top: 10px; }
-.highlight-green .data-value { color: var(--secondary-color); font-weight: 800; font-size: 1.1em; }
+.highlight-green { background-color: #E5F3F2; border-radius: 6px; padding: 10px 15px !important; margin-top: 10px; border-left: 4px solid var(--secondary-color);}
 .highlight-loss { 
     border-left: 4px solid var(--danger-color); 
     padding-left: 15px; 

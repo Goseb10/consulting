@@ -42,6 +42,11 @@ label.toggle-group input[type="checkbox"] {
     transform: scale(1.2);
 }
 
+/* --- NOUVEAU : Masquer la carte de prévisualisation par défaut --- */
+#f5-results-card {
+    display: none; /* Caché par défaut, JS le montrera au clic */
+}
+
 /* Conteneur d'aperçu de l'email */
 #email-preview-container {
     border: 1px solid var(--border-light);
@@ -186,5 +191,32 @@ section#f4 .results-card {
 
 /* Ajustement pour la dernière carte */
 section#f4 .results-card {
+    margin-bottom: 0;
+}
+
+
+/* --- NOUVEAU : Ajout de style "box" pour les groupes de paramètres F5 --- */
+section#f4 .parameters-card .input-group-section {
+    background-color: var(--background-light); /* Couleur de fond légère */
+    border: 1px solid var(--border-light);
+    border-radius: var(--border-radius-base);
+    padding: 20px; /* Plus de padding */
+    margin-bottom: 20px; /* Plus d'espace entre les boîtes */
+}
+
+/* Ajustement du premier groupe (pas de padding en haut) */
+section#f4 .parameters-card .input-group-section:first-of-type {
+    padding-top: 20px;
+}
+
+/* Ajustement des H4 dans les nouvelles boîtes (concerne les options EP, ELT, etc.) */
+section#f4 .parameters-card .input-group-section h4 {
+    margin-bottom: 15px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--border-light);
+}
+
+/* Ajustement du dernier groupe pour coller au bouton */
+section#f4 .parameters-card .input-group-section:last-of-type {
     margin-bottom: 0;
 }
