@@ -19,9 +19,10 @@ export function calculerProjectionF2() {
         const rendementAnnuelPct = parseFloat(state.f2_rendement) || 0;
         const dureeAnnees = parseInt(state.f2_duree) || 0;
         const fraisMensuelPctInput = parseFloat(state.f2_frais_versement) || 0; // LIRE LE NOUVEAU FRAIS
-
+        
         // --- NOUVELLE LOGIQUE DE CALCUL ---
         const fraisMensuelPct = fraisMensuelPctInput / 100; // Convertir en décimal
+        const fraisGestionAnnuelPct = (parseFloat(state.f2_frais_gestion) || 0) / 100; // <-- NOUVEAU FRAIS DE GESTION
         const taxeVersamentPct = 0.02; // 2%
         const taxePlusValuePct = 0.10; // 10%
         const franchisePlusValue = 10000; // 10K €
@@ -59,12 +60,26 @@ export function calculerProjectionF2() {
             
             totalVerseBrut += versementMensuel; // On suit l'effort BRUT
 
+            // --- NOUVELLE LOGIQUE (FRAIS DE GESTION ANNUELS) ---
+            if (m > 0 && m % 12 === 0) {
+                const fraisGestionAn = capital * fraisGestionAnnuelPct;
+                capital -= (fraisGestionAn || 0);
+            }
+            // --- FIN NOUVELLE LOGIQUE ---
+
             if (m % 12 === 0) {
                 evolutionData.push({ year: m / 12, capital: capital });
                 evolutionVerse.push({ year: m / 12, verse: totalVerseBrut }); 
             }
         }
         if (dureeMois % 12 !== 0) {
+            // Appliquer les frais de gestion au prorata pour la dernière période si elle n'est pas complète
+            const moisRestants = dureeMois % 12;
+            if (moisRestants > 0 && fraisGestionAnnuelPct > 0) {
+                 const fraisGestionProrata = capital * (fraisGestionAnnuelPct * (moisRestants / 12));
+                 capital -= (fraisGestionProrata || 0);
+            }
+            
             evolutionData.push({ year: dureeMois / 12, capital: capital });
             evolutionVerse.push({ year: dureeMois / 12, verse: totalVerseBrut });
         }
@@ -221,7 +236,8 @@ export function initF2() {
     });
     bindInput('nf-rendement', 'f2_rendement', calculerProjectionF2);
     bindInput('nf-duree', 'f2_duree', calculerProjectionF2);
-    bindInput('nf-frais-versement', 'f2_frais_versement', calculerProjectionF2); // LIER LE NOUVEL INPUT
+    bindInput('nf-frais-versement', 'f2_frais_versement', calculerProjectionF2);
+    bindInput('nf-frais-gestion', 'f2_frais_gestion', calculerProjectionF2); // <-- NOUVEAU BINDING
     
     // Bouton: lance juste le calcul
     document.getElementById('f2-calculate-button').addEventListener('click', calculerProjectionF2);
@@ -229,15 +245,23 @@ export function initF2() {
     // Enregistrer pour les changements de langue
     registerOnLangChange(calculerProjectionF2);
     
-    // NOUVEAU: Synchro vers le mail
+    // NOUVEAU: Synchro vers le mail (CORRECTION BUG #4)
     const syncF2ToMail = () => {
         // Ne pas synchroniser en mode visiteur
         if (document.body.classList.contains('mode-visitor')) return;
         
         const state = getState();
         const montant = state.f2_versement;
+        
+        // --- MODIFICATION : Récupérer aussi l'année de naissance de F1 ---
+        const birthYear = state.f1_birth_year; // Lire l'état de F1
+        
         updateInputElement('mail-nonfiscal-mensualite', montant);
         updateState('f5_nonfiscal_mensualite', montant);
+        
+        // --- AJOUT : Mettre à jour l'année de naissance dans l'onglet mail ---
+        updateInputElement('mail-nonfiscal-birthyear', birthYear);
+        updateState('f5_nonfiscal_birthyear', birthYear);
     };
 
     // Premier calcul

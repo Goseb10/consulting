@@ -35,9 +35,9 @@
     </header>
 
     <main>
+        
         <section id="f1" class="calculator-section">
             <h2 data-key="f1_title">Épargne Pension / Long Terme</h2>
-
             <div class="calculator-content"> 
                 
                 <div class="parameters-card">
@@ -197,7 +197,6 @@
 
         <section id="f_nonfiscal" class="calculator-section">
             <h2 data-key="f2_title">Épargne non déductible (Intérêts Composés)</h2>
-
             <div class="calculator-content">
                 
                 <div class="parameters-card">
@@ -226,6 +225,10 @@
                         
                         <label for="nf-frais-versement" data-key="label_fees_monthly_f2">Frais sur versement (%)</label>
                         <input type="number" id="nf-frais-versement" value="3.0" step="0.1" min="0">
+
+                        <label for="nf-frais-gestion" data-key="label_running_fees" style="margin-top: 10px;">Frais de gestion (%)</label>
+                        <input type="number" id="nf-frais-gestion" value="0.85" step="0.01" min="0">
+                        
                         <div class="info-tax-line" style="margin-top: 10px;">
                             <label data-key="label_tax_monthly_f2">Taxe sur versement</label>
                             <span>2,00 %</span>
@@ -295,10 +298,10 @@
                 </div>
             </div>
         </section>
+
         <section id="f2" class="calculator-section">
             <h2 data-key="f3_title">Calculateur d'Inflation</h2>
-             
-             <div class="calculator-content">
+            <div class="calculator-content">
                  <div class="parameters-card">
                      <h3 data-key="h3_params_f3">Paramètres</h3>
                      
@@ -350,7 +353,6 @@
 
         <section id="f3" class="calculator-section">
             <h2 data-key="f3_title_comparator">Comparateur de Contrats (EP/ELT)</h2>
-            
             <div class="calculator-content" id="f3-comparator">
 
                 <div class="comparison-column" id="f3-col-1">
@@ -534,6 +536,7 @@
                             <label for="mail-client-email" data-key="f4_label_email">Email</label>
                             <input type="text" id="mail-client-email" value="client@email.com">
                         </div>
+                        
                         <div>
                             <label for="mail-rdv-date" data-key="f4_label_rdv_date">Date prochain RDV</label>
                             <input type="date" id="mail-rdv-date">
@@ -542,7 +545,11 @@
                             <label for="mail-rdv-time" data-key="f4_label_rdv_time">Heure prochain RDV</label>
                             <input type="time" id="mail-rdv-time">
                         </div>
-                    </div> 
+                        <label class="toggle-group" for="mail-rdv-tbd" style="grid-column: 1 / -1; margin-top: 10px;">
+                            <input type="checkbox" id="mail-rdv-tbd">
+                            <span data-key="f4_label_rdv_tbd">Date à déterminer</span>
+                        </label>
+                        </div> 
 
                     <div class="input-group-section" style="border-top: 1px solid var(--border-light); padding-top: 15px; margin-top: 15px;">
                         <label for="mail-langue" data-key="f4_label_mail_lang">Langue du Mail</label>
@@ -578,6 +585,11 @@
                         <label class="toggle-group" for="toggle-nonfiscal">
                             <input type="checkbox" id="toggle-nonfiscal">
                             <span data-key="f4_toggle_nonfiscal">Épargne non fiscal</span>
+                        </label>
+                        
+                        <label class="toggle-group" for="toggle-enfant">
+                            <input type="checkbox" id="toggle-enfant">
+                            <span data-key="f4_toggle_enfant">Épargne Enfant</span>
                         </label>
                         <label class="toggle-group" for="toggle-dela">
                             <input type="checkbox" id="toggle-dela">
@@ -643,6 +655,14 @@
                         </div>
                     </div>
 
+                    <div class="input-group-section" id="children-main-container" style="display: none; border-top: 1px solid var(--border-light); padding-top: 15px; margin-top: 15px;">
+                        <h4 data-key="f4_enfant_options_title" style="margin-bottom: 15px;">Options Épargne Enfant</h4>
+                        <div>
+                            <label for="mail-children-count" data-key="f4_children_count_label">Nombre d'enfants</label>
+                            <input type="number" id="mail-children-count" value="0" min="0" max="5" step="1">
+                        </div>
+                        <div id="children-options-container" style="margin-top: 15px;"></div>
+                    </div>
                     <div class="input-group-section" id="dela-options-container" style="display: none; border-top: 1px solid var(--border-light); padding-top: 15px; margin-top: 15px;">
                         <h4 data-key="f4_dela_options_title" style="margin-bottom: 15px;">Options Dela</h4>
                         <div class="mail-inputs-grid">
@@ -657,17 +677,19 @@
                         </div>
                     </div>
 
+                    
+                    <div class="f5-button-group">
+                        <button class="main-button" id="f5-generate-button" data-key="f4_btn_generate">Actualiser l'aperçu</button>
+                        <button class="main-button" id="f5-copy-button" data-key="f4_btn_copy">Copier l'email</button>
+                    </div>
+                    <span id="copy-feedback" data-key="f4_feedback_copied">Copié !</span>
 
-                    <button class="main-button" id="f5-generate-button" data-key="f4_btn_generate" style="margin-top: 25px;">Actualiser l'aperçu</button>
                 </div>
                 
-                <div class="results-card"> 
+                <div class="results-card" id="f5-results-card"> 
+                    
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 1px solid var(--border-light); padding-bottom: 10px;">
                         <h3 data-key="f4_preview_title" style="margin: 0; border: none;">Aperçu de l'email</h3>
-                        <div>
-                            <button class="main-button" id="f5-copy-button" data-key="f4_btn_copy" style="margin: 0; padding: 10px 20px; font-size: 0.9em;">Copier l'email</button>
-                            <span id="copy-feedback" data-key="f4_feedback_copied">Copié !</span>
-                        </div>
                     </div>
                     
                     <div class="email-meta-container">
@@ -692,4 +714,3 @@
     <script type="module" src="main.js"></script>
 </body>
 </html>
-

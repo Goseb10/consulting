@@ -100,7 +100,7 @@ function setupLanguageSwitcher() {
 // =======================================================
 // POINT D'ENTRÉE PRINCIPAL
 // =======================================================
-document.addEventListener('DOMContentLoaded', () => { 
+document.addEventListener('DOMContentLoaded', async () => { // <-- MODIFICATION : ajout de 'async'
     console.log("DOM prêt. Initialisation de l'application...");
     
     // 2. Vérifier si on est en mode visiteur AVANT de charger le state
@@ -150,7 +150,20 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // 1. Lancer la configuration de base (navigation, langue...)
     try {
-        applyTranslations(); 
+        
+        // --- MODIFICATION CRITIQUE ---
+        // Nous devons charger la langue par défaut (fr) et ATTENDRE (await)
+        // avant de continuer. Nous passons 'false' pour ne pas
+        // exécuter les calculateurs une deuxième fois.
+        
+        // applyTranslations(); // <--- SUPPRIMÉ (s'exécute trop tôt)
+        
+        const defaultLang = 'fr';
+        console.log(`Chargement de la langue par défaut: ${defaultLang}...`);
+        await setLanguage(defaultLang, false);
+        console.log("Langue par défaut chargée.");
+        // --- FIN MODIFICATION ---
+
         setupNavigation(); 
         setupMobileMenu();
         setupLanguageSwitcher();
@@ -159,6 +172,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     
     // 3. Initialiser chaque module
+    // (Ces fonctions peuvent maintenant s'exécuter car les traductions sont chargées)
     try { initF1(); } catch (e) { console.error("Erreur à l'initialisation de F1:", e); }
     try { initF2(); } catch (e) { console.error("Erreur à l'initialisation de F2:", e); }
     try { initF3(); } catch (e) { console.error("Erreur à l'initialisation de F3:", e); }

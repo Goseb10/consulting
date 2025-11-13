@@ -18,18 +18,19 @@ const defaultState = {
     f2_versement: 75,
     f2_rendement: 8,
     f2_duree: 10,
-    f2_frais_versement: 3.0, // NOUVELLE CLÉ AJOUTÉE
+    f2_frais_versement: 3.0, 
+    f2_frais_gestion: 0.85, // <-- NOUVELLE LIGNE AJOUTÉE
 
     // F3 - Inflation
     f3_montant: 1000,
     f3_duree: 10,
     f3_taux: 3,
 
-    // F4 - Comparateur // MODIFICATION ICI
+    // F4 - Comparateur
     f4_c1_name: 'Belfius',
     f4_c1_type: 'pension',
     f4_c1_extend_80: false,
-    f4_c1_start_age: 25, // Anciennement f4_c1_birth_year
+    f4_c1_start_age: 25, 
     f4_c1_versement: 87.50,
     f4_c1_rendement: 2,
     f4_c1_frais_entree: 3,
@@ -37,7 +38,7 @@ const defaultState = {
     f4_c2_name: 'AXA',
     f4_c2_type: 'pension',
     f4_c2_extend_80: false,
-    f4_c2_start_age: 25, // Anciennement f4_c2_birth_year
+    f4_c2_start_age: 25, 
     f4_c2_versement: 87.50,
     f4_c2_rendement: 5,
     f4_c2_frais_entree: 3,
@@ -46,9 +47,10 @@ const defaultState = {
     // F5 - Mail
     f5_prenom: 'Prénom',
     f5_nom: 'Nom',
-    f5_email: 'client@email.com', // <-- AJOUTÉ
+    f5_email: 'client@email.com',
     f5_rdv_date: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0], // Format AAAA-MM-JJ
     f5_rdv_time: '10:00', // Format HH:mm
+    f5_rdv_tbd: false, 
     f5_langue: 'fr',
     f5_msci_rate: 8.53,
     f5_toggle_ep: true,
@@ -58,6 +60,13 @@ const defaultState = {
     f5_toggle_eip: false,
     f5_toggle_nonfiscal: false,
     f5_toggle_dela: false,
+    
+    // --- MODIFIÉ: Section Enfant (retour au mode dynamique) ---
+    f5_toggle_enfant: false,      // Toggle pour la section entière
+    f5_children_count: 0,         // Nombre d'enfants à afficher
+    f5_children_data: [],         // Tableau d'objets { name, mensualite, birthyear }
+    // --- FIN MODIFIÉ ---
+
     f5_ep_mensualite: 87.50,
     f5_ep_birthyear: 2000,
     f5_elt_mensualite: 100.00,
@@ -66,13 +75,13 @@ const defaultState = {
     f5_dela_capital: 10000,
     f5_dela_prime: 25.00,
     f5_nonfiscal_mensualite: 100,
-    f5_nonfiscal_birthyear: 2000
+    f5_nonfiscal_birthyear: 2000,
 };
 
 // 2. Initialiser l'état
 let state = { ...defaultState };
 const APP_STATE_KEY = 'consultingAppState';
-const boundElements = []; // NOUVEAU: Pour suivre les éléments pour le reset visiteur
+const boundElements = []; 
 
 // 3. Fonctions de gestion du state
 function saveState() {
@@ -98,7 +107,15 @@ export function loadState() {
     try {
         const savedState = localStorage.getItem(APP_STATE_KEY);
         if (savedState) {
-            state = { ...defaultState, ...JSON.parse(savedState) };
+            const parsed = JSON.parse(savedState);
+            // S'assurer que les nouvelles clés par défaut sont présentes
+            state = { ...defaultState, ...parsed };
+
+            // Nettoyage des anciennes clés (mode enfant unique)
+            delete state.f5_enfant_name;
+            delete state.f5_enfant_mensualite;
+            delete state.f5_enfant_birthyear;
+
         } else {
             state = { ...defaultState };
         }
@@ -117,7 +134,13 @@ export function updateState(key, value) {
         state[key] = value;
         saveState();
     } else {
-        console.warn(`Clé de state inconnue: ${key}`);
+        // Avertir si la clé est dans defaultState mais pas dans state (ne devrait pas arriver)
+        if (key in defaultState) {
+             state[key] = value;
+             saveState();
+        } else {
+            console.warn(`Clé de state inconnue: ${key}`);
+        }
     }
 }
 
@@ -134,7 +157,6 @@ export function bindInput(inputId, stateKey, callback) {
         return;
     }
     
-    // NOUVEL AJOUT
     boundElements.push({ element, stateKey, type: 'input' });
     
     // 1. Charger la valeur du state dans l'input
@@ -146,23 +168,17 @@ export function bindInput(inputId, stateKey, callback) {
         const eventType = (element.tagName === 'SELECT' || element.type === 'number') ? 'change' : 'input';    element.addEventListener(eventType, (e) => {
         let value = e.target.value;
         if (element.type === 'number') {
-            // Assurer que la valeur est bien un nombre, même si le champ est vidé temporairement
              const parsedValue = parseFloat(value);
-             // MODIFIÉ: Utilise 0 si NaN, sinon la valeur parsée
              value = isNaN(parsedValue) ? 0 : parsedValue; 
         }
         updateState(stateKey, value);
         if (callback) callback();
     });
     
-    // 3. Gérer le 'change' (pour les inputs number qui perdent le focus ou "Enter")
-     // Assure que la valeur finale est correcte si l'utilisateur quitte le champ
     if (element.type === 'number') {
          element.addEventListener('change', (e) => {
-             // MODIFIÉ: Utilise 0 si NaN, sinon la valeur parsée
              const value = parseFloat(e.target.value); 
              const finalValue = isNaN(value) ? 0 : value;
-             // S'assurer que la valeur dans l'input correspond bien au nombre stocké
              if (element.value !== finalValue.toString()) {
                   element.value = finalValue;
              }
@@ -185,7 +201,6 @@ export function bindCheckbox(inputId, stateKey, callback) {
         return;
     }
     
-    // NOUVEL AJOUT
     boundElements.push({ element, stateKey, type: 'checkbox' });
     
     // 1. Charger la valeur du state
@@ -201,7 +216,6 @@ export function bindCheckbox(inputId, stateKey, callback) {
 }
 
 /**
- * NOUVELLE FONCTION:
  * Réinitialise le state à ses valeurs par défaut et met à jour tous les éléments DOM liés.
  */
 export function resetStateToDefault() {

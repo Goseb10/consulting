@@ -341,9 +341,13 @@ export function initF1() {
         }
     };
     
-    // Premier calcul
-    changerFraisDefaut(); // Appelé avant le bind pour set les bons frais
-    calculerProjectionF1(); // Appelé après les binds pour tout calculer
+// Premier calcul (légèrement différé pour assurer que le DOM est prêt)
+    changerFraisDefaut(); 
+    setTimeout(() => {
+        calculerProjectionF1(); 
+        // Synchro initiale au chargement (déplacée ici aussi)
+        syncF1ToMail(); 
+    }, 0); // Le délai de 0ms suffit généralement
     
     // Synchro initiale au chargement
     syncF1ToMail(); 

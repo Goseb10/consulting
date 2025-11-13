@@ -167,3 +167,24 @@ label.toggle-group input[type="checkbox"] {
      #email-preview-container { padding: 15px; }
      .email-meta-line { flex-direction: column; gap: 2px; }
 }
+
+
+/* --- NOUVEAU: Surcharge pour la mise en page (Req 5) --- */
+/* Cible le conteneur principal de la section F4 (Mail) */
+section#f4 .calculator-content {
+    display: block; /* Annule le 'display: flex' de style.css */
+}
+
+/* Force les deux cartes (paramètres et résultats) à prendre toute la largeur */
+section#f4 .parameters-card,
+section#f4 .results-card {
+    max-width: 100%; /* Annule la largeur max de style.css */
+    flex-basis: 100%; /* Annule le flex-basis */
+    min-width: unset;  /* Annule le min-width */
+    margin-bottom: 30px; /* Ajoute un espace entre les deux cartes */
+}
+
+/* Ajustement pour la dernière carte */
+section#f4 .results-card {
+    margin-bottom: 0;
+}
