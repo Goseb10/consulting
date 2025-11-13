@@ -16,6 +16,11 @@ export function effectuerSimulation(params, startYear = CURRENT_YEAR) {
     const fraisEntreePct = parseFloat(params.fraisEntreePct) / 100 || 0; 
     const fraisCourantAnnuelPct = parseFloat(params.fraisCourantAnnuelPct) / 100 || 0; 
     const targetAge = params.targetAge || AGE_FINALE_DEFAUT; 
+    
+    // --- AJOUT ---
+    // Récupérer le capital initial depuis les paramètres, avec 0 comme valeur par défaut
+    const capitalInitial = parseFloat(params.capitalInitial) || 0;
+    // --- FIN AJOUT ---
 
     const anneeFinale = anneeNaissance + targetAge; 
     const dureeAnnees = Math.max(0, anneeFinale - startYear); 
@@ -72,11 +77,21 @@ export function effectuerSimulation(params, startYear = CURRENT_YEAR) {
     const avantageFiscalTotal = avantageFiscalAnnuel * dureeVersementAnnees; 
     const avantageFiscalMensuel = avantageFiscalAnnuel > 0 ? avantageFiscalAnnuel / 12 : 0;
     const moisVersement = Math.max(0, Math.floor(dureeVersementAnnees * 12));
-    const capitalBrutPlaceTotal = versementBrutMensuel * moisVersement;
+    
+    // --- MODIFICATION ---
+    // Le capital brut total placé doit maintenant inclure le capital initial
+    const capitalBrutPlaceTotal = capitalInitial + (versementBrutMensuel * moisVersement);
+    // Le capital net est calculé de la même manière
     const capitalNetPlaceTotal = capitalBrutPlaceTotal - avantageFiscalTotal;
+    // --- FIN MODIFICATION ---
+    
     const capitalNetPlaceAnnuel = versementBrutAnnuel - avantageFiscalAnnuel;
     
-    let capital = 0; 
+    // --- MODIFICATION ---
+    // Initialiser le capital avec le capitalInitial au lieu de 0
+    let capital = capitalInitial; 
+    // --- FIN MODIFICATION ---
+    
     let capitalAuMomentTaxe = 0;
     let taxeLiberatoire = 0;
     let evolutionCapital = []; 

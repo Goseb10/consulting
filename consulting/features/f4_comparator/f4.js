@@ -4,8 +4,6 @@ import { updateElement } from '../../core/utils.js';
 import { translations, currentLang, registerOnLangChange } from '../../core/i18n.js';
 import { AGE_FINALE_DEFAUT, AGE_FINALE_LT, CURRENT_YEAR, AGE_TAXE } from '../../core/constants.js';
 import { effectuerSimulation } from '../../core/simulationEngine.js';
-
-// Importer le store
 import { getState, bindInput, bindCheckbox, updateState } from '../../core/store.js';
 
 /**
@@ -86,8 +84,44 @@ function updateComparatorTaxInfo() {
 }
 
 
+/**
+ * NOUVELLE FONCTION : Gère l'affichage des blocs UI pour le scénario
+ */
+function setupF4ScenarioUI() {
+    const state = getState();
+    const isStopSwitch = state.f4_scenario_stop_switch;
+    const t = translations[currentLang] || translations.fr;
+
+    // Récupérer les éléments de l'interface
+    const stopSwitchGroup = document.getElementById('f3-c1-stop-switch-group'); // MODIFIÉ
+    const versementGroup = document.getElementById('f3-c1-flux-group');
+    const differenceLine = document.getElementById('f3-difference-line');
+    const combinedResults = document.getElementById('f3-combined-results');
+    const resultsTitle = document.getElementById('f3-results-title');
+
+    if (isStopSwitch) {
+        // --- Activer la vue "Stop & Switch" ---
+        if (stopSwitchGroup) stopSwitchGroup.style.display = 'block'; // AFFICHER
+        if (versementGroup) versementGroup.style.display = 'none'; // Masquer les versements C1
+        
+        if (differenceLine) differenceLine.style.display = 'none';
+        if (combinedResults) combinedResults.style.display = 'block';
+        if (resultsTitle) resultsTitle.textContent = t.h3_total_capital || "Capital Total Combiné";
+
+    } else {
+        // --- Activer la vue "Comparaison" par défaut ---
+        if (stopSwitchGroup) stopSwitchGroup.style.display = 'none'; // MASQUER
+        if (versementGroup) versementGroup.style.display = 'block'; // Afficher les versements C1
+        
+        if (differenceLine) differenceLine.style.display = 'block';
+        if (combinedResults) combinedResults.style.display = 'none';
+        if (resultsTitle) resultsTitle.textContent = t.h3_difference || "Différence";
+    }
+}
+
+
 export function calculerComparaisonF3() {
-    console.log("calculerComparaisonF3 déclenché avec âge de début");
+    console.log("calculerComparaisonF3 déclenché");
     
     // Met à jour l'UI (labels, taxes, toggles) avant de calculer
     updateComparatorTaxInfo();
@@ -95,63 +129,136 @@ export function calculerComparaisonF3() {
     try {
         const t = translations[currentLang] || translations.fr;
         const state = getState();
+        
+        // --- NOUVELLE LOGIQUE : Lire l'état du scénario ---
+        const isStopSwitch = state.f4_scenario_stop_switch;
 
-        // --- Compagnie 1 ---
+        // --- Paramètres Communs C1 ---
         const type1 = state.f4_c1_type;
-        const startAge1 = parseInt(state.f4_c1_start_age) || 0; // Lire l'âge de début
-        const annee1 = CURRENT_YEAR - startAge1; // Calculer l'année de naissance
-        const versement1 = parseFloat(state.f4_c1_versement) || 0;
+        const currentAge1 = parseInt(state.f4_c1_start_age) || 0; // Âge actuel
+        const anneeNaissance1 = CURRENT_YEAR - currentAge1;
+        const versement1_base = parseFloat(state.f4_c1_versement) || 0;
         const rendement1 = parseFloat(state.f4_c1_rendement) || 0;
         const fraisEntree1 = parseFloat(state.f4_c1_frais_entree) || 0;
         const fraisCourant1 = parseFloat(state.f4_c1_frais_courant) || 0;
         const isExtended1 = state.f4_c1_extend_80;
         const finalAge1 = (type1 === 'long-terme' && isExtended1) ? AGE_FINALE_LT : AGE_FINALE_DEFAUT;
-        
-        // --- Compagnie 2 ---
+
+        const paramsC1_Base = { 
+            typeEpargne: type1, anneeNaissance: anneeNaissance1, 
+            rendementAnnuel: rendement1, fraisEntreePct: fraisEntree1, 
+            fraisCourantAnnuelPct: fraisCourant1, targetAge: finalAge1
+        };
+
+        // --- Paramètres Communs C2 ---
         const type2 = state.f4_c2_type;
-        const startAge2 = parseInt(state.f4_c2_start_age) || 0; // Lire l'âge de début
-        const annee2 = CURRENT_YEAR - startAge2; // Calculer l'année de naissance
+        const currentAge2 = parseInt(state.f4_c2_start_age) || 0; // Âge actuel
+        const anneeNaissance2 = CURRENT_YEAR - currentAge2;
         const versement2 = parseFloat(state.f4_c2_versement) || 0;
         const rendement2 = parseFloat(state.f4_c2_rendement) || 0;
         const fraisEntree2 = parseFloat(state.f4_c2_frais_entree) || 0;
         const fraisCourant2 = parseFloat(state.f4_c2_frais_courant) || 0;
         const isExtended2 = state.f4_c2_extend_80;
         const finalAge2 = (type2 === 'long-terme' && isExtended2) ? AGE_FINALE_LT : AGE_FINALE_DEFAUT;
-
-        // Créer les paramètres de simulation (passe l'année de naissance calculée)
-        const params1 = { 
-            typeEpargne: type1, anneeNaissance: annee1, versementBrutMensuel: versement1, 
-            rendementAnnuel: rendement1, fraisEntreePct: fraisEntree1, fraisCourantAnnuelPct: fraisCourant1, 
-            targetAge: finalAge1 
-        };
-        const params2 = { 
-            typeEpargne: type2, anneeNaissance: annee2, versementBrutMensuel: versement2, 
-            rendementAnnuel: rendement2, fraisEntreePct: fraisEntree2, fraisCourantAnnuelPct: fraisCourant2, 
-            targetAge: finalAge2 
-        };
         
-        // Exécuter les simulations
-        const result1 = effectuerSimulation(params1, CURRENT_YEAR);
-        const result2 = effectuerSimulation(params2, CURRENT_YEAR);
+        const paramsC2_Base = { 
+            typeEpargne: type2, anneeNaissance: anneeNaissance2, versementBrutMensuel: versement2, 
+            rendementAnnuel: rendement2, fraisEntreePct: fraisEntree2, fraisCourantAnnuelPct: fraisCourant2, 
+            targetAge: finalAge2, capitalInitial: 0
+        };
 
-        // Mettre à jour les infos de durée
+        let result1, result2;
+
+        if (isStopSwitch) {
+            // --- SCÉNARIO "STOP & SWITCH" ---
+            
+            // 1. Pré-calcul : Simuler C1 du début (original) jusqu'à AUJOURD'HUI
+            const originalStartAge = parseInt(state.f4_c1_original_start_age) || 18;
+            // Année de début de la simulation de pré-calcul
+            const startYear_Precalc = anneeNaissance1 + originalStartAge;
+            
+            const params_Precalc = {
+                ...paramsC1_Base,
+                versementBrutMensuel: versement1_base,
+                targetAge: currentAge1, // Simuler jusqu'à l'âge actuel
+                capitalInitial: 0
+            };
+            // On simule en partant de l'année de début originale
+            const result_Precalc = effectuerSimulation(params_Precalc, startYear_Precalc);
+            const capitalActuelC1 = result_Precalc.capitalFinalNet;
+            
+            // 2. Simuler C1 (Croissance seule) : d'AUJOURD'HUI jusqu'à 67 ans
+            const params_C1_Growth = {
+                ...paramsC1_Base,
+                versementBrutMensuel: 0, // Arrêt des versements
+                capitalInitial: capitalActuelC1, // Démarrer avec le capital calculé
+                targetAge: finalAge1 // Simuler jusqu'à l'âge final
+            };
+            // On simule en partant de l'année actuelle
+            result1 = effectuerSimulation(params_C1_Growth, CURRENT_YEAR);
+
+            // 3. Simuler C2 (Nouveau Contrat) : d'AUJOURD'HUI jusqu'à 67 ans
+            // On simule en partant de l'année actuelle
+            result2 = effectuerSimulation(paramsC2_Base, CURRENT_YEAR);
+
+            // Mettre à jour les champs de résultats combinés
+            updateElement('f3-c1-final-only', result1.capitalFinalNet);
+            updateElement('f3-c2-final-only', result2.capitalFinalNet);
+            const combinedTotal = result1.capitalFinalNet + result2.capitalFinalNet;
+            updateElement('f3-combined-capital', combinedTotal);
+
+        } else {
+            // --- SCÉNARIO "COMPARAISON" NORMAL ---
+            
+            // 1. Simuler C1 normalement (d'AUJOURD'HUI à 67 ans)
+            const params_C1_Normal = {
+                ...paramsC1_Base,
+                versementBrutMensuel: versement1_base,
+                capitalInitial: 0,
+                targetAge: finalAge1
+            };
+            result1 = effectuerSimulation(params_C1_Normal, CURRENT_YEAR);
+            
+            // 2. Simuler C2 normally (d'AUJOURD'HUI à 67 ans)
+            result2 = effectuerSimulation(paramsC2_Base, CURRENT_YEAR);
+            
+            // Mettre à jour la différence
+            const diff = result1.capitalFinalNet - result2.capitalFinalNet;
+            updateElement('f3-difference-capital', diff);
+            const diffEl = document.getElementById('f3-difference-capital');
+            if (diffEl) {
+                diffEl.classList.remove('positive', 'negative');
+                if (diff > 0.01) {
+                    diffEl.classList.add('positive');
+                } else if (diff < -0.01) {
+                    diffEl.classList.add('negative');
+                }
+            }
+        }
+
+        // --- Mise à jour de l'UI (partie commune) ---
+
+        // Mettre à jour les infos de durée (C1)
         updateElement('f3-c1-duree-ans-info', result1.dureeAnnees.toFixed(0), false);
+        // Mettre à jour les infos de durée (C2)
         updateElement('f3-c2-duree-ans-info', result2.dureeAnnees.toFixed(0), false);
         
-        // Mettre à jour le texte du capital final
+        // Mettre à jour le texte du capital final (C1)
         const finalAgeKey1 = (finalAge1 === 80) ? 'chart_final_net_80' : 'chart_final_net';
-        const finalAgeKey2 = (finalAge2 === 80) ? 'chart_final_net_80' : 'chart_final_net';
         updateElement('f3-c1-final-capital-text', (t[finalAgeKey1] || "Capital Final Net").toUpperCase(), false);
+        // Mettre à jour le texte du capital final (C2)
+        const finalAgeKey2 = (finalAge2 === 80) ? 'chart_final_net_80' : 'chart_final_net';
         updateElement('f3-c2-final-capital-text', (t[finalAgeKey2] || "Capital Final Net").toUpperCase(), false);
 
-        // Mettre à jour les labels de taxe
+        // Mettre à jour les labels de taxe (C1)
         const ageTaxe1 = result1.ageTaxe || AGE_TAXE;
         const labelTaxe1 = t.span_f3_tax.replace('{age}', ageTaxe1.toFixed(0));
         updateElement('f4-c1-tax-label', labelTaxe1, false);
-        
+        // Mettre à jour les labels de taxe (C2)
         const ageTaxe2 = result2.ageTaxe || AGE_TAXE;
         const labelTaxe2 = t.span_f3_tax.replace('{age}', ageTaxe2.toFixed(0));
         updateElement('f4-c2-tax-label', labelTaxe2, false);
+
 
         // Mettre à jour les résultats (Colonne 1)
         const unit = currentLang === 'nl' ? 'jaar' : (currentLang === 'en' ? 'yrs' : 'ans');
@@ -169,21 +276,6 @@ export function calculerComparaisonF3() {
         updateElement('f3-c2-capital-net-total', result2.capitalNetPlaceTotal);
         updateElement('f3-c2-taxe-liberatoire', result2.taxeLiberatoire);
         updateElement('f3-c2-capital-final', result2.capitalFinalNet);
-        
-        // Mettre à jour la différence
-        const diff = result1.capitalFinalNet - result2.capitalFinalNet;
-        updateElement('f3-difference-capital', diff);
-        
-        // Appliquer la couleur à la différence
-        const diffEl = document.getElementById('f3-difference-capital');
-        if (diffEl) {
-            diffEl.classList.remove('positive', 'negative');
-            if (diff > 0.01) {
-                diffEl.classList.add('positive');
-            } else if (diff < -0.01) {
-                diffEl.classList.add('negative');
-            }
-        }
 
     } catch (error) {
         console.error("Erreur majeure dans calculerComparaisonF3:", error);
@@ -196,22 +288,30 @@ export function calculerComparaisonF3() {
 export function initF4() {
     console.log("Initialisation F4 (Comparateur)...");
 
-    // Lier les inputs au store
-    // Colonne 1
+    // --- BINDINGS "STOP & SWITCH" ---
+    bindCheckbox('f3-scenario-stop-switch', 'f4_scenario_stop_switch', () => {
+        setupF4ScenarioUI(); // Change l'affichage
+        calculerComparaisonF3(); // Relance le calcul
+    });
+    // MODIFIÉ: Lier le nouveau champ
+    bindInput('f3-c1-original-start-age', 'f4_c1_original_start_age', calculerComparaisonF3);
+
+
+    // --- BINDINGS COLONNE 1 ---
     bindInput('f3-c1-name', 'f4_c1_name'); 
     bindInput('f3-c1-type-epargne', 'f4_c1_type', calculerComparaisonF3);
     bindCheckbox('f3-c1-extension-80ans-toggle', 'f4_c1_extend_80', calculerComparaisonF3);
-    bindInput('f3-c1-start-age', 'f4_c1_start_age', calculerComparaisonF3); // MODIFIÉ
+    bindInput('f3-c1-start-age', 'f4_c1_start_age', calculerComparaisonF3); // (Âge actuel C1)
     bindInput('f3-c1-versement-brut', 'f4_c1_versement', calculerComparaisonF3);
     bindInput('f3-c1-rendement', 'f4_c1_rendement', calculerComparaisonF3);
     bindInput('f3-c1-frais-entree', 'f4_c1_frais_entree', calculerComparaisonF3);
     bindInput('f3-c1-frais-courant', 'f4_c1_frais_courant', calculerComparaisonF3);
 
-    // Colonne 2
+    // --- BINDINGS COLONNE 2 ---
     bindInput('f3-c2-name', 'f4_c2_name');
     bindInput('f3-c2-type-epargne', 'f4_c2_type', calculerComparaisonF3);
     bindCheckbox('f3-c2-extension-80ans-toggle', 'f4_c2_extend_80', calculerComparaisonF3);
-    bindInput('f3-c2-start-age', 'f4_c2_start_age', calculerComparaisonF3); // MODIFIÉ
+    bindInput('f3-c2-start-age', 'f4_c2_start_age', calculerComparaisonF3); // (Âge actuel C2)
     bindInput('f3-c2-versement-brut', 'f4_c2_versement', calculerComparaisonF3);
     bindInput('f3-c2-rendement', 'f4_c2_rendement', calculerComparaisonF3);
     bindInput('f3-c2-frais-entree', 'f4_c2_frais_entree', calculerComparaisonF3);
@@ -222,8 +322,12 @@ export function initF4() {
     document.getElementById('f4-compare-button').addEventListener('click', calculerComparaisonF3);
 
     // Enregistrer pour les changements de langue
-    registerOnLangChange(calculerComparaisonF3);
+    registerOnLangChange(() => {
+        setupF4ScenarioUI(); // Met à jour les textes des titres
+        calculerComparaisonF3(); // Relance le calcul (met à jour les labels de taxe, etc.)
+    });
 
-    // Premier calcul
-    calculerComparaisonF3();
+    // Exécution initiale
+    setupF4ScenarioUI(); // Définit l'état d'affichage initial
+    calculerComparaisonF3(); // Lance le premier calcul
 }

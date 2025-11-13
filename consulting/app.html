@@ -356,6 +356,16 @@
 
         <section id="f3" class="calculator-section">
             <h2 data-key="f3_title_comparator">Comparateur de Contrats (EP/ELT)</h2>
+            
+            <div class="scenario-toggle-box" id="f3-scenario-switch-container">
+                <label for="f3-scenario-stop-switch">
+                    <input type="checkbox" id="f3-scenario-stop-switch">
+                    <div>
+                        <strong data-key="f4_scenario_toggle">Scénario "Stop & Switch"</strong>
+                        <span data-key="f4_scenario_desc">Calculer le capital C1 actuel et le laisser fructifier.</span>
+                    </div>
+                </label>
+            </div>
             <div class="calculator-content" id="f3-comparator">
 
                 <div class="comparison-column" id="f3-col-1">
@@ -367,6 +377,11 @@
                             <input type="text" id="f3-c1-name" value="Belfius">
                         </div>
 
+                        <div class="input-group-section" id="f3-c1-stop-switch-group" style="display: none;">
+                            <h4 data-key="h4_existing_capital">Données Contrat C1 (Existant)</h4>
+                            <label for="f3-c1-original-start-age" data-key="label_original_start_age">Âge de début (Contrat C1)</label>
+                            <input type="number" id="f3-c1-original-start-age" value="25" min="18">
+                        </div>
                         <div class="input-group-section">
                             <h4 data-key="h4_contract">Données</h4>
                             <label for="f3-c1-type-epargne" data-key="label_type">Type d'Épargne</label>
@@ -388,7 +403,7 @@
                             </div>
                         </div>
 
-                        <div class="input-group-section">
+                        <div class="input-group-section" id="f3-c1-flux-group">
                             <h4 data-key="h4_flux">Flux & Rendement</h4>
                             <label for="f3-c1-versement-brut" data-key="label_monthly_gross">Versement Brut Mensuel (€)</label>
                             <input type="number" id="f3-c1-versement-brut" value="87.50" min="30">
@@ -504,18 +519,35 @@
                              <div class="data-line highlight-final"><span id="f3-c2-final-capital-text" data-key="span_f3_final_capital">CAPITAL FINAL NET (67 ans)</span> <strong class="data-value" id="f3-c2-capital-final">0,00 €</strong></div>
                         </div>
                     </div>
-                </div> <div class="difference-box-container">
-                    <h3 data-key="h3_difference">Différence</h3>
+                </div> 
+                
+                <div class="difference-box-container">
+                    <h3 data-key="h3_difference" id="f3-results-title">Différence</h3>
                     <div class="data-summary-table">
-                        <div class="data-line">
+                        
+                        <div class="data-line" id="f3-difference-line">
                             <span data-key="span_difference_label">Différence de Capital Final (C1 - C2)</span>
                             <strong class="data-value" id="f3-difference-capital">0,00 €</strong>
                         </div>
-                    </div>
+
+                        <div id="f3-combined-results" style="display: none;">
+                            <div class="data-line">
+                                <span data-key="span_final_capital_c1_only">Capital Final C1 (croissance seule)</span>
+                                <strong class="data-value" id="f3-c1-final-only">0,00 €</strong>
+                            </div>
+                            <div class="data-line">
+                                <span data-key="span_final_capital_c2_only">Capital Final C2 (nouveau contrat)</span>
+                                <strong class="data-value" id="f3-c2-final-only">0,00 €</strong>
+                            </div>
+                            <div class="data-line highlight-final" style="margin-top: 10px; padding-top: 10px; border-top: 1px dashed var(--border-light);">
+                                <span data-key="span_final_capital_combined">CAPITAL FINAL COMBINÉ (C1 + C2)</span>
+                                <strong class="data-value" id="f3-combined-capital">0,00 €</strong>
+                            </div>
+                        </div>
+                        </div>
                     <button class="main-button" id="f4-compare-button" data-key="btn_compare">Comparer les Projections</button>
                 </div>
-
-            </div> 
+                </div> 
         </section>
         
         <section id="f4" class="calculator-section">

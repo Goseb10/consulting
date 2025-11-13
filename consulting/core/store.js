@@ -27,10 +27,12 @@ const defaultState = {
     f3_taux: 3,
 
     // F4 - Comparateur
+    f4_scenario_stop_switch: false, // <-- AJOUT: Le toggle pour le scénario
     f4_c1_name: 'Belfius',
     f4_c1_type: 'pension',
     f4_c1_extend_80: false,
     f4_c1_start_age: 25, 
+    f4_c1_original_start_age: 25, // <-- AJOUT: Âge début contrat C1
     f4_c1_versement: 87.50,
     f4_c1_rendement: 2,
     f4_c1_frais_entree: 3,
@@ -113,6 +115,10 @@ export function loadState() {
             delete state.f5_enfant_name;
             delete state.f5_enfant_mensualite;
             delete state.f5_enfant_birthyear;
+            
+            // Nettoyage de l'ancienne clé de capital (remplacée)
+            delete state.f4_c1_capital_actuel;
+
 
         } else {
             state = { ...defaultState };
@@ -163,7 +169,8 @@ export function bindInput(inputId, stateKey, callback) {
     }
     
     // 2. Écouter les changements de l'input pour mettre à jour le state
-        const eventType = (element.tagName === 'SELECT' || element.type === 'number') ? 'change' : 'input';    element.addEventListener(eventType, (e) => {
+        const eventType = (element.tagName === 'SELECT' || element.type === 'number') ? 'change' : 'input';
+    element.addEventListener(eventType, (e) => {
         let value = e.target.value;
         if (element.type === 'number') {
              const parsedValue = parseFloat(value);

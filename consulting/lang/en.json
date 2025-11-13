@@ -291,5 +291,14 @@
     "email_enfant_p2": "Simulation until age 21:",
     "email_enfant_summary_21": "For an invested capital of <strong>{investedCapital}</strong>, the final capital is estimated at <strong>{finalCapital}</strong>.",
     "email_enfant_p3": "Simulation until age 25:",
-    "email_enfant_summary_25": "For an invested capital of <strong>{investedCapital}</strong>, the final capital is estimated at <strong>{finalCapital}</strong>."
+    "email_enfant_summary_25": "For an invested capital of <strong>{investedCapital}</strong>, the final capital is estimated at <strong>{finalCapital}</strong>.",
+    
+    "f4_scenario_toggle": "\"Stop & Switch\" Scenario",
+    "f4_scenario_desc": "Calculate C1 current capital and let it grow.",
+    "label_original_start_age": "Start Age (Contract C1)",
+    "h4_existing_capital": "Existing Contract C1 Data",
+    "h3_total_capital": "Combined Total Capital",
+    "span_final_capital_c1_only": "Final Capital C1 (growth only)",
+    "span_final_capital_c2_only": "Final Capital C2 (new contract)",
+    "span_final_capital_combined": "COMBINED FINAL CAPITAL (C1 + C2)"
 }

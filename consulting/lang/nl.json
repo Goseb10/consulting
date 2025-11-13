@@ -291,5 +291,14 @@
     "email_enfant_p2": "Simulatie tot 21 jaar:",
     "email_enfant_summary_21": "Voor een geïnvesteerd kapitaal van <strong>{investedCapital}</strong>, wordt het eindkapitaal geschat op <strong>{finalCapital}</strong>.",
     "email_enfant_p3": "Simulatie tot 25 jaar:",
-    "email_enfant_summary_25": "Voor een geïnvesteerd kapitaal van <strong>{investedCapital}</strong>, wordt het eindkapitaal geschat op <strong>{finalCapital}</strong>."
+    "email_enfant_summary_25": "Voor een geïnvesteerd kapitaal van <strong>{investedCapital}</strong>, wordt het eindkapitaal geschat op <strong>{finalCapital}</strong>.",
+    
+    "label_original_start_age": "Startleeftijd (Contract C1)",
+    "f4_scenario_toggle": "Scenario \"Stop & Switch\"",
+    "f4_scenario_desc": "Bereken huidig C1-kapitaal en laat het renderen.",
+    "h4_existing_capital": "Gegevens Bestaand Contract C1",
+    "h3_total_capital": "Gecombineerd Totaal Kapitaal",
+    "span_final_capital_c1_only": "Eindkapitaal C1 (alleen groei)",
+    "span_final_capital_c2_only": "Eindkapitaal C2 (nieuw contract)",
+    "span_final_capital_combined": "GECOMBINEERD EIND KAPITAAL (C1 + C2)"
 }

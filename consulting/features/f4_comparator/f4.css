@@ -157,3 +157,62 @@ section#f3 .comparison-card .input-group-section h4 {
 section#f3 .comparison-card .input-group-section:last-of-type {
     margin-bottom: 0;
 }
+
+
+/* --- NOUVEAUX STYLES : Scénario "Stop & Switch" Toggle --- */
+.scenario-toggle-box {
+    background-color: #fdfae6;
+    border: 1px solid #f0e0a4;
+    border-radius: var(--border-radius-base);
+    padding: 15px 20px;
+    margin-bottom: 30px; /* Espace avant le comparateur */
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.scenario-toggle-box:hover {
+    border-color: var(--primary-color);
+    background-color: var(--background-card);
+}
+
+.scenario-toggle-box label {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    cursor: pointer;
+    margin-top: 0; /* Annule le style de label global */
+}
+
+.scenario-toggle-box input[type="checkbox"] {
+    width: auto;
+    accent-color: var(--primary-color);
+    transform: scale(1.3); /* Rend la checkbox plus visible */
+    flex-shrink: 0;
+}
+
+.scenario-toggle-box div {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+}
+
+.scenario-toggle-box strong {
+    font-size: 1.1em;
+    color: var(--text-color-dark);
+    user-select: none;
+    font-weight: 700;
+}
+
+.scenario-toggle-box span {
+    font-size: 0.9em;
+    color: var(--text-color-light);
+    user-select: none;
+    font-weight: 500;
+}
+
+/* --- NOUVEAUX STYLES : Résultats Combinés --- */
+#f3-combined-results .highlight-final .data-value {
+    font-size: 1.6em; /* Met en valeur le total */
+    font-weight: 800;
+    color: var(--primary-color);
+}
