@@ -50,7 +50,12 @@
 
 /* Boîte pour la différence */
 .difference-box-container {
-    flex-basis: 100%; 
+    /* --- MODIFIÉ ICI (REMIS COMME AVANT) --- */
+    flex-basis: 100%; /* <-- Reste à 100% pour prendre toute la largeur */
+    /* margin-left: auto; (supprimé) */
+    /* flex-grow: 0; (supprimé) */
+    /* --- FIN DE LA MODIFICATION --- */
+    
     margin-top: 20px;
     padding: 25px;
     border-radius: var(--border-radius-base);
@@ -73,11 +78,12 @@
     font-weight: 800;
     color: var(--text-color-dark);
     
-    /* --- MODIFICATION ICI --- */
-    /* Reprend les styles de .data-value pour assurer l'alignement */
+    /* --- MODIFIÉ ICI (POUR ALIGNER LA SOMME) --- */
+    /* Reprend les styles de .data-value (de style.css) pour assurer l'alignement */
     text-align: right;
     min-width: 110px; 
     flex-shrink: 0; /* Empêche le texte de se comprimer */
+    /* --- FIN DE LA MODIFICATION --- */
 }
 #f3-difference-capital.positive {
     color: var(--secondary-color); /* Vert si C1 > C2 */

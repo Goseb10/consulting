@@ -108,6 +108,8 @@ export const emailTemplates = {
             <ul style="margin-top: 5px; margin-bottom: 10px; padding-left: 20px;">
                 <li>Fonds Épargne Pension/ Long Terme: <a href="https://www.quantalys.com/Fonds/Performances/731077" target="_blank" rel="noopener noreferrer">${t('email_common_reco_axa_link_1')}</a></li>
                 <li>Fonds Épargne Pension/ Long Terme: <a href="https://www.comgest.com/fr/lu/professionnel/fonds/comgest-growth-europe-eur-z-acc" target="_blank" rel="noopener noreferrer">${t('email_common_reco_axa_link_2')}</a></li>
+                
+                <li>Fonds Épargne Pension/ Long Terme: <a href="https://www.lecho.be/les-marches/fonds/r-co-valor-f-eur.60203572.html" target="_blank" rel="noopener noreferrer">AXA - Pension Plan R Valor</a></li>
                 <li style="list-style-type: none; margin-top: 5px;">
                     <ul style="padding-left: 20px; margin-top: 5px; margin-bottom: 5px;">
                         <li>${t('email_common_reco_axa_li_1')}</li>
@@ -121,7 +123,12 @@ export const emailTemplates = {
                 <li>Fonds d'Epargne Pension/ Long Terme: BlackRock - <a href="https://www.blackrock.com/fr/intermediaries/products/290846/ishares-msci-world-sri-ucits-etf" target="_blank" rel="noopener noreferrer">${t('email_common_reco_pv_link_1')}</a></li>
                 <li>Fonds d'Epargne Pension: P&V Group - <a href="https://www.lecho.be/les-marches/fonds/dynamic-multi-fund.620832117.html" target="_blank" rel="noopener noreferrer">${t('email_common_reco_pv_link_2')}</a></li>
             </ul>
-        </p>
+            
+            <a href="https://www.allianzgi.com/" target="_blank" rel="noopener noreferrer"><strong>Allianz Global Investor</strong></a>
+            <ul style="margin-top: 5px; margin-bottom: 10px; padding-left: 20px;">
+                <li>Fonds d'Epargne Pension: Allianz - <a href="https://www.lecho.be/les-marches/fonds/nordea-1-global-climate-and-environment-fund-bp-eur.60003833.html" target="_blank" rel="noopener noreferrer">Nordea</a></li>
+            </ul>
+            </p>
     `},
 
     plci: (t) => `

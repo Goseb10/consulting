@@ -113,7 +113,7 @@ function setupF4ScenarioUI() {
         if (stopSwitchGroup) stopSwitchGroup.style.display = 'none'; // MASQUER
         if (versementGroup) versementGroup.style.display = 'block'; // Afficher les versements C1
         
-        if (differenceLine) differenceLine.style.display = 'block';
+        if (differenceLine) differenceLine.style.display = 'flex'; // <-- MODIFIÉ ICI (remplace 'block')
         if (combinedResults) combinedResults.style.display = 'none';
         if (resultsTitle) resultsTitle.textContent = t.h3_difference || "Différence";
     }
