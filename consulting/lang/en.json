@@ -193,6 +193,7 @@
     "email_elt_yield_source": "Source, expectations, and others",
     "email_elt_summary": "In your case, we start with an invested capital of <strong>{capitalBrut}</strong> to reach an estimated amount of <strong>{capitalFinal}</strong> at the end of the contract, including taxes and fees. The total tax benefit received amounts to <strong>{avantageFiscal}</strong>",
     "email_common_calculator_link": "Savings calculator (pension, child, and investment)",
+    "email_common_yield_range": "between 5.00% and 10.00%.",
     "email_common_disclaimer": "I remind you that these calculations are based on a fictitious return of 5.00% (for safety and to account for potential underperformance). Over a period of about 30 years, it is more realistic to expect a final return in the range of 5.00% to 10.00%. Over the last 37 years, the average annual return has been <strong>{msciRate}%</strong> (<a href=\"https://www.msci.com/documents/10199/178e6643-6ae6-47b9-82be-e1fc565ededb\" target=\"_blank\" rel=\"noopener noreferrer\">MSCI World Index - return since 1987</a>).",
     "email_common_links_title": "Links to form an opinion:",
     "email_common_link_1": "Tax advantages in Belgium.",

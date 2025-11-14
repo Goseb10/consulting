@@ -193,6 +193,7 @@
     "email_elt_yield_source": "Bron, verwachtingen en andere",
     "email_elt_summary": "In uw geval gaan we uit van een geïnvesteerd kapitaal van <strong>{capitalBrut}</strong> om een geschat bedrag van <strong>{capitalFinal}</strong> te bereiken op de eindvervaldag, inclusief taksen en kosten. Het genoten fiscale voordeel bedraagt <strong>{avantageFiscal}</strong>",
     "email_common_calculator_link": "Spaarcalculator (pensioen, kind en beleggingen)",
+    "email_common_yield_range": "Tussen 5,00% en 10,00%.",
     "email_common_disclaimer": "Ik herinner u eraan dat deze berekeningen zijn gebaseerd op een fictief rendement van 5,00% (voor de veiligheid en om rekening te houden met mogelijke onderprestaties). Over een periode van ongeveer 30 jaar is het realistischer om uit te gaan van een eindrendement van 5,00% tot 10,00%. De afgelopen 37 jaar bedroeg het gemiddelde jaarlijkse rendement <strong>{msciRate}%</strong> (<a href=\"https://www.msci.com/documents/10199/178e6643-6ae6-47b9-82be-e1fc565ededb\" target=\"_blank\" rel=\"noopener noreferrer\">MSCI World Index - rendement sinds 1987</a>).",
     "email_common_links_title": "Links om u een mening te vormen:",
     "email_common_link_1": "Belastingvoordelen in België.",
