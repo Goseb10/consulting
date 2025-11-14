@@ -8,7 +8,7 @@ export const onLangChangeCallbacks = []; // Fonctions à appeler lors du changem
  * Charge un fichier de traduction (lang/fr.json, etc.)
  * @param {string} lang - 'fr', 'nl', 'en'
  */
-async function loadTranslations(lang) {
+export async function loadTranslations(lang) {
     // Si déjà chargé, ne rien faire
     if (translations[lang] && Object.keys(translations[lang]).length > 0) {
         return translations[lang];

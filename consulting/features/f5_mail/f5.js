@@ -2,7 +2,7 @@
 
 import { CURRENT_YEAR, AGE_FINALE_DEFAUT, AGE_FINALE_LT, FRAIS_DEFAUT } from '../../core/constants.js';
 import { emailTemplates } from '../../core/emailTemplates.js'; 
-import { translations } from '../../core/i18n.js';
+import { translations, loadTranslations } from '../../core/i18n.js';
 import { effectuerSimulation } from '../../core/simulationEngine.js'; 
 // Importer formatMonetaire et updateElement
 import { formatMonetaire, updateElement } from '../../core/utils.js';
@@ -66,11 +66,14 @@ function calculateNonFiscal(monthlyPayment, years) {
 /**
  * Génère l'aperçu de l'email
  */
-export function genererEmail() {
+export async function genererEmail() {
     console.log("Génération email...");
     try {
         const state = getState();
         const mailLang = state.f5_langue || 'fr';
+        // --- FIX : S'ASSURER QUE LES TRADUCTIONS SONT CHARGÉES ---
+await loadTranslations(mailLang);
+        // --- FIN FIX ---
         
         // ========================================================
         // ### CRÉATION DE LA FONCTION 't' ###
