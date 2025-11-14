@@ -168,6 +168,7 @@ export function calculerComparaisonF3() {
         };
 
         let result1, result2;
+        let result_Precalc_data = null; // <-- MODIFIÉ: Pour stocker les résultats passés
 
         if (isStopSwitch) {
             // --- SCÉNARIO "STOP & SWITCH" ---
@@ -185,6 +186,7 @@ export function calculerComparaisonF3() {
             };
             // On simule en partant de l'année de début originale
             const result_Precalc = effectuerSimulation(params_Precalc, startYear_Precalc);
+            result_Precalc_data = result_Precalc; // <-- MODIFIÉ: Stocker les résultats
             const capitalActuelC1 = result_Precalc.capitalFinalNet;
             
             // 2. Simuler C1 (Croissance seule) : d'AUJOURD'HUI jusqu'à 67 ans
@@ -210,7 +212,7 @@ export function calculerComparaisonF3() {
         } else {
             // --- SCÉNARIO "COMPARAISON" NORMAL ---
             
-            // 1. Simuler C1 normalement (d'AUJOURD'HUI à 67 ans)
+            // 1. Simuler C1 normally (d'AUJOURD'HUI à 67 ans)
             const params_C1_Normal = {
                 ...paramsC1_Base,
                 versementBrutMensuel: versement1_base,
@@ -260,14 +262,28 @@ export function calculerComparaisonF3() {
         updateElement('f4-c2-tax-label', labelTaxe2, false);
 
 
-        // Mettre à jour les résultats (Colonne 1)
+        // --- MODIFIÉ: BLOC DE MISE À JOUR C1 ---
         const unit = currentLang === 'nl' ? 'jaar' : (currentLang === 'en' ? 'yrs' : 'ans');
-        updateElement('f3-c1-duree-ans-total', `${result1.dureeVersementAnnees.toFixed(0)} ${unit}`, false);
-        updateElement('f3-c1-versement-brut-total', result1.capitalBrutPlaceTotal);
-        updateElement('f3-c1-avantage-total', result1.avantageFiscalTotal);
-        updateElement('f3-c1-capital-net-total', result1.capitalNetPlaceTotal);
-        updateElement('f3-c1-taxe-liberatoire', result1.taxeLiberatoire);
-        updateElement('f3-c1-capital-final', result1.capitalFinalNet);
+        
+        if (isStopSwitch && result_Precalc_data) {
+            // Mode Stop & Switch: utilise les données de pré-calcul (passé) pour les totaux
+            updateElement('f3-c1-duree-ans-total', `${result_Precalc_data.dureeVersementAnnees.toFixed(0)} ${unit}`, false);
+            updateElement('f3-c1-versement-brut-total', result_Precalc_data.capitalBrutPlaceTotal);
+            updateElement('f3-c1-avantage-total', result_Precalc_data.avantageFiscalTotal);
+            updateElement('f3-c1-capital-net-total', result_Precalc_data.capitalNetPlaceTotal);
+            // La taxe et le capital final viennent de la simulation de CROISSANCE (future) (result1)
+            updateElement('f3-c1-taxe-liberatoire', result1.taxeLiberatoire);
+            updateElement('f3-c1-capital-final', result1.capitalFinalNet); 
+        } else {
+            // Mode Comparaison Normal: utilise result1 pour tout
+            updateElement('f3-c1-duree-ans-total', `${result1.dureeVersementAnnees.toFixed(0)} ${unit}`, false);
+            updateElement('f3-c1-versement-brut-total', result1.capitalBrutPlaceTotal);
+            updateElement('f3-c1-avantage-total', result1.avantageFiscalTotal);
+            updateElement('f3-c1-capital-net-total', result1.capitalNetPlaceTotal);
+            updateElement('f3-c1-taxe-liberatoire', result1.taxeLiberatoire);
+            updateElement('f3-c1-capital-final', result1.capitalFinalNet);
+        }
+        // --- FIN DE LA MODIFICATION ---
 
         // Mettre à jour les résultats (Colonne 2)
         updateElement('f3-c2-duree-ans-total', `${result2.dureeVersementAnnees.toFixed(0)} ${unit}`, false);

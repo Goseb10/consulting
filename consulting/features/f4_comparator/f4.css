@@ -71,7 +71,13 @@
 #f3-difference-capital {
     font-size: 1.6em;
     font-weight: 800;
-    color: var(--text-color-dark); 
+    color: var(--text-color-dark);
+    
+    /* --- MODIFICATION ICI --- */
+    /* Reprend les styles de .data-value pour assurer l'alignement */
+    text-align: right;
+    min-width: 110px; 
+    flex-shrink: 0; /* Empêche le texte de se comprimer */
 }
 #f3-difference-capital.positive {
     color: var(--secondary-color); /* Vert si C1 > C2 */
