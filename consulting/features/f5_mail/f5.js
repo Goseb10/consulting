@@ -302,57 +302,41 @@ await loadTranslations(mailLang);
     }
 }
 
-
-// =======================================================
-// ### DÉBUT DU BLOC MODIFIÉ ###
-// =======================================================
 /**
- * Copie le contenu HTML de l'aperçu dans le presse-papiers
- * en utilisant la nouvelle API Clipboard pour garantir un formatage HTML pur.
+ * Copie le contenu HTML de l'aperçu dans le presse-papiers.
  */
-async function copierEmailHTML() {
+function copierEmailHTML() {
     const previewContainer = document.getElementById('email-preview-container');
     const feedback = document.getElementById('copy-feedback');
     if (!previewContainer || !feedback) return;
 
-    // 1. Obtenir le code HTML brut de l'email
-    const html = previewContainer.innerHTML;
-    
-    // 2. Obtenir la langue pour le message de feedback
-    const lang = getState().f5_langue || 'fr';
-    const t = translations[lang] || translations['fr'];
-
     try {
-        // 3. Créer un "Blob" (un objet fichier) de type text/html
-        const blob = new Blob([html], { type: 'text/html' });
+        const range = document.createRange();
+        range.selectNode(previewContainer);
+        const selection = window.getSelection();
+        selection.removeAllRanges();
+        selection.addRange(range);
+        document.execCommand('copy');
+        selection.removeAllRanges();
         
-        // 4. Créer un item de presse-papiers
-        const clipboardItem = new ClipboardItem({
-            'text/html': blob
-        });
-
-        // 5. Écrire dans le presse-papiers
-        await navigator.clipboard.write([clipboardItem]);
-
-        // Succès
-        feedback.textContent = t.f4_feedback_copied || "Copié !";
-        feedback.style.color = "var(--secondary-color)";
+        const lang = getState().f5_langue || 'fr';
+        const t = translations[lang] || translations['fr'];
+        
+        feedback.textContent = t.f4_feedback_copied || "Copié !"; 
+        feedback.style.color = "var(--secondary-color)"; 
         feedback.style.display = 'inline';
         setTimeout(() => { feedback.style.display = 'none'; }, 2000);
 
     } catch (e) {
-        // Échec
-        console.error("Échec de la copie HTML avec l'API Clipboard : ", e);
+        console.error("Échec copie HTML : ", e);
+        const lang = getState().f5_langue || 'fr';
         const feedbackText = lang === 'fr' ? "Échec!" : (lang === 'nl' ? "Mislukt!" : (lang === 'en' ? "Failed!" : "Échec!"));
         feedback.textContent = feedbackText;
-        feedback.style.color = "red";
+        feedback.style.color = "red"; 
         feedback.style.display = 'inline';
         setTimeout(() => { feedback.style.display = 'none'; }, 3000);
     }
 }
-// =======================================================
-// ### FIN DU BLOC MODIFIÉ ###
-// =======================================================
 
 
 // --- NOUVELLES FONCTIONS (Enfants) - RÉINTRODUITES ---
