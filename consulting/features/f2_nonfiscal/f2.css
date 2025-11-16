@@ -33,3 +33,11 @@ section#f_nonfiscal .parameters-card .input-group-section h4 {
 section#f_nonfiscal .parameters-card .input-group-section:last-of-type {
     margin-bottom: 0;
 }
+
+/* --- Ajout de style "box" pour le groupe de RÉSULTATS F2 --- */
+section#f_nonfiscal .results-card .table-group {
+    background-color: var(--background-light); /* Fond léger */
+    border: 1px solid var(--border-light);     /* Bordure discrète */
+    border-radius: var(--border-radius-base);  /* Bords arrondis */
+    padding: 20px;                             /* Espacement intérieur */
+}

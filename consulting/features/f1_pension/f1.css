@@ -138,3 +138,26 @@ section#f1 .parameters-card .input-group-section h4 {
 section#f1 .parameters-card .input-group-section:last-of-type {
     margin-bottom: 0;
 }
+
+/* --- Ajout de style "box" pour les groupes de RÉSULTATS F1 --- */
+
+/* D'abord, j'augmente l'espacement principal entre les futurs blocs */
+section#f1 .results-card .data-summary-table {
+    gap: 20px; /* Au lieu de 10px par défaut */
+}
+
+/* Ensuite, j'applique le style "box" à chaque groupe de résultats */
+section#f1 .results-card .table-group {
+    background-color: var(--background-light); /* Fond léger */
+    border: 1px solid var(--border-light);     /* Bordure discrète */
+    border-radius: var(--border-radius-base);  /* Bords arrondis */
+    padding: 20px;                             /* Espacement intérieur */
+}
+
+/* Finalement, j'ajuste les titres (h4) à l'intérieur de ces nouveaux blocs */
+section#f1 .results-card .table-group h4 {
+    margin-top: 0;
+    margin-bottom: 15px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--border-light); /* Ligne de séparation sous le titre */
+}

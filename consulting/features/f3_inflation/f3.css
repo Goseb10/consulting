@@ -32,3 +32,13 @@ section#f2 .parameters-card .input-group-section h4 {
 section#f2 .parameters-card .input-group-section:last-of-type {
     margin-bottom: 0;
 }
+
+/* --- Ajout de style "box" pour le groupe de RÉSULTATS F3 (Inflation) --- */
+/* Note: L'ID HTML de cette section est #f2 */
+section#f2 .results-card .table-group {
+    background-color: var(--background-light); /* Fond léger */
+    border: 1px solid var(--border-light);     /* Bordure discrète */
+    border-radius: var(--border-radius-base);  /* Bords arrondis */
+    padding: 20px;                             /* Espacement intérieur */
+    margin-bottom: 20px; /* Espace avant le texte résumé */
+}
