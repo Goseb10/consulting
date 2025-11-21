@@ -301,5 +301,7 @@
     "h3_total_capital": "Combined Total Capital",
     "span_final_capital_c1_only": "Final Capital C1 (growth only)",
     "span_final_capital_c2_only": "Final Capital C2 (new contract)",
-    "span_final_capital_combined": "COMBINED FINAL CAPITAL (C1 + C2)"
+    "span_final_capital_combined": "COMBINED FINAL CAPITAL (C1 + C2)",
+
+    "h4_comparator_chart": "Graphical Comparison"
 }

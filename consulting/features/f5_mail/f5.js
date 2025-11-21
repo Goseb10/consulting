@@ -5,7 +5,7 @@ import { emailTemplates } from '../../core/emailTemplates.js';
 import { translations, loadTranslations } from '../../core/i18n.js';
 import { effectuerSimulation } from '../../core/simulationEngine.js'; 
 // Importer formatMonetaire et updateElement
-import { formatMonetaire, updateElement } from '../../core/utils.js';
+import { formatMonetaire, updateElement, updateInputElement } from '../../core/utils.js';
 
 // Importer le store
 import { getState, bindInput, bindCheckbox, updateState } from '../../core/store.js';
@@ -72,7 +72,7 @@ export async function genererEmail() {
         const state = getState();
         const mailLang = state.f5_langue || 'fr';
         // --- FIX : S'ASSURER QUE LES TRADUCTIONS SONT CHARGÉES ---
-await loadTranslations(mailLang);
+        await loadTranslations(mailLang);
         // --- FIN FIX ---
         
         // ========================================================
@@ -302,43 +302,6 @@ await loadTranslations(mailLang);
     }
 }
 
-/**
- * Copie le contenu HTML de l'aperçu dans le presse-papiers.
- */
-function copierEmailHTML() {
-    const previewContainer = document.getElementById('email-preview-container');
-    const feedback = document.getElementById('copy-feedback');
-    if (!previewContainer || !feedback) return;
-
-    try {
-        const range = document.createRange();
-        range.selectNode(previewContainer);
-        const selection = window.getSelection();
-        selection.removeAllRanges();
-        selection.addRange(range);
-        document.execCommand('copy');
-        selection.removeAllRanges();
-        
-        const lang = getState().f5_langue || 'fr';
-        const t = translations[lang] || translations['fr'];
-        
-        feedback.textContent = t.f4_feedback_copied || "Copié !"; 
-        feedback.style.color = "var(--secondary-color)"; 
-        feedback.style.display = 'inline';
-        setTimeout(() => { feedback.style.display = 'none'; }, 2000);
-
-    } catch (e) {
-        console.error("Échec copie HTML : ", e);
-        const lang = getState().f5_langue || 'fr';
-        const feedbackText = lang === 'fr' ? "Échec!" : (lang === 'nl' ? "Mislukt!" : (lang === 'en' ? "Failed!" : "Échec!"));
-        feedback.textContent = feedbackText;
-        feedback.style.color = "red"; 
-        feedback.style.display = 'inline';
-        setTimeout(() => { feedback.style.display = 'none'; }, 3000);
-    }
-}
-
-
 // --- NOUVELLES FONCTIONS (Enfants) - RÉINTRODUITES ---
 
 /**
@@ -531,7 +494,6 @@ export function initF5() {
             previewCard.style.display = 'block';
         }
     });
-    document.getElementById('f5-copy-button').addEventListener('click', copierEmailHTML);
     
     // Générations initiales
     toggleRdvInputs(); // Gère l'affichage initial des champs RDV
