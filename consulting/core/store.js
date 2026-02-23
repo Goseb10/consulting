@@ -6,7 +6,7 @@ import { onLangChangeCallbacks } from './i18n.js';
 const defaultState = {
     // F1 - Pension / LT
     f1_type: 'pension',
-    f1_extend_80: false,
+    f1_target_age: 67,
     f1_birth_year: 2000,
     f1_versement: 87.50,
     f1_rendement: 5,
@@ -19,7 +19,7 @@ const defaultState = {
     f2_rendement: 8,
     f2_duree: 10,
     f2_frais_versement: 3.0, 
-    f2_frais_gestion: 0.85, // <-- NOUVELLE LIGNE AJOUTÉE
+    f2_frais_gestion: 0.85,
 
     // F3 - Inflation
     f3_montant: 1000,
@@ -27,19 +27,19 @@ const defaultState = {
     f3_taux: 3,
 
     // F4 - Comparateur
-    f4_scenario_stop_switch: false, // <-- AJOUT: Le toggle pour le scénario
+    f4_scenario_stop_switch: false,
     f4_c1_name: 'Belfius',
     f4_c1_type: 'pension',
-    f4_c1_extend_80: false,
+    f4_c1_target_age: 67,
     f4_c1_start_age: 25, 
-    f4_c1_original_start_age: 25, // <-- AJOUT: Âge début contrat C1
+    f4_c1_original_start_age: 25,
     f4_c1_versement: 87.50,
     f4_c1_rendement: 2,
     f4_c1_frais_entree: 3,
     f4_c1_frais_courant: 1.25,
     f4_c2_name: 'AXA',
     f4_c2_type: 'pension',
-    f4_c2_extend_80: false,
+    f4_c2_target_age: 67,
     f4_c2_start_age: 25, 
     f4_c2_versement: 87.50,
     f4_c2_rendement: 5,
@@ -50,8 +50,8 @@ const defaultState = {
     f5_prenom: 'Prénom',
     f5_nom: 'Nom',
     f5_email: 'client@email.com',
-    f5_rdv_date: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0], // Format AAAA-MM-JJ
-    f5_rdv_time: '10:00', // Format HH:mm
+    f5_rdv_date: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+    f5_rdv_time: '10:00',
     f5_rdv_tbd: false, 
     f5_langue: 'fr',
     f5_msci_rate: 8.53,
@@ -62,16 +62,14 @@ const defaultState = {
     f5_toggle_eip: false,
     f5_toggle_nonfiscal: false,
     f5_toggle_dela: false,
-    
-    // --- MODIFIÉ: Section Enfant (retour au mode dynamique) ---
-    f5_toggle_enfant: false,      // Toggle pour la section entière
-    f5_children_count: 0,         // Nombre d'enfants à afficher
-    f5_children_data: [],         // Tableau d'objets { name, mensualite, birthyear }
+    f5_toggle_enfant: false,
+    f5_children_count: 0,
+    f5_children_data: [],
     f5_ep_mensualite: 87.50,
     f5_ep_birthyear: 2000,
     f5_elt_mensualite: 100.00,
     f5_elt_birthyear: 2000,
-    f5_elt_extend_80: false,
+    f5_elt_target_age: 67,
     f5_dela_capital: 10000,
     f5_dela_prime: 25.00,
     f5_nonfiscal_mensualite: 100,
@@ -85,7 +83,6 @@ const boundElements = [];
 
 // 3. Fonctions de gestion du state
 function saveState() {
-    // Ne pas sauvegarder si on est en mode visiteur
     if (document.body.classList.contains('mode-visitor')) {
         return;
     }
@@ -97,7 +94,6 @@ function saveState() {
 }
 
 export function loadState() {
-    // Ne pas charger si on est en mode visiteur
     if (document.body.classList.contains('mode-visitor')) {
         console.log("Mode visiteur: chargement du state depuis localStorage désactivé.");
         state = { ...defaultState };
@@ -108,17 +104,13 @@ export function loadState() {
         const savedState = localStorage.getItem(APP_STATE_KEY);
         if (savedState) {
             const parsed = JSON.parse(savedState);
-            // S'assurer que les nouvelles clés par défaut sont présentes
             state = { ...defaultState, ...parsed };
 
-            // Nettoyage des anciennes clés (mode enfant unique)
-            delete state.f5_enfant_name;
-            delete state.f5_enfant_mensualite;
-            delete state.f5_enfant_birthyear;
-            
-            // Nettoyage de l'ancienne clé de capital (remplacée)
-            delete state.f4_c1_capital_actuel;
-
+            // Nettoyages des clés obsolètes liées aux checkbox 80 ans
+            delete state.f1_extend_80;
+            delete state.f4_c1_extend_80;
+            delete state.f4_c2_extend_80;
+            delete state.f5_elt_extend_80;
 
         } else {
             state = { ...defaultState };
@@ -138,7 +130,6 @@ export function updateState(key, value) {
         state[key] = value;
         saveState();
     } else {
-        // Avertir si la clé est dans defaultState mais pas dans state (ne devrait pas arriver)
         if (key in defaultState) {
              state[key] = value;
              saveState();
@@ -148,12 +139,6 @@ export function updateState(key, value) {
     }
 }
 
-/**
- * Lie un champ <input> ou <select> au store.
- * @param {string} inputId - ID de l'élément DOM.
- * @param {string} stateKey - Clé dans l'objet state.
- * @param {function} [callback] - Fonction à appeler après la mise à jour (ex: un calculateur).
- */
 export function bindInput(inputId, stateKey, callback) {
     const element = document.getElementById(inputId);
     if (!element) {
@@ -163,13 +148,11 @@ export function bindInput(inputId, stateKey, callback) {
     
     boundElements.push({ element, stateKey, type: 'input' });
     
-    // 1. Charger la valeur du state dans l'input
     if (state[stateKey] !== undefined) {
         element.value = state[stateKey];
     }
     
-    // 2. Écouter les changements de l'input pour mettre à jour le state
-        const eventType = (element.tagName === 'SELECT' || element.type === 'number') ? 'change' : 'input';
+    const eventType = (element.tagName === 'SELECT' || element.type === 'number') ? 'change' : 'input';
     element.addEventListener(eventType, (e) => {
         let value = e.target.value;
         if (element.type === 'number') {
@@ -193,12 +176,6 @@ export function bindInput(inputId, stateKey, callback) {
     }
 }
 
-/**
- * Lie une <input type="checkbox"> au store.
- * @param {string} inputId - ID de l'élément DOM.
- * @param {string} stateKey - Clé dans l'objet state.
- * @param {function} [callback] - Fonction à appeler après la mise à jour (ex: un calculateur).
- */
 export function bindCheckbox(inputId, stateKey, callback) {
     const element = document.getElementById(inputId);
     if (!element) {
@@ -208,26 +185,20 @@ export function bindCheckbox(inputId, stateKey, callback) {
     
     boundElements.push({ element, stateKey, type: 'checkbox' });
     
-    // 1. Charger la valeur du state
     if (state[stateKey] !== undefined) {
         element.checked = state[stateKey];
     }
     
-    // 2. Écouter les changements
     element.addEventListener('change', (e) => {
         updateState(stateKey, e.target.checked);
         if (callback) callback();
     });
 }
 
-/**
- * Réinitialise le state à ses valeurs par défaut et met à jour tous les éléments DOM liés.
- */
 export function resetStateToDefault() {
     console.log("Resetting state to default for visitor...");
     state = { ...defaultState };
     
-    // 1. Mettre à jour tous les éléments DOM liés (inputs, selects, checkbox)
     boundElements.forEach(binding => {
         const { element, stateKey, type } = binding;
         if (state[stateKey] !== undefined) {
@@ -239,7 +210,6 @@ export function resetStateToDefault() {
         }
     });
     
-    // 2. Déclencher tous les calculateurs (F1, F2, F3...) pour mettre à jour les graphiques et les résultats
     console.log("Reset: Triggering all module calculations...");
     onLangChangeCallbacks.forEach(callback => {
         try {
