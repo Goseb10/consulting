@@ -2,7 +2,6 @@
 
 import { onLangChangeCallbacks } from './i18n.js';
 
-// 1. Définir l'état par défaut de tous les inputs de l'application
 const defaultState = {
     // F1 - Pension / LT
     f1_type: 'pension',
@@ -55,6 +54,8 @@ const defaultState = {
     f5_rdv_tbd: false, 
     f5_langue: 'fr',
     f5_msci_rate: 8.53,
+    
+    // Toggles F5
     f5_toggle_ep: true,
     f5_toggle_elt: false,
     f5_toggle_plci: false,
@@ -63,94 +64,70 @@ const defaultState = {
     f5_toggle_nonfiscal: false,
     f5_toggle_dela: false,
     f5_toggle_enfant: false,
+    
+    // Nouveaux Arrays for multiple simulations F5
+    f5_ep_count: 1,
+    f5_ep_data: [{ mensualite: 87.50, birthyear: 2000 }],
+    
+    f5_elt_count: 1,
+    f5_elt_data: [{ mensualite: 100.00, birthyear: 2000, target_age: 67 }],
+    
+    f5_nonfiscal_count: 1,
+    f5_nonfiscal_data: [{ mensualite: 100, birthyear: 2000 }],
+    
+    f5_dela_count: 1,
+    f5_dela_data: [{ capital: 10000, prime: 25.00 }],
+    
     f5_children_count: 0,
     f5_children_data: [],
-    f5_ep_mensualite: 87.50,
-    f5_ep_birthyear: 2000,
-    f5_elt_mensualite: 100.00,
-    f5_elt_birthyear: 2000,
-    f5_elt_target_age: 67,
-    f5_dela_capital: 10000,
-    f5_dela_prime: 25.00,
-    f5_nonfiscal_mensualite: 100,
-    f5_nonfiscal_birthyear: 2000,
 };
 
-// 2. Initialiser l'état
 let state = { ...defaultState };
 const APP_STATE_KEY = 'consultingAppState';
 const boundElements = []; 
 
-// 3. Fonctions de gestion du state
 function saveState() {
-    if (document.body.classList.contains('mode-visitor')) {
-        return;
-    }
+    if (document.body.classList.contains('mode-visitor')) return;
     try {
         localStorage.setItem(APP_STATE_KEY, JSON.stringify(state));
-    } catch (e) {
-        console.error("Erreur lors de la sauvegarde du state:", e);
-    }
+    } catch (e) { console.error("Erreur save state:", e); }
 }
 
 export function loadState() {
     if (document.body.classList.contains('mode-visitor')) {
-        console.log("Mode visiteur: chargement du state depuis localStorage désactivé.");
         state = { ...defaultState };
         return;
     }
-    
     try {
         const savedState = localStorage.getItem(APP_STATE_KEY);
         if (savedState) {
             const parsed = JSON.parse(savedState);
             state = { ...defaultState, ...parsed };
-
-            // Nettoyages des clés obsolètes liées aux checkbox 80 ans
-            delete state.f1_extend_80;
-            delete state.f4_c1_extend_80;
-            delete state.f4_c2_extend_80;
-            delete state.f5_elt_extend_80;
-
+            // Ensure arrays exist for backward compatibility
+            if (!state.f5_ep_data) state.f5_ep_data = [{ mensualite: state.f5_ep_mensualite || 87.5, birthyear: state.f5_ep_birthyear || 2000 }];
+            if (!state.f5_elt_data) state.f5_elt_data = [{ mensualite: state.f5_elt_mensualite || 100, birthyear: state.f5_elt_birthyear || 2000, target_age: state.f5_elt_target_age || 67 }];
+            if (!state.f5_nonfiscal_data) state.f5_nonfiscal_data = [{ mensualite: state.f5_nonfiscal_mensualite || 100, birthyear: state.f5_nonfiscal_birthyear || 2000 }];
+            if (!state.f5_dela_data) state.f5_dela_data = [{ capital: state.f5_dela_capital || 10000, prime: state.f5_dela_prime || 25 }];
         } else {
             state = { ...defaultState };
         }
-    } catch (e) {
-        console.error("Erreur lors du chargement du state:", e);
-        state = { ...defaultState };
-    }
+    } catch (e) { state = { ...defaultState }; }
 }
 
-export function getState() {
-    return state;
-}
+export function getState() { return state; }
 
 export function updateState(key, value) {
-    if (key in state) {
+    if (key in state || key in defaultState) {
         state[key] = value;
         saveState();
-    } else {
-        if (key in defaultState) {
-             state[key] = value;
-             saveState();
-        } else {
-            console.warn(`Clé de state inconnue: ${key}`);
-        }
     }
 }
 
 export function bindInput(inputId, stateKey, callback) {
     const element = document.getElementById(inputId);
-    if (!element) {
-        console.warn(`Binding impossible: ID "${inputId}" non trouvé.`);
-        return;
-    }
-    
+    if (!element) return;
     boundElements.push({ element, stateKey, type: 'input' });
-    
-    if (state[stateKey] !== undefined) {
-        element.value = state[stateKey];
-    }
+    if (state[stateKey] !== undefined) element.value = state[stateKey];
     
     const eventType = (element.tagName === 'SELECT' || element.type === 'number') ? 'change' : 'input';
     element.addEventListener(eventType, (e) => {
@@ -162,32 +139,13 @@ export function bindInput(inputId, stateKey, callback) {
         updateState(stateKey, value);
         if (callback) callback();
     });
-    
-    if (element.type === 'number') {
-         element.addEventListener('change', (e) => {
-             const value = parseFloat(e.target.value); 
-             const finalValue = isNaN(value) ? 0 : value;
-             if (element.value !== finalValue.toString()) {
-                  element.value = finalValue;
-             }
-             updateState(stateKey, finalValue);
-             if (callback) callback();
-         });
-    }
 }
 
 export function bindCheckbox(inputId, stateKey, callback) {
     const element = document.getElementById(inputId);
-    if (!element) {
-        console.warn(`Binding impossible: ID "${inputId}" non trouvé.`);
-        return;
-    }
-    
+    if (!element) return;
     boundElements.push({ element, stateKey, type: 'checkbox' });
-    
-    if (state[stateKey] !== undefined) {
-        element.checked = state[stateKey];
-    }
+    if (state[stateKey] !== undefined) element.checked = state[stateKey];
     
     element.addEventListener('change', (e) => {
         updateState(stateKey, e.target.checked);
@@ -196,26 +154,13 @@ export function bindCheckbox(inputId, stateKey, callback) {
 }
 
 export function resetStateToDefault() {
-    console.log("Resetting state to default for visitor...");
     state = { ...defaultState };
-    
     boundElements.forEach(binding => {
         const { element, stateKey, type } = binding;
         if (state[stateKey] !== undefined) {
-            if (type === 'checkbox') {
-                element.checked = state[stateKey];
-            } else {
-                element.value = state[stateKey];
-            }
+            if (type === 'checkbox') element.checked = state[stateKey];
+            else element.value = state[stateKey];
         }
     });
-    
-    console.log("Reset: Triggering all module calculations...");
-    onLangChangeCallbacks.forEach(callback => {
-        try {
-            callback();
-        } catch (e) {
-            console.error("Erreur lors du rappel de recalcul :", e, callback);
-        }
-    });
+    onLangChangeCallbacks.forEach(callback => callback());
 }
