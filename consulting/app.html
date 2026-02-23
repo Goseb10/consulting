@@ -579,7 +579,7 @@
                             <input type="checkbox" id="mail-rdv-tbd">
                             <span data-key="f4_label_rdv_tbd">Date à déterminer</span>
                         </label>
-                        </div> 
+                    </div> 
 
                     <div class="input-group-section" style="border-top: 1px solid var(--border-light); padding-top: 15px; margin-top: 15px;">
                         <label for="mail-langue" data-key="f4_label_mail_lang">Langue du Mail</label>
@@ -641,48 +641,29 @@
 
                     <div class="input-group-section" id="ep-options-container" style="display: none; border-top: 1px solid var(--border-light); padding-top: 15px; margin-top: 15px;">
                         <h4 data-key="f4_ep_options_title" style="margin-bottom: 15px;">Options Épargne Pension</h4>
-                        <div class="mail-inputs-grid">
-                            <div>
-                                <label for="mail-ep-mensualite" data-key="f4_label_ep_monthly">Mensualité (€)</label>
-                                <input type="number" id="mail-ep-mensualite" value="87.50" step="0.01">
-                            </div>
-                            <div>
-                                <label for="mail-ep-birthyear" data-key="f4_label_ep_birthyear">Année de naissance</label>
-                                <input type="number" id="mail-ep-birthyear" value="2000" step="1">
-                            </div>
+                        <div>
+                            <label data-key="f4_sim_count_label">Nombre d'options de simulations</label>
+                            <input type="number" id="mail-ep-count" value="1" min="1" max="5" step="1">
                         </div>
+                        <div id="ep-dynamic-inputs" style="margin-top: 10px;"></div>
                     </div>
 
                     <div class="input-group-section" id="elt-options-container" style="display: none; border-top: 1px solid var(--border-light); padding-top: 15px; margin-top: 15px;">
                         <h4 data-key="f4_elt_options_title" style="margin-bottom: 15px;">Options Épargne Long Terme</h4>
-                        <div class="mail-inputs-grid">
-                            <div>
-                                <label for="mail-elt-mensualite" data-key="f4_label_elt_monthly">Mensualité (€)</label>
-                                <input type="number" id="mail-elt-mensualite" value="100.00" step="0.01">
-                            </div>
-                            <div>
-                                <label for="mail-elt-birthyear" data-key="f4_label_elt_birthyear">Année de naissance</label>
-                                <input type="number" id="mail-elt-birthyear" value="2000" step="1">
-                            </div>
+                        <div>
+                            <label data-key="f4_sim_count_label">Nombre d'options de simulations</label>
+                            <input type="number" id="mail-elt-count" value="1" min="1" max="5" step="1">
                         </div>
-                        <div style="margin-top: 15px;">
-                             <label for="mail-elt-target-age" data-key="label_target_age">Âge terme (ELT)</label>
-                             <input type="number" id="mail-elt-target-age" value="67" min="60" max="99">
-                        </div>
+                        <div id="elt-dynamic-inputs" style="margin-top: 10px;"></div>
                     </div>
 
                     <div class="input-group-section" id="nonfiscal-options-container" style="display: none; border-top: 1px solid var(--border-light); padding-top: 15px; margin-top: 15px;">
                         <h4 data-key="f4_nonfiscal_options_title" style="margin-bottom: 15px;">Options Épargne Non-Fiscale</h4>
-                        <div class="mail-inputs-grid">
-                            <div>
-                                <label for="mail-nonfiscal-mensualite" data-key="f4_label_nonfiscal_monthly">Mensualité (€)</label>
-                                <input type="number" id="mail-nonfiscal-mensualite" value="100" step="10">
-                            </div>
-                            <div>
-                                <label for="mail-nonfiscal-birthyear" data-key="f4_label_nonfiscal_birthyear">Année de naissance</label>
-                                <input type="number" id="mail-nonfiscal-birthyear" value="2000" step="1">
-                            </div>
+                        <div>
+                            <label data-key="f4_sim_count_label">Nombre d'options de simulations</label>
+                            <input type="number" id="mail-nonfiscal-count" value="1" min="1" max="5" step="1">
                         </div>
+                        <div id="nonfiscal-dynamic-inputs" style="margin-top: 10px;"></div>
                     </div>
 
                     <div class="input-group-section" id="children-main-container" style="display: none; border-top: 1px solid var(--border-light); padding-top: 15px; margin-top: 15px;">
@@ -693,20 +674,15 @@
                         </div>
                         <div id="children-options-container" style="margin-top: 15px;"></div>
                     </div>
+                    
                     <div class="input-group-section" id="dela-options-container" style="display: none; border-top: 1px solid var(--border-light); padding-top: 15px; margin-top: 15px;">
                         <h4 data-key="f4_dela_options_title" style="margin-bottom: 15px;">Options Dela</h4>
-                        <div class="mail-inputs-grid">
-                            <div>
-                                <label for="mail-dela-capital" data-key="f4_label_dela_capital">Capital Assuré (€)</label>
-                                <input type="number" id="mail-dela-capital" value="10000" step="500">
-                            </div>
-                            <div>
-                                <label for="mail-dela-prime" data-key="f4_label_dela_prime">Prime Mensuelle (€)</label>
-                                <input type="number" id="mail-dela-prime" value="25.00" step="0.01">
-                            </div>
+                        <div>
+                            <label data-key="f4_sim_count_label">Nombre d'options de couverture</label>
+                            <input type="number" id="mail-dela-count" value="1" min="1" max="5" step="1">
                         </div>
+                        <div id="dela-dynamic-inputs" style="margin-top: 10px;"></div>
                     </div>
-
                     
                     <div class="f5-button-group">
                         <button class="main-button" id="f5-generate-button" data-key="f4_btn_generate">Actualiser l'aperçu</button>
