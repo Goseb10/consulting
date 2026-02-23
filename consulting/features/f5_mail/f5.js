@@ -1,30 +1,22 @@
 // features/f5_mail/f5.js 
 
-import { CURRENT_YEAR, AGE_FINALE_DEFAUT, AGE_FINALE_LT, FRAIS_DEFAUT } from '../../core/constants.js';
+import { CURRENT_YEAR, AGE_FINALE_DEFAUT, FRAIS_DEFAUT } from '../../core/constants.js';
 import { emailTemplates } from '../../core/emailTemplates.js'; 
 import { translations, loadTranslations } from '../../core/i18n.js';
 import { effectuerSimulation } from '../../core/simulationEngine.js'; 
-// Importer formatMonetaire et updateElement
 import { formatMonetaire, updateElement, updateInputElement } from '../../core/utils.js';
-
-// Importer le store
 import { getState, bindInput, bindCheckbox, updateState } from '../../core/store.js';
 
-
-/**
- * Calcule le capital final et le capital investi pour une épargne non fiscale.
- * Inclut les frais de gestion annuels de 0.85%
- */
 function calculateNonFiscal(monthlyPayment, years) {
     const P_monthly = parseFloat(monthlyPayment);
     const t = parseInt(years);
     const annualRatePct = 8.0; 
 
-    const fraisMensuelPct = 0.03; // 3%
-    const taxeVersamentPct = 0.02; // 2%
-    const fraisGestionAnnuelPct = 0.0085; // NOUVEAU: 0.85%
-    const taxePlusValuePct = 0.10; // 10%
-    const franchisePlusValue = 10000; // 10K €
+    const fraisMensuelPct = 0.03; 
+    const taxeVersamentPct = 0.02; 
+    const fraisGestionAnnuelPct = 0.0085; 
+    const taxePlusValuePct = 0.10; 
+    const franchisePlusValue = 10000; 
 
     if (isNaN(P_monthly) || P_monthly < 0 || isNaN(t) || t <= 0) {
         return { finalCapital: 0, investedCapital: 0 };
@@ -41,12 +33,10 @@ function calculateNonFiscal(monthlyPayment, years) {
         currentCapital += versementNet;
         currentCapital *= (1 + monthlyRate);
         
-        // --- LOGIQUE DE FRAIS DE GESTION AJOUTÉE ---
         if (month > 0 && month % 12 === 0) {
             const fraisGestionAn = currentCapital * fraisGestionAnnuelPct;
             currentCapital -= (fraisGestionAn || 0);
         }
-        // --- FIN AJOUT ---
     }
 
     const capitalFinalBrut = currentCapital;
@@ -63,21 +53,13 @@ function calculateNonFiscal(monthlyPayment, years) {
 }
 
 
-/**
- * Génère l'aperçu de l'email
- */
 export async function genererEmail() {
     console.log("Génération email...");
     try {
         const state = getState();
         const mailLang = state.f5_langue || 'fr';
-        // --- FIX : S'ASSURER QUE LES TRADUCTIONS SONT CHARGÉES ---
         await loadTranslations(mailLang);
-        // --- FIN FIX ---
         
-        // ========================================================
-        // ### CRÉATION DE LA FONCTION 't' ###
-        // ========================================================
         const langDict = translations[mailLang] || translations['fr'];
         if (!langDict) {
             console.error(`Dictionnaire de langue introuvable pour "${mailLang}".`);
@@ -90,24 +72,20 @@ export async function genererEmail() {
             console.warn(`Clé d'email manquante pour ${mailLang}: ${key}`);
             return translations['fr'][key] || `[${key}]`; 
         };
-        // ========================================================
 
         const prenom = state.f5_prenom || "Prénom";
         const nom = state.f5_nom || "Nom";
         const email = state.f5_email || ""; 
         const isTbd = state.f5_rdv_tbd;
 
-        // --- Formatage de la date et de l'heure ---
         let formattedRdvDate = state.f5_rdv_date;
         let formattedRdvTime = state.f5_rdv_time;
         const langLocale = mailLang === 'nl' ? 'nl-BE' : (mailLang === 'en' ? 'en-GB' : 'fr-BE');
 
-        // --- Fonction pour mettre la première lettre en majuscule ---
         const capitalize = (s) => {
             if (typeof s !== 'string' || s.length === 0) return '';
             return s.charAt(0).toUpperCase() + s.slice(1);
         };
-        // --- FIN AJOUT ---
 
         if (!isTbd) { 
             try {
@@ -119,24 +97,18 @@ export async function genererEmail() {
                         month: 'long'
                     }).format(dateObj);
                     
-                    // Sépare la chaîne (ex: "lundi 10 novembre") en mots
                     const parts = dateString.split(' ');
                     if (parts.length > 0) {
-                        // Met la majuscule au premier mot (jour)
                         parts[0] = capitalize(parts[0]);
-                        // Met la majuscule au dernier mot (mois)
-                        if (parts.length > 2) { // S'assurer qu'il y a un mois
+                        if (parts.length > 2) { 
                              parts[parts.length - 1] = capitalize(parts[parts.length - 1]);
                         }
-                        // Reconstitue la chaîne
                         formattedRdvDate = parts.join(' ');
                     } else {
-                        formattedRdvDate = capitalize(dateString); // Fallback
+                        formattedRdvDate = capitalize(dateString); 
                     }
-                    // --- FIN MODIFICATION ---
                 }
             } catch (e) {
-                console.warn("Date RDV invalide pour formatage:", state.f5_rdv_date);
                 formattedRdvDate = state.f5_rdv_date; 
             }
 
@@ -156,11 +128,9 @@ export async function genererEmail() {
                     }
                  }
             } catch (e) {
-                 console.warn("Heure RDV invalide pour formatage:", state.f5_rdv_time);
                  formattedRdvTime = state.f5_rdv_time; 
             }
         }
-        // --- FIN BLOC DATE/HEURE ---
         
         const delaCapital = (typeof state.f5_dela_capital === 'number') ? state.f5_dela_capital : 10000;
         const delaPrime = (typeof state.f5_dela_prime === 'number') ? state.f5_dela_prime : 25.00;
@@ -175,10 +145,9 @@ export async function genererEmail() {
         const epBirthYear = parseInt(state.f5_ep_birthyear) || CURRENT_YEAR;
         const eltMensualite = parseFloat(state.f5_elt_mensualite) || 0;
         const eltBirthYear = parseInt(state.f5_elt_birthyear) || CURRENT_YEAR;
-        const eltExtend80 = state.f5_elt_extend_80;
+        const eltTargetAge = parseInt(state.f5_elt_target_age) || 67; // NOUVEAU
         const msciRate = parseFloat(state.f5_msci_rate) || 8.53;
         
-        // Cases à cocher
         const includeEP = state.f5_toggle_ep;
         const includeELT = state.f5_toggle_elt;
         const includePLCI = state.f5_toggle_plci;
@@ -189,7 +158,6 @@ export async function genererEmail() {
         const includeEnfant = state.f5_toggle_enfant; 
         const childrenData = state.f5_children_data || [];
         
-        // --- Simulations ---
         const res10 = calculateNonFiscal(nonFiscalMensualite, 10);
         const res20 = calculateNonFiscal(nonFiscalMensualite, 20);
         const res30 = calculateNonFiscal(nonFiscalMensualite, 30);
@@ -211,7 +179,6 @@ export async function genererEmail() {
         
         let eltData = {}; 
         if (includeELT) {
-            const eltTargetAge = eltExtend80 ? AGE_FINALE_LT : AGE_FINALE_DEFAUT;
             const eltParams = {
                 anneeNaissance: eltBirthYear,
                 versementBrutMensuel: eltMensualite,
@@ -225,16 +192,12 @@ export async function genererEmail() {
             eltData.targetAge = eltTargetAge; 
         }
 
-
-        // --- Construction HTML ---
-        
-        // Définition du sujet déplacée ici
         const sujet = (t('email_subject') || "Synthèse : {nom} {prenom}")
                         .replace('{nom}', nom)
                         .replace('{prenom}', prenom);
         
         let html = '';
-        html += emailTemplates.intro(t, prenom, nom, email, sujet); // 'sujet' est passé en paramètre
+        html += emailTemplates.intro(t, prenom, nom, email, sujet); 
         
         if (includeEP) html += emailTemplates.ep(t, epData, formatMonetaire); 
         if (includeELT) html += emailTemplates.elt(t, eltData, formatMonetaire);
@@ -246,7 +209,6 @@ export async function genererEmail() {
         
         if (includeNonFiscal) html += emailTemplates.nonfiscal(t, nonFiscalMensualite, nonFiscalAge, res10, res20, res30, formatMonetaire);
         
-        // --- NOUVELLE LOGIQUE ENFANT (Dynamique + 3 Sims) ---
         if (includeEnfant) {
             childrenData.forEach((child) => {
                 if (child.name && child.mensualite > 0) {
@@ -254,22 +216,18 @@ export async function genererEmail() {
                     const birthYear = parseInt(child.birthyear) || CURRENT_YEAR;
                     const age = CURRENT_YEAR - birthYear;
                     
-                    // Calcul des durées
                     const duration18 = Math.max(0, 18 - age);
                     const duration21 = Math.max(0, 21 - age);
                     const duration25 = Math.max(0, 25 - age);
                     
-                    // Lancement des 3 simulations
                     const res18 = calculateNonFiscal(mensualite, duration18);
                     const res21 = calculateNonFiscal(mensualite, duration21);
                     const res25 = calculateNonFiscal(mensualite, duration25);
                     
-                    // Appel du template mis à jour
                     html += emailTemplates.enfant(t, child, res18, res21, res25, formatMonetaire);
                 }
             });
         }
-        // --- FIN NOUVELLE LOGIQUE ---
         
         if (includeDela) html += emailTemplates.dela(t, delaCapital, delaPrime, formatMonetaire); 
         
@@ -280,7 +238,6 @@ export async function genererEmail() {
         html += `</ul>`;
         html += emailTemplates.outro(t); 
 
-        // --- Injection ---
         const previewContainer = document.getElementById('email-preview-container');
         if (previewContainer) {
             previewContainer.innerHTML = html;
@@ -288,10 +245,8 @@ export async function genererEmail() {
             console.error("Conteneur d'aperçu 'email-preview-container' non trouvé.");
         }
 
-        // 'sujet' est déjà défini plus haut
         updateElement('email-subject-display', sujet, false);
         updateElement('email-to-display', email, false);
-
 
     } catch (e) {
         console.error("Erreur lors de la génération de l'email:", e);
@@ -302,11 +257,7 @@ export async function genererEmail() {
     }
 }
 
-// --- NOUVELLES FONCTIONS (Enfants) - RÉINTRODUITES ---
 
-/**
- * Met à jour le state `f5_children_data` en lisant le DOM
- */
 function updateChildrenDataFromDOM() {
     const state = getState();
     const container = document.getElementById('children-options-container');
@@ -323,19 +274,15 @@ function updateChildrenDataFromDOM() {
     });
     
     updateState('f5_children_data', newChildrenData);
-    genererEmail(); // Regénérer l'email à chaque frappe
+    genererEmail(); 
 }
 
-/**
- * Génère les champs d'input pour le nombre d'enfants demandé
- */
 function renderChildrenInputs() {
     const state = getState();
     const count = parseInt(state.f5_children_count) || 0;
     let data = state.f5_children_data || [];
     const t = translations[state.f5_langue || 'fr'] || translations['fr'];
     
-    // Ajuster la taille du tableau de données pour correspondre au compteur
     if (data.length > count) {
         data = data.slice(0, count);
     }
@@ -346,14 +293,14 @@ function renderChildrenInputs() {
             birthyear: 2010 
         });
     }
-    updateState('f5_children_data', data); // Sauvegarder le tableau ajusté
+    updateState('f5_children_data', data); 
 
     const container = document.getElementById('children-options-container');
     if (!container) return;
 
     let html = '';
     data.forEach((child, index) => {
-        const nameVal = (child.name || '').replace(/"/g, '&quot;'); // Échapper les guillemets
+        const nameVal = (child.name || '').replace(/"/g, '&quot;'); 
         html += `
             <div class="child-options-group" style="border-top: 1px dashed #EBEBEB; padding-top: 15px; margin-top: 15px;">
                 <h4 style="font-size: 1.1em; color: var(--primary-color); margin-bottom: 10px;">
@@ -377,15 +324,10 @@ function renderChildrenInputs() {
     });
     
     container.innerHTML = html;
-    genererEmail(); // Mettre à jour l'email après avoir rendu les champs
+    genererEmail(); 
 }
 
-// --- FIN NOUVELLES FONCTIONS ---
 
-
-/**
- * Gère l'affichage des champs de date/heure du RDV
- */
 function toggleRdvInputs() {
     const state = getState();
     const isTbd = state.f5_rdv_tbd;
@@ -402,17 +344,13 @@ function toggleRdvInputs() {
     if (dateLabel) dateLabel.style.display = displayValue;
     if (timeLabel) timeLabel.style.display = displayValue;
     
-    genererEmail(); // Mettre à jour l'email
+    genererEmail(); 
 }
 
 
-/**
- * Initialise la fonctionnalité F5 (Générateur de Mail)
- */
 export function initF5() {
     console.log("Initialisation F5 (Mail)...");
 
-    // Lier les inputs et checkboxes au store
     bindInput('mail-client-prenom', 'f5_prenom', genererEmail);
     bindInput('mail-client-nom', 'f5_nom', genererEmail);
     bindInput('mail-client-email', 'f5_email', genererEmail); 
@@ -421,12 +359,11 @@ export function initF5() {
     bindCheckbox('mail-rdv-tbd', 'f5_rdv_tbd', toggleRdvInputs); 
     
     bindInput('mail-langue', 'f5_langue', () => {
-        renderChildrenInputs(); // Réintroduit pour màj les labels
+        renderChildrenInputs();
         genererEmail();
     });
     bindInput('mail-common-msci-rate', 'f5_msci_rate', genererEmail);
 
-    // Toggles de section
     bindCheckbox('toggle-ep', 'f5_toggle_ep', genererEmail);
     bindCheckbox('toggle-elt', 'f5_toggle_elt', genererEmail);
     bindCheckbox('toggle-plci', 'f5_toggle_plci', genererEmail);
@@ -436,38 +373,30 @@ export function initF5() {
     bindCheckbox('toggle-dela', 'f5_toggle_dela', genererEmail);
     bindCheckbox('toggle-enfant', 'f5_toggle_enfant', genererEmail);
     
-    // Options EP
     bindInput('mail-ep-mensualite', 'f5_ep_mensualite', genererEmail);
     bindInput('mail-ep-birthyear', 'f5_ep_birthyear', genererEmail);
     
-    // Options ELT
     bindInput('mail-elt-mensualite', 'f5_elt_mensualite', genererEmail);
     bindInput('mail-elt-birthyear', 'f5_elt_birthyear', genererEmail);
-    bindCheckbox('mail-elt-extend-80ans', 'f5_elt_extend_80', genererEmail);
+    bindInput('mail-elt-target-age', 'f5_elt_target_age', genererEmail); // NOUVEAU
 
-    // Options Dela
     bindInput('mail-dela-capital', 'f5_dela_capital', genererEmail);
     bindInput('mail-dela-prime', 'f5_dela_prime', genererEmail);
 
-    // Options Non-Fiscal
     bindInput('mail-nonfiscal-mensualite', 'f5_nonfiscal_mensualite', genererEmail);
     bindInput('mail-nonfiscal-birthyear', 'f5_nonfiscal_birthyear', genererEmail);
 
-    // --- Bindings Enfants (Dynamique) ---
     bindInput('mail-children-count', 'f5_children_count', renderChildrenInputs);
     
-    // Ajout d'un écouteur délégué pour les champs enfants dynamiques
     const childrenContainer = document.getElementById('children-options-container');
     if (childrenContainer) {
         childrenContainer.addEventListener('input', (e) => {
             if (e.target.matches('.child-input')) {
-                updateChildrenDataFromDOM(); // Met à jour le state et régénère l'email
+                updateChildrenDataFromDOM(); 
             }
         });
     }
-    // --- FIN NOUVEAU ---
 
-    // --- Logique d'affichage conditionnel ---
     const setupConditionalDisplay = (toggleId, containerId) => {
         const toggle = document.getElementById(toggleId);
         const container = document.getElementById(containerId);
@@ -486,7 +415,6 @@ export function initF5() {
     setupConditionalDisplay('toggle-nonfiscal', 'nonfiscal-options-container');
     setupConditionalDisplay('toggle-enfant', 'children-main-container');
 
-    // Boutons
     document.getElementById('f5-generate-button').addEventListener('click', () => {
         genererEmail(); 
         const previewCard = document.getElementById('f5-results-card');
@@ -495,8 +423,6 @@ export function initF5() {
         }
     });
     
-    // Générations initiales
-    toggleRdvInputs(); // Gère l'affichage initial des champs RDV
-    renderChildrenInputs(); // Gère l'affichage initial des champs enfant
-    // genererEmail(); // Est déjà appelé par les two fonctions ci-dessus
+    toggleRdvInputs();
+    renderChildrenInputs(); 
 }
