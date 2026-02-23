@@ -46,7 +46,6 @@ export function calculerProjectionF1() {
         let versementBrutMensuel = parseFloat(state.f1_versement) || 0; 
         const typeEpargne = state.f1_type;
         
-        // --- NOUVEAU: Récupère l'âge dynamiquement ---
         const finalAge = (typeEpargne === 'long-terme') ? (parseInt(state.f1_target_age) || 67) : AGE_FINALE_DEFAUT;
         
         const rendementAnnuel = parseFloat(state.f1_rendement) || 0; 
@@ -271,55 +270,19 @@ export function initF1() {
     bindInput('type-epargne', 'f1_type', () => {
         changerFraisDefaut(); 
         calculerProjectionF1();
-        syncF1ToMail(); 
     });
-    bindInput('f1-target-age', 'f1_target_age', () => {
-        calculerProjectionF1();
-        syncF1ToMail();
-    });
-    bindInput('annee-naissance', 'f1_birth_year', () => {
-        calculerProjectionF1();
-        syncF1ToMail();
-    });
-    bindInput('versement-brut', 'f1_versement', () => {
-        calculerProjectionF1();
-        syncF1ToMail();
-    });
+    bindInput('f1-target-age', 'f1_target_age', calculerProjectionF1);
+    bindInput('annee-naissance', 'f1_birth_year', calculerProjectionF1);
+    bindInput('versement-brut', 'f1_versement', calculerProjectionF1);
     bindInput('rendement', 'f1_rendement', calculerProjectionF1);
     bindInput('frais-entree', 'f1_frais_entree', calculerProjectionF1);
     bindInput('frais-courant', 'f1_frais_courant', calculerProjectionF1);
     
     document.getElementById('f1-calculate-button').addEventListener('click', calculerProjectionF1);
     registerOnLangChange(calculerProjectionF1);
-
-    const syncF1ToMail = () => {
-        if (document.body.classList.contains('mode-visitor')) return;
-
-        const state = getState();
-        const montant = state.f1_versement;
-        const birthYear = state.f1_birth_year;
-        const targetAge = state.f1_target_age;
-        
-        if (state.f1_type === 'pension') {
-            updateInputElement('mail-ep-mensualite', montant);
-            updateInputElement('mail-ep-birthyear', birthYear);
-            updateState('f5_ep_mensualite', montant); 
-            updateState('f5_ep_birthyear', birthYear);
-        } else if (state.f1_type === 'long-terme') {
-            updateInputElement('mail-elt-mensualite', montant);
-            updateInputElement('mail-elt-birthyear', birthYear);
-            updateInputElement('mail-elt-target-age', targetAge);
-            updateState('f5_elt_mensualite', montant); 
-            updateState('f5_elt_birthyear', birthYear);
-            updateState('f5_elt_target_age', targetAge);
-        }
-    };
     
     changerFraisDefaut(); 
     setTimeout(() => {
         calculerProjectionF1(); 
-        syncF1ToMail(); 
     }, 0); 
-    
-    syncF1ToMail(); 
 }
