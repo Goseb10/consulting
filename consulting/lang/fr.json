@@ -291,5 +291,8 @@
     "h3_total_capital": "Capital Total Combiné",
     "span_final_capital_c1_only": "Capital Final C1 (croissance seule)",
     "span_final_capital_c2_only": "Capital Final C2 (nouveau contrat)",
-    "span_final_capital_combined": "CAPITAL FINAL COMBINÉ (C1 + C2)"
+    "span_final_capital_combined": "CAPITAL FINAL COMBINÉ (C1 + C2)",
+    
+    "f4_sim_count_label": "Nombre d'options de simulations",
+    "email_ep_intro": "Voici une comparaison selon vos différents choix de montants mensuels :"
 }
