@@ -1,21 +1,7 @@
 // core/emailTemplates.js
 
-/**
- * Note : Ce fichier est "pur" et ne contient pas de logique métier.
- * Il n'importe pas de constantes (comme CURRENT_YEAR).
- * Toute la logique de calcul doit être effectuée dans f5.js et les résultats
- * doivent être passés aux fonctions de ce template.
- */
-
 export const emailTemplates = {
     
-    /**
-     * @param {function} t - Fonction de traduction (ex: t('email_intro_hello'))
-     * @param {string} prenom
-     * @param {string} nom
-     * @param {string} email
-     * @param {string} subject
-     */
     intro: (t, prenom, nom, email, subject) => `
         <p><strong>${t('email_intro_to')}:</strong> ${email || ' '}</p>
         
@@ -27,13 +13,13 @@ export const emailTemplates = {
         <p>${t('email_intro_p3')}</p>
     `,
     
-    /**
-     * @param {function} t
-     * @param {object} data - Résultat de la simulation
-     * @param {function} formatMonetaire
-     */
-    ep: (t, data, formatMonetaire) => `
-        <h3 style="color: #0070B0; border-bottom: 2px solid #0070B0; padding-bottom: 5px; margin-top: 35px; font-family: 'Inter', sans-serif;">${t('email_ep_title')}</h3>
+    ep: (t, dataArray, formatMonetaire) => {
+        if (!Array.isArray(dataArray)) dataArray = [dataArray];
+        let html = `<h3 style="color: #0070B0; border-bottom: 2px solid #0070B0; padding-bottom: 5px; margin-top: 35px; font-family: 'Inter', sans-serif;">${t('email_ep_title')}</h3>`;
+        
+        if (dataArray.length === 1) {
+            let data = dataArray[0];
+            html += `
         <p>
             ${t('email_ep_amounts')}: <strong>${formatMonetaire(data.versementBrutMensuel)} BRUTS</strong> (Les montants peuvent être adaptés en fonction de votre objectif fiscal/financier).<br>
             ${t('email_ep_net_cost')}: <strong>${formatMonetaire(data.capitalNetPlaceMensuel)} / mois</strong>.<br>
@@ -55,10 +41,48 @@ export const emailTemplates = {
                 </li>
             </ul>
         </p>
-    `,
+            `;
+        } else {
+            html += `<p>${t('email_ep_intro')}</p>`;
+            dataArray.forEach((data, index) => {
+                html += `
+                <div style="background-color: #f9f9f9; border-left: 4px solid #0070B0; padding: 10px; margin-bottom: 15px;">
+                    <h4 style="margin-top: 0; color: #0070B0; margin-bottom: 5px;">Option ${index + 1} : ${formatMonetaire(data.versementBrutMensuel)} BRUTS / mois</h4>
+                    <ul style="margin: 0; padding-left: 20px;">
+                        <li>${t('email_ep_net_cost')}: <strong>${formatMonetaire(data.capitalNetPlaceMensuel)} / mois</strong></li>
+                        <li>${t('email_ep_deductibility')}: <strong>${formatMonetaire(data.avantageFiscalAnnuel)}/an</strong></li>
+                        <li style="margin-top:5px;">${t('email_ep_summary')
+                            .replace('{capitalBrut}', formatMonetaire(data.capitalBrutPlaceTotal))
+                            .replace('{capitalFinal}', formatMonetaire(data.capitalFinalNet))
+                            .replace('{avantageFiscal}', formatMonetaire(data.avantageFiscalTotal))}
+                        </li>
+                    </ul>
+                </div>`;
+            });
+            html += `
+        <p>
+            ${t('email_ep_duration')} - âge terme - 67 ans.<br>
+            ${t('email_ep_entry_fees')}: <strong>3,00%</strong><br>
+            ${t('email_ep_mgmt_fees')}:
+            <ul style="margin-top: 5px; margin-bottom: 10px; padding-left: 20px;">
+                <li><strong>1,90%</strong> (${t('email_ep_link_1')});</li>
+                <li><strong>0,85%</strong> (${t('email_ep_link_2')});</li>
+                <li><strong>1,25%</strong> (${t('email_ep_link_3')}).</li>
+            </ul>
+            ${t('email_ep_yield_text')}: ${t('email_common_yield_range')} <a href="https://www.wikifin.be/fr/epargner-et-investir/produits-dinvestissement/produits-dassurances/assurance-de-la-branche-23/quest" target="_blank" rel="noopener noreferrer">${t('email_ep_yield_source')}</a>.
+        </p>
+            `;
+        }
+        return html;
+    },
 
-    elt: (t, data, formatMonetaire) => `
-        <h3 style="color: #0070B0; border-bottom: 2px solid #0070B0; padding-bottom: 5px; margin-top: 35px; font-family: 'Inter', sans-serif;">${t('email_elt_title')}</h3>
+    elt: (t, dataArray, formatMonetaire) => {
+        if (!Array.isArray(dataArray)) dataArray = [dataArray];
+        let html = `<h3 style="color: #0070B0; border-bottom: 2px solid #0070B0; padding-bottom: 5px; margin-top: 35px; font-family: 'Inter', sans-serif;">${t('email_elt_title')}</h3>`;
+        
+        if (dataArray.length === 1) {
+            let data = dataArray[0];
+            html += `
         <p>
             ${t('email_ep_amounts')}: <strong>${formatMonetaire(data.versementBrutMensuel)} BRUTS</strong> (Les montants peuvent être adaptés en fonction de votre objectif fiscal/financier).<br>
             ${t('email_ep_net_cost')}: <strong>${formatMonetaire(data.capitalNetPlaceMensuel)} / mois</strong>.<br>
@@ -83,7 +107,43 @@ export const emailTemplates = {
                 </li>
             </ul>
         </p>
-    `,
+            `;
+        } else {
+            html += `<p>${t('email_ep_intro')}</p>`;
+            dataArray.forEach((data, index) => {
+                html += `
+                <div style="background-color: #f9f9f9; border-left: 4px solid #0070B0; padding: 10px; margin-bottom: 15px;">
+                    <h4 style="margin-top: 0; color: #0070B0; margin-bottom: 5px;">Option ${index + 1} : ${formatMonetaire(data.versementBrutMensuel)} BRUTS / mois</h4>
+                    <ul style="margin: 0; padding-left: 20px;">
+                        <li>${t('email_elt_duration')} : âge terme <strong>${data.targetAge} ans</strong></li>
+                        <li>${t('email_ep_net_cost')}: <strong>${formatMonetaire(data.capitalNetPlaceMensuel)} / mois</strong></li>
+                        <li>${t('email_ep_deductibility')}: <strong>${formatMonetaire(data.avantageFiscalAnnuel)}/an</strong></li>
+                        <li style="margin-top:5px;">${t('email_elt_summary')
+                            .replace('{capitalBrut}', formatMonetaire(data.capitalBrutPlaceTotal))
+                            .replace('{capitalFinal}', formatMonetaire(data.capitalFinalNet))
+                            .replace('{avantageFiscal}', formatMonetaire(data.avantageFiscalTotal))}
+                        </li>
+                    </ul>
+                </div>`;
+            });
+            html += `
+        <p>
+            ${t('email_ep_entry_fees')}: <strong>3,00%</strong><br>
+            ${t('email_ep_mgmt_fees')}:
+            <ul style="margin-top: 5px; margin-bottom: 10px; padding-left: 20px;">
+                <li><strong>1,90%</strong> (${t('email_elt_link_1')});</li>
+                <li><strong>0,85%</strong> (${t('email_elt_link_2')});</li>
+                <li><strong>0,85%</strong> (${t('email_elt_link_3')});</li>
+                <li><strong>0,85%</strong> (${t('email_elt_link_4')});</li>
+                <li><strong>1,00%</strong> (${t('email_elt_link_5')});</li>
+                <li><strong>1,25%</strong> (${t('email_elt_link_6')}).</li>
+            </ul>
+            ${t('email_ep_yield_text')}: ${t('email_common_yield_range')} <a href="https://www.google.com" target="_blank" rel="noopener noreferrer">${t('email_elt_yield_source')}</a>.
+        </p>
+            `;
+        }
+        return html;
+    },
 
     ep_elt_common: (t, msciRate, formatMonetaire) => {
         const formattedMsciRate = (typeof msciRate === 'number' ? msciRate : 8.53).toLocaleString('fr-BE', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
@@ -128,7 +188,7 @@ export const emailTemplates = {
             <ul style="margin-top: 5px; margin-bottom: 10px; padding-left: 20px;">
                 <li>Fonds d'Epargne Pension: Allianz - <a href="https://www.lecho.be/les-marches/fonds/nordea-1-global-climate-and-environment-fund-bp-eur.60003833.html" target="_blank" rel="noopener noreferrer">Nordea</a></li>
             </ul>
-            </p>
+        </p>
     `},
 
     plci: (t) => `
@@ -156,7 +216,7 @@ export const emailTemplates = {
         <p style="padding: 5px; margin-top: 10px;">${t('email_inami_p3')}</p>
         <p style="margin-top: 15px;">
             <strong><u>SOCIÉTÉ RECOMMANDÉE</u></strong><br>
-            <strong><a href="https://www.vivium.be/fr/private-individuals/home" ...>P&V Assurances SC (Vivium)</a></strong>
+            <strong><a href="https://www.vivium.be/fr/private-individuals/home" target="_blank" rel="noopener noreferrer">P&V Assurances SC (Vivium)</a></strong>
             <ul style="margin-top: 5px; margin-bottom: 10px; padding-left: 20px;">
                 <li>Fonds Plan INAMI: <a href="...">${t('email_inami_reco_pv_link_1')}</a></li>
             </ul>
@@ -176,7 +236,7 @@ export const emailTemplates = {
         <p style="padding: 5px; margin-top: 10px;">${t('email_eip_p5')}</p>
         <p style="margin-top: 15px;">
             <strong><u>SOCIÉTÉ RECOMMANDÉE</u></strong><br>
-            <strong><a href="https://ag.be/particuliers/fr..." ...>AG Insurance</a></strong>
+            <strong><a href="https://ag.be/particuliers/fr" target="_blank" rel="noopener noreferrer">AG Insurance</a></strong>
             <ul style="margin-top: 5px; margin-bottom: 10px; padding-left: 20px;">
                 <li>Fonds Engagement Individuel de Pension: <a href="...">${t('email_eip_reco_ag_link_1')}</a></li>
                 <li>Fonds Engagement Individuel de Pension: <a href="...">${t('email_eip_reco_ag_link_2')}</a></li>
@@ -186,42 +246,65 @@ export const emailTemplates = {
         </p>
     `,
 
-    nonfiscal: (t, mensualite, age, res10, res20, res30, formatMonetaire) => `
-        <h3 style="color: #0070B0; border-bottom: 2px solid #0070B0; padding-bottom: 5px; margin-top: 35px; font-family: 'Inter', sans-serif;">${t('email_nonfiscal_title')}</h3>
+    nonfiscal: (t, dataArray, formatMonetaire) => {
+        if (!Array.isArray(dataArray)) dataArray = [dataArray];
+        let html = `<h3 style="color: #0070B0; border-bottom: 2px solid #0070B0; padding-bottom: 5px; margin-top: 35px; font-family: 'Inter', sans-serif;">${t('email_nonfiscal_title')}</h3>`;
+        
+        if (dataArray.length === 1) {
+            let data = dataArray[0];
+            html += `
         <p>
-            ${t('email_nonfiscal_p1_line_1').replace('{mensualite}', formatMonetaire(mensualite))}<br>
+            ${t('email_nonfiscal_p1_line_1').replace('{mensualite}', formatMonetaire(data.mensualite))}<br>
             ${t('email_nonfiscal_p1_line_2')}<br>
             ${t('email_nonfiscal_p1_line_4')}<br>
             ${t('email_nonfiscal_p1_line_5')}<br>
         </p>
-        <p style="margin-top: 10px;">${t('email_nonfiscal_p2').replace('{age}', (parseInt(age) || 0) + 10)}</p>
+        <p style="margin-top: 10px;">${t('email_nonfiscal_p2').replace('{age}', data.age + 10)}</p>
         <ul style="margin-top: 5px; margin-bottom: 10px; padding-left: 20px;">
             <li style="padding: 5px;">${t('email_nonfiscal_p2_summary')
-                .replace('{investedCapital}', formatMonetaire(res10.investedCapital))
-                .replace('{finalCapital}', formatMonetaire(res10.finalCapital))}
+                .replace('{investedCapital}', formatMonetaire(data.res10.investedCapital))
+                .replace('{finalCapital}', formatMonetaire(data.res10.finalCapital))}
             </li>
         </ul>
-        <p style="margin-top: 10px;">${t('email_nonfiscal_p3').replace('{age}', (parseInt(age) || 0) + 20)}</p>
+        <p style="margin-top: 10px;">${t('email_nonfiscal_p3').replace('{age}', data.age + 20)}</p>
         <ul style="margin-top: 5px; margin-bottom: 10px; padding-left: 20px;">
             <li style="padding: 5px;">${t('email_nonfiscal_p3_summary')
-                .replace('{investedCapital}', formatMonetaire(res20.investedCapital))
-                .replace('{finalCapital}', formatMonetaire(res20.finalCapital))}
+                .replace('{investedCapital}', formatMonetaire(data.res20.investedCapital))
+                .replace('{finalCapital}', formatMonetaire(data.res20.finalCapital))}
             </li>
         </ul>
-        <p style="margin-top: 10px;">${t('email_nonfiscal_p4').replace('{age}', (parseInt(age) || 0) + 30)}</p>
+        <p style="margin-top: 10px;">${t('email_nonfiscal_p4').replace('{age}', data.age + 30)}</p>
         <ul style="margin-top: 5px; margin-bottom: 10px; padding-left: 20px;">
             <li style="padding: 5px;">${t('email_nonfiscal_p4_summary')
-                .replace('{investedCapital}', formatMonetaire(res30.investedCapital))
-                .replace('{finalCapital}', formatMonetaire(res30.finalCapital))}
+                .replace('{investedCapital}', formatMonetaire(data.res30.investedCapital))
+                .replace('{finalCapital}', formatMonetaire(data.res30.finalCapital))}
             </li>
         </ul>
+            `;
+        } else {
+            html += `<p>Voici une comparaison selon vos différents choix de montants mensuels :</p>`;
+            dataArray.forEach((data, index) => {
+                html += `
+                <div style="background-color: #f9f9f9; border-left: 4px solid #0070B0; padding: 10px; margin-bottom: 15px;">
+                    <h4 style="margin-top: 0; color: #0070B0; margin-bottom: 5px;">Option ${index + 1} : ${formatMonetaire(data.mensualite)} / mois</h4>
+                    <ul style="margin: 0; padding-left: 20px;">
+                        <li><strong>À 10 ans (${data.age + 10} ans)</strong> : Capital investi de ${formatMonetaire(data.res10.investedCapital)} pour un capital estimé à <strong>${formatMonetaire(data.res10.finalCapital)}</strong>.</li>
+                        <li><strong>À 20 ans (${data.age + 20} ans)</strong> : Capital investi de ${formatMonetaire(data.res20.investedCapital)} pour un capital estimé à <strong>${formatMonetaire(data.res20.finalCapital)}</strong>.</li>
+                        <li><strong>À 30 ans (${data.age + 30} ans)</strong> : Capital investi de ${formatMonetaire(data.res30.investedCapital)} pour un capital estimé à <strong>${formatMonetaire(data.res30.finalCapital)}</strong>.</li>
+                    </ul>
+                </div>`;
+            });
+            html += `<p>${t('email_nonfiscal_p1_line_2')}<br>${t('email_nonfiscal_p1_line_4')}<br>${t('email_nonfiscal_p1_line_5')}</p>`;
+        }
+        
+        html += `
         <p style="margin-top: 25px;">${t('email_nonfiscal_p5')}</p>
         <p style="font-size: 0.9em; font-style: italic; margin-top: 10px;">
             ${t('email_nonfiscal_p6')}
         </p>
         <p style="margin-top: 15px;">
             <strong><u>${t('email_common_reco_title')}</u></strong><br>
-            <strong><a href="https://www.vivium.be/fr/private-individuals/home" ...>P&V Assurances SC (Vivium)</a></strong><br>
+            <strong><a href="https://www.vivium.be/fr/private-individuals/home" target="_blank" rel="noopener noreferrer">P&V Assurances SC (Vivium)</a></strong><br>
             ${t('email_nonfiscal_reco_pv_text')}
             <ul style="margin-top: 5px; margin-bottom: 10px; padding-left: 20px;">
                 <li><a href="...">${t('email_nonfiscal_reco_pv_link_1')}</a></li>
@@ -230,13 +313,15 @@ export const emailTemplates = {
                 <li><a href="...">${t('email_nonfiscal_reco_pv_link_4')}</a></li>
                 <li><a href="...">${t('email_nonfiscal_reco_pv_link_5')}</a></li>
             </ul>
-            <strong><a href="https://www.allianzgi.com/" ...>Allianz Global Investor</a></strong><br>
+            <strong><a href="https://www.allianzgi.com/" target="_blank" rel="noopener noreferrer">Allianz Global Investor</a></strong><br>
             ${t('email_nonfiscal_reco_allianz_text')}
             <ul style="margin-top: 5px; margin-bottom: 10px; padding-left: 20px;">
                 <li><a href="...">${t('email_nonfiscal_reco_allianz_link_1')}</a></li>
             </ul>
         </p>
-    `,
+        `;
+        return html;
+    },
 
     enfant: (t, child, res18, res21, res25, formatMonetaire) => `
         <h3 style="color: #0070B0; border-bottom: 2px solid #0070B0; padding-bottom: 5px; margin-top: 35px; font-family: 'Inter', sans-serif;">${t('email_enfant_title').replace('{name}', child.name)}</h3>
@@ -266,20 +351,30 @@ export const emailTemplates = {
         </ul>
     `,
 
-    dela: (t, capital, prime, formatMonetaire) => `
+    dela: (t, dataArray, formatMonetaire) => {
+        if (!Array.isArray(dataArray)) dataArray = [dataArray];
+        let html = `
         <h3 style="color: #0070B0; border-bottom: 2px solid #0070B0; padding-bottom: 5px; margin-top: 35px; font-family: 'Inter', sans-serif;">${t('email_dela_title')}</h3>
         <p>${t('email_dela_p1')}</p>
         <p>${t('email_dela_p2')}</p>
         <p style="margin-top: 10px;">${t('email_dela_p3')}</p>
         <ul style="margin-top: 5px; margin-bottom: 10px; padding-left: 20px;">
-            <li>${t('email_dela_li_1')
-                .replace('{capital}', formatMonetaire(capital))
-                .replace('{prime}', formatMonetaire(prime))}
-            </li>
+        `;
+        
+        dataArray.forEach(data => {
+            html += `<li>${t('email_dela_li_1')
+                .replace('{capital}', formatMonetaire(data.capital))
+                .replace('{prime}', formatMonetaire(data.prime))}
+            </li>`;
+        });
+        
+        html += `
         </ul>
         <p>${t('email_dela_p4')}</p>
         <p>${t('email_dela_p5')}</p>
-    `,
+        `;
+        return html;
+    },
 
     rdv: (t, date, time, isTbd) => {
         const titleKey = isTbd ? 'email_rdv_title_tbd' : 'email_rdv_title';
