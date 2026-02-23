@@ -51,10 +51,10 @@
                             <option value="long-terme" data-key="opt_lt">Épargne Long Terme</option>
                         </select>
                         
-                        <label id="lt-extension-container" for="extension-80ans-toggle">
-                            <input type="checkbox" id="extension-80ans-toggle">
-                            <span data-key="label_extend_lt">Prolonger jusqu'à 80 ans</span>
-                        </label>
+                        <div id="lt-target-age-container" style="display: none; margin-top: 15px;">
+                            <label for="f1-target-age" data-key="label_target_age">Âge terme (ELT)</label>
+                            <input type="number" id="f1-target-age" value="67" min="60" max="99">
+                        </div>
                         
                         <label for="annee-naissance" data-key="label_birth_year">Année de Naissance (Cible 67 ans)</label>
                         <input type="number" id="annee-naissance" value="2000" min="1900" max="2025">
@@ -143,29 +143,16 @@
                              <div class="data-line highlight-green"><span data-key="span_net_total">Capital Net Placé Total (votre effort)</span> <strong class="data-value" id="capital-net-total">0,00 €</strong></div>
                         </div>
 
-                        <div class="table-group group-final-result" id="result-box-67">
-                            <h4 data-key="h4_final_projection">Projection Finale (Âge 67 ans)</h4>
+                        <div class="table-group group-final-result" id="result-box-final">
+                            <h4 id="f1-final-projection-title">Projection Finale (Âge 67 ans)</h4>
                             
                             <div class="data-line highlight-tax-final">
                                 <span id="f1-tax-label" data-key="span_tax_levied">Taxe Libératoire Prélevée (à 60 ans)</span>
                                 <strong class="data-value" id="taxe-liberatoire">0,00 €</strong>
                             </div>
                             <div class="data-line highlight-final">
-                                <span data-key="span_final_net_capital">CAPITAL FINAL NET (Total perçu à 67 ans)</span> 
+                                <span id="f1-final-net-label">CAPITAL FINAL NET (Total perçu à 67 ans)</span> 
                                 <strong class="data-value" id="capital-final">0,00 €</strong>
-                            </div>
-                        </div>
-                        
-                        <div class="table-group group-final-result" id="result-box-80">
-                            <h4 data-key="h4_final_projection_80">Projection Finale (Âge 80 ans)</h4>
-                            
-                            <div class="data-line highlight-tax-final">
-                                <span id="f1-tax-label-80" data-key="span_tax_levied">Taxe Libératoire Prélevée (à 60 ans)</span> 
-                                <strong class="data-value" id="taxe-liberatoire-80">0,00 €</strong> 
-                            </div>
-                            <div class="data-line highlight-final">
-                                <span data-key="span_final_net_capital_80">CAPITAL FINAL NET (Total perçu à 80 ans)</span> 
-                                <strong class="data-value" id="capital-final-80">0,00 €</strong>
                             </div>
                         </div>
 
@@ -390,10 +377,10 @@
                                 <option value="long-terme" data-key="opt_lt">Épargne Long Terme</option>
                             </select>
                             
-                            <label id="f3-c1-lt-extension-container" class="lt-extension-container-f3" for="f3-c1-extension-80ans-toggle">
-                                <input type="checkbox" id="f3-c1-extension-80ans-toggle">
-                                <span data-key="label_extend_lt">Prolonger jusqu'à 80 ans</span>
-                            </label>
+                            <div id="f3-c1-lt-target-age-container" style="display: none; margin-top: 15px;">
+                                <label for="f3-c1-target-age" data-key="label_target_age">Âge terme (ELT)</label>
+                                <input type="number" id="f3-c1-target-age" value="67" min="60" max="99">
+                            </div>
                             
                             <label for="f3-c1-start-age" data-key="label_start_age_f4">Âge actuel (Cible 67 ans)</label>
                             <input type="number" id="f3-c1-start-age" value="25" min="18" max="99">
@@ -463,10 +450,10 @@
                                 <option value="long-terme" data-key="opt_lt">Épargne Long Terme</option>
                             </select>
                             
-                            <label id="f3-c2-lt-extension-container" class="lt-extension-container-f3" for="f3-c2-extension-80ans-toggle">
-                                <input type="checkbox" id="f3-c2-extension-80ans-toggle">
-                                <span data-key="label_extend_lt">Prolonger jusqu'à 80 ans</span>
-                            </label>
+                            <div id="f3-c2-lt-target-age-container" style="display: none; margin-top: 15px;">
+                                <label for="f3-c2-target-age" data-key="label_target_age">Âge terme (ELT)</label>
+                                <input type="number" id="f3-c2-target-age" value="67" min="60" max="99">
+                            </div>
                             
                             <label for="f3-c2-start-age" data-key="label_start_age_f4">Âge actuel (Cible 67 ans)</label>
                             <input type="number" id="f3-c2-start-age" value="25" min="18" max="99">
@@ -678,10 +665,10 @@
                                 <input type="number" id="mail-elt-birthyear" value="2000" step="1">
                             </div>
                         </div>
-                        <label class="toggle-group" for="mail-elt-extend-80ans" style="margin-top: 15px;">
-                             <input type="checkbox" id="mail-elt-extend-80ans">
-                             <span data-key="f4_label_elt_extend_80">Prolonger jusqu'à 80 ans</span>
-                        </label>
+                        <div style="margin-top: 15px;">
+                             <label for="mail-elt-target-age" data-key="label_target_age">Âge terme (ELT)</label>
+                             <input type="number" id="mail-elt-target-age" value="67" min="60" max="99">
+                        </div>
                     </div>
 
                     <div class="input-group-section" id="nonfiscal-options-container" style="display: none; border-top: 1px solid var(--border-light); padding-top: 15px; margin-top: 15px;">
