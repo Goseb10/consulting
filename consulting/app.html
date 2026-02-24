@@ -637,6 +637,10 @@
                             <input type="checkbox" id="toggle-eip">
                             <span data-key="f4_toggle_eip">EIP</span>
                         </label>
+                        <label class="toggle-group" for="toggle-comparator">
+                            <input type="checkbox" id="toggle-comparator">
+                            <span data-key="f4_toggle_comparator">Comparateur</span>
+                        </label>
                     </div>
 
                     <div class="input-group-section" id="ep-options-container" style="display: none; border-top: 1px solid var(--border-light); padding-top: 15px; margin-top: 15px;">
@@ -684,6 +688,57 @@
                         <div id="dela-dynamic-inputs" style="margin-top: 10px;"></div>
                     </div>
                     
+                    <div class="input-group-section" id="comparator-options-container" style="display: none; border-top: 1px solid var(--border-light); padding-top: 15px; margin-top: 15px;">
+                        <h4 data-key="f4_comp_options_title" style="margin-bottom: 15px;">Options Comparateur</h4>
+                        
+                        <label class="toggle-group" for="mail-comp-stop-switch" style="margin-bottom: 15px;">
+                            <input type="checkbox" id="mail-comp-stop-switch">
+                            <span data-key="f4_scenario_toggle">Scénario "Stop & Switch"</span>
+                        </label>
+
+                        <div style="display: flex; gap: 20px; flex-wrap: wrap;">
+                            <div style="flex: 1; min-width: 250px; background: #f9f9f9; padding: 10px; border-radius: 8px;">
+                                <h5 data-key="h3_company_1" style="margin-top: 0; color: var(--primary-color);">Compagnie 1 (Existant)</h5>
+                                <div class="mail-inputs-grid">
+                                    <div style="grid-column: 1 / -1"><label>Nom</label><input type="text" id="mail-comp-c1-name" value="Belfius"></div>
+                                    <div style="grid-column: 1 / -1; display: none;" id="mail-comp-c1-stop-switch-group">
+                                        <label>Âge de début original</label><input type="number" id="mail-comp-c1-original-age" value="25" min="18">
+                                    </div>
+                                    <div><label>Type</label>
+                                        <select id="mail-comp-c1-type">
+                                            <option value="pension">Épargne Pension</option>
+                                            <option value="long-terme">Épargne Long Terme</option>
+                                        </select>
+                                    </div>
+                                    <div><label>Âge cible</label><input type="number" id="mail-comp-c1-target-age" value="67"></div>
+                                    <div><label>Âge actuel</label><input type="number" id="mail-comp-c1-start-age" value="25"></div>
+                                    <div><label>Versement Brut (€)</label><input type="number" id="mail-comp-c1-versement" value="87.50"></div>
+                                    <div><label>Rendement (%)</label><input type="number" id="mail-comp-c1-rendement" value="2" step="0.1"></div>
+                                    <div><label>Frais Entrée (%)</label><input type="number" id="mail-comp-c1-frais-entree" value="3" step="0.1"></div>
+                                    <div><label>Frais Gestion (%)</label><input type="number" id="mail-comp-c1-frais-courant" value="1.25" step="0.01"></div>
+                                </div>
+                            </div>
+                            <div style="flex: 1; min-width: 250px; background: #f9f9f9; padding: 10px; border-radius: 8px;">
+                                <h5 data-key="h3_company_2" style="margin-top: 0; color: var(--primary-color);">Compagnie 2 (Proposition)</h5>
+                                <div class="mail-inputs-grid">
+                                    <div style="grid-column: 1 / -1"><label>Nom</label><input type="text" id="mail-comp-c2-name" value="AXA"></div>
+                                    <div><label>Type</label>
+                                        <select id="mail-comp-c2-type">
+                                            <option value="pension">Épargne Pension</option>
+                                            <option value="long-terme">Épargne Long Terme</option>
+                                        </select>
+                                    </div>
+                                    <div><label>Âge cible</label><input type="number" id="mail-comp-c2-target-age" value="67"></div>
+                                    <div><label>Âge actuel</label><input type="number" id="mail-comp-c2-start-age" value="25"></div>
+                                    <div><label>Versement Brut (€)</label><input type="number" id="mail-comp-c2-versement" value="87.50"></div>
+                                    <div><label>Rendement (%)</label><input type="number" id="mail-comp-c2-rendement" value="5" step="0.1"></div>
+                                    <div><label>Frais Entrée (%)</label><input type="number" id="mail-comp-c2-frais-entree" value="3" step="0.1"></div>
+                                    <div><label>Frais Gestion (%)</label><input type="number" id="mail-comp-c2-frais-courant" value="0.85" step="0.01"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
                     <div class="f5-button-group">
                         <button class="main-button" id="f5-generate-button" data-key="f4_btn_generate">Actualiser l'aperçu</button>
                     </div>
