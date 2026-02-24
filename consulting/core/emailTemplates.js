@@ -188,8 +188,65 @@ export const emailTemplates = {
             <ul style="margin-top: 5px; margin-bottom: 10px; padding-left: 20px;">
                 <li>Fonds d'Epargne Pension: Allianz - <a href="https://www.lecho.be/les-marches/fonds/nordea-1-global-climate-and-environment-fund-bp-eur.60003833.html" target="_blank" rel="noopener noreferrer">Nordea</a></li>
             </ul>
-        </p>
+            </p>
     `},
+
+    // --- NOUVEAU: TEMPLATE COMPARATEUR ---
+    comparator: (t, data, formatMonetaire) => {
+        let html = `<h3 style="color: #0070B0; border-bottom: 2px solid #0070B0; padding-bottom: 5px; margin-top: 35px; font-family: 'Inter', sans-serif;">${t('email_comp_title') || 'COMPARATIF DE VOS CONTRATS'}</h3>`;
+        html += `<p>${t('email_comp_intro') || 'Suite à notre analyse, voici la comparaison entre votre situation actuelle et notre proposition :'}</p>`;
+
+        html += `<table style="width: 100%; border-collapse: collapse; margin-top: 15px; margin-bottom: 15px;">
+            <thead>
+                <tr>
+                    <th style="border: 1px solid #ddd; padding: 8px; background-color: #f2f2f2; width: 33%;"></th>
+                    <th style="border: 1px solid #ddd; padding: 8px; background-color: #f2f2f2; text-align: center;">${data.name1} (Existant)</th>
+                    <th style="border: 1px solid #ddd; padding: 8px; background-color: #e6f2ff; text-align: center; color: #0070B0;">${data.name2} (Proposition)</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td style="border: 1px solid #ddd; padding: 8px; font-weight: bold;">Rendement estimé</td>
+                    <td style="border: 1px solid #ddd; padding: 8px; text-align: center;">${data.rendement1.toFixed(2)} %</td>
+                    <td style="border: 1px solid #ddd; padding: 8px; text-align: center; font-weight: bold; color: #0070B0;">${data.rendement2.toFixed(2)} %</td>
+                </tr>
+                <tr>
+                    <td style="border: 1px solid #ddd; padding: 8px; font-weight: bold;">Frais d'entrée</td>
+                    <td style="border: 1px solid #ddd; padding: 8px; text-align: center;">${data.fraisEntree1.toFixed(2)} %</td>
+                    <td style="border: 1px solid #ddd; padding: 8px; text-align: center; font-weight: bold; color: #0070B0;">${data.fraisEntree2.toFixed(2)} %</td>
+                </tr>
+                <tr>
+                    <td style="border: 1px solid #ddd; padding: 8px; font-weight: bold;">Frais de gestion annuels</td>
+                    <td style="border: 1px solid #ddd; padding: 8px; text-align: center;">${data.fraisCourant1.toFixed(2)} %</td>
+                    <td style="border: 1px solid #ddd; padding: 8px; text-align: center; font-weight: bold; color: #0070B0;">${data.fraisCourant2.toFixed(2)} %</td>
+                </tr>
+            </tbody>
+        </table>`;
+
+        if (data.isStopSwitch) {
+            const totalCombined = data.result1.capitalFinalNet + data.result2.capitalFinalNet;
+            html += `<p>Dans le cadre d'un scénario <strong>"Stop & Switch"</strong>, nous vous conseillons d'arrêter les versements sur votre contrat ${data.name1} actuel et de le laisser fructifier, tout en démarrant un nouveau contrat chez ${data.name2}.</p>
+            <ul style="margin-top: 5px; margin-bottom: 10px; padding-left: 20px;">
+                <li>Capital estimé du contrat ${data.name1} à terme : <strong>${formatMonetaire(data.result1.capitalFinalNet)}</strong></li>
+                <li>Capital estimé du nouveau contrat ${data.name2} à terme : <strong>${formatMonetaire(data.result2.capitalFinalNet)}</strong></li>
+                <li style="margin-top: 10px; font-size: 1.1em;"><strong>Capital Final Total Combiné : <span style="color: #00B3A6;">${formatMonetaire(totalCombined)}</span></strong></li>
+            </ul>`;
+        } else {
+            const diff = data.result2.capitalFinalNet - data.result1.capitalFinalNet;
+            const diffColor = diff > 0 ? '#00B3A6' : '#D3425A';
+            const diffText = diff > 0 ? `Un gain supplémentaire estimé à` : `Une différence de`;
+
+            html += `<ul style="margin-top: 5px; margin-bottom: 10px; padding-left: 20px;">
+                <li>Capital final net estimé chez ${data.name1} (${data.finalAge1} ans) : <strong>${formatMonetaire(data.result1.capitalFinalNet)}</strong></li>
+                <li>Capital final net estimé chez ${data.name2} (${data.finalAge2} ans) : <strong>${formatMonetaire(data.result2.capitalFinalNet)}</strong></li>
+            </ul>
+            <p style="font-size: 1.1em; text-align: center; padding: 10px; background-color: #f9f9f9; border-radius: 5px; border: 1px solid var(--border-light);">
+                <strong>Bilan :</strong> ${diffText} <strong style="color: ${diffColor};">${formatMonetaire(Math.abs(diff))}</strong> en faveur de la proposition ${diff > 0 ? data.name2 : data.name1}.
+            </p>`;
+        }
+
+        return html;
+    },
 
     plci: (t) => `
         <h3 style="color: #0070B0; border-bottom: 2px solid #0070B0; padding-bottom: 5px; margin-top: 35px; font-family: 'Inter', sans-serif;">${t('email_plci_title')}</h3>
