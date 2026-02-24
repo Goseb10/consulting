@@ -25,7 +25,7 @@ const defaultState = {
     f3_duree: 10,
     f3_taux: 3,
 
-    // F4 - Comparateur
+    // F4 - Comparateur Principal
     f4_scenario_stop_switch: false,
     f4_c1_name: 'Belfius',
     f4_c1_type: 'pension',
@@ -64,8 +64,9 @@ const defaultState = {
     f5_toggle_nonfiscal: false,
     f5_toggle_dela: false,
     f5_toggle_enfant: false,
+    f5_toggle_comparator: false, // NOUVEAU: Toggle comparateur mail
     
-    // Nouveaux Arrays for multiple simulations F5
+    // Arrays for multiple simulations F5
     f5_ep_count: 1,
     f5_ep_data: [{ mensualite: 87.50, birthyear: 2000 }],
     
@@ -80,6 +81,26 @@ const defaultState = {
     
     f5_children_count: 0,
     f5_children_data: [],
+
+    // NOUVEAU: Etat du comparateur interne au module Mail
+    f5_comp_scenario_stop_switch: false,
+    f5_comp_c1_name: 'Belfius',
+    f5_comp_c1_type: 'pension',
+    f5_comp_c1_target_age: 67,
+    f5_comp_c1_start_age: 25, 
+    f5_comp_c1_original_start_age: 25,
+    f5_comp_c1_versement: 87.50,
+    f5_comp_c1_rendement: 2,
+    f5_comp_c1_frais_entree: 3,
+    f5_comp_c1_frais_courant: 1.25,
+    f5_comp_c2_name: 'AXA',
+    f5_comp_c2_type: 'pension',
+    f5_comp_c2_target_age: 67,
+    f5_comp_c2_start_age: 25, 
+    f5_comp_c2_versement: 87.50,
+    f5_comp_c2_rendement: 5,
+    f5_comp_c2_frais_entree: 3,
+    f5_comp_c2_frais_courant: 0.85,
 };
 
 let state = { ...defaultState };
