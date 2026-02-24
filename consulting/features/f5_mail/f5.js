@@ -82,6 +82,7 @@ export async function genererEmail() {
         const includeNonFiscal = state.f5_toggle_nonfiscal;
         const includeDela = state.f5_toggle_dela;
         const includeEnfant = state.f5_toggle_enfant; 
+        const includeComparator = state.f5_toggle_comparator; // NOUVEAU
 
         // Préparation des tableaux de données
         let epDataArray = [];
@@ -126,6 +127,85 @@ export async function genererEmail() {
             });
         }
 
+        // --- NOUVEAU : Calculs pour le Comparateur Mail ---
+        let compData = null;
+        if (includeComparator) {
+            const isStopSwitch = state.f5_comp_scenario_stop_switch;
+
+            const name1 = state.f5_comp_c1_name;
+            const type1 = state.f5_comp_c1_type;
+            const currentAge1 = parseInt(state.f5_comp_c1_start_age) || 0; 
+            const anneeNaissance1 = CURRENT_YEAR - currentAge1;
+            const versement1_base = parseFloat(state.f5_comp_c1_versement) || 0;
+            const rendement1 = parseFloat(state.f5_comp_c1_rendement) || 0;
+            const fraisEntree1 = parseFloat(state.f5_comp_c1_frais_entree) || 0;
+            const fraisCourant1 = parseFloat(state.f5_comp_c1_frais_courant) || 0;
+            const finalAge1 = parseInt(state.f5_comp_c1_target_age) || 67;
+
+            const paramsC1_Base = { 
+                typeEpargne: type1, anneeNaissance: anneeNaissance1, 
+                rendementAnnuel: rendement1, fraisEntreePct: fraisEntree1, 
+                fraisCourantAnnuelPct: fraisCourant1, targetAge: finalAge1
+            };
+
+            const name2 = state.f5_comp_c2_name;
+            const type2 = state.f5_comp_c2_type;
+            const currentAge2 = parseInt(state.f5_comp_c2_start_age) || 0; 
+            const anneeNaissance2 = CURRENT_YEAR - currentAge2;
+            const versement2 = parseFloat(state.f5_comp_c2_versement) || 0;
+            const rendement2 = parseFloat(state.f5_comp_c2_rendement) || 0;
+            const fraisEntree2 = parseFloat(state.f5_comp_c2_frais_entree) || 0;
+            const fraisCourant2 = parseFloat(state.f5_comp_c2_frais_courant) || 0;
+            const finalAge2 = parseInt(state.f5_comp_c2_target_age) || 67;
+            
+            const paramsC2_Base = { 
+                typeEpargne: type2, anneeNaissance: anneeNaissance2, versementBrutMensuel: versement2, 
+                rendementAnnuel: rendement2, fraisEntreePct: fraisEntree2, fraisCourantAnnuelPct: fraisCourant2, 
+                targetAge: finalAge2, capitalInitial: 0
+            };
+
+            let result1, result2, result_Precalc_data = null; 
+
+            if (isStopSwitch) {
+                const originalStartAge = parseInt(state.f5_comp_c1_original_start_age) || 18;
+                const startYear_Precalc = anneeNaissance1 + originalStartAge;
+                
+                const params_Precalc = {
+                    ...paramsC1_Base,
+                    versementBrutMensuel: versement1_base,
+                    targetAge: currentAge1, 
+                    capitalInitial: 0
+                };
+                result_Precalc_data = effectuerSimulation(params_Precalc, startYear_Precalc);
+                const capitalActuelC1 = result_Precalc_data.capitalFinalNet;
+                
+                const params_C1_Growth = {
+                    ...paramsC1_Base,
+                    versementBrutMensuel: 0, 
+                    capitalInitial: capitalActuelC1, 
+                    targetAge: finalAge1 
+                };
+                result1 = effectuerSimulation(params_C1_Growth, CURRENT_YEAR);
+                result2 = effectuerSimulation(paramsC2_Base, CURRENT_YEAR);
+            } else {
+                const params_C1_Normal = {
+                    ...paramsC1_Base,
+                    versementBrutMensuel: versement1_base,
+                    capitalInitial: 0,
+                    targetAge: finalAge1
+                };
+                result1 = effectuerSimulation(params_C1_Normal, CURRENT_YEAR);
+                result2 = effectuerSimulation(paramsC2_Base, CURRENT_YEAR);
+            }
+
+            compData = {
+                isStopSwitch, name1, name2, result1, result2, result_Precalc_data,
+                versement1: versement1_base, versement2, type1, type2,
+                rendement1, rendement2, fraisEntree1, fraisEntree2, fraisCourant1, fraisCourant2,
+                finalAge1, finalAge2, currentAge1, currentAge2
+            };
+        }
+
         const sujet = (t('email_subject') || "Synthèse d’analyse financière : {prenom} {nom}").replace('{nom}', nom).replace('{prenom}', prenom);
         
         let html = emailTemplates.intro(t, prenom, nom, email, sujet); 
@@ -133,6 +213,11 @@ export async function genererEmail() {
         if (includeEP) html += emailTemplates.ep(t, epDataArray, formatMonetaire); 
         if (includeELT) html += emailTemplates.elt(t, eltDataArray, formatMonetaire);
         if (includeEP || includeELT) html += emailTemplates.ep_elt_common(t, msciRate, formatMonetaire); 
+        
+        // --- NOUVEAU: Insertion du comparateur ---
+        if (includeComparator && compData) {
+            html += emailTemplates.comparator(t, compData, formatMonetaire);
+        }
         
         if (includePLCI) html += emailTemplates.plci(t);
         if (includeINAMI) html += emailTemplates.inami(t);
@@ -311,7 +396,7 @@ export function initF5() {
     bindInput('mail-langue', 'f5_langue', renderDynamicInputs);
     bindInput('mail-common-msci-rate', 'f5_msci_rate', genererEmail);
 
-    ['ep', 'elt', 'plci', 'inami', 'eip', 'nonfiscal', 'dela', 'enfant'].forEach(type => {
+    ['ep', 'elt', 'plci', 'inami', 'eip', 'nonfiscal', 'dela', 'enfant', 'comparator'].forEach(type => {
         bindCheckbox(`toggle-${type}`, `f5_toggle_${type}`, genererEmail);
         const toggle = document.getElementById(`toggle-${type}`);
         const container = document.getElementById(`${type === 'enfant' ? 'children-main' : type + '-options'}-container`);
@@ -325,7 +410,28 @@ export function initF5() {
         bindInput(`mail-${type}-count`, `f5_${type}_count`, renderDynamicInputs);
     });
 
-    // CIBLAGE CORRIGÉ ICI : L'écouteur s'applique bien sur #f4 pour attraper les modifs des simulations
+    // --- NOUVEAU: Binding des inputs du comparateur interne ---
+    bindCheckbox('mail-comp-stop-switch', 'f5_comp_scenario_stop_switch', () => {
+        const group = document.getElementById('mail-comp-c1-stop-switch-group');
+        if (group) group.style.display = getState().f5_comp_scenario_stop_switch ? 'block' : 'none';
+        genererEmail();
+    });
+
+    const group = document.getElementById('mail-comp-c1-stop-switch-group');
+    if (group) group.style.display = getState().f5_comp_scenario_stop_switch ? 'block' : 'none';
+
+    ['c1', 'c2'].forEach(c => {
+        bindInput(`mail-comp-${c}-name`, `f5_comp_${c}_name`, genererEmail);
+        bindInput(`mail-comp-${c}-type`, `f5_comp_${c}_type`, genererEmail);
+        bindInput(`mail-comp-${c}-target-age`, `f5_comp_${c}_target_age`, genererEmail);
+        bindInput(`mail-comp-${c}-start-age`, `f5_comp_${c}_start_age`, genererEmail);
+        bindInput(`mail-comp-${c}-versement`, `f5_comp_${c}_versement`, genererEmail);
+        bindInput(`mail-comp-${c}-rendement`, `f5_comp_${c}_rendement`, genererEmail);
+        bindInput(`mail-comp-${c}-frais-entree`, `f5_comp_${c}_frais_entree`, genererEmail);
+        bindInput(`mail-comp-${c}-frais-courant`, `f5_comp_${c}_frais_courant`, genererEmail);
+    });
+    bindInput('mail-comp-c1-original-age', 'f5_comp_c1_original_start_age', genererEmail);
+
     const f4Section = document.getElementById('f4');
     if (f4Section) {
         f4Section.addEventListener('input', handleDynamicInput);
