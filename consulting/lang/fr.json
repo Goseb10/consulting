@@ -246,7 +246,7 @@
     "email_nonfiscal_reco_allianz_text": "Vous investiriez au sein du fonds suivant :",
     "email_nonfiscal_reco_allianz_link_1": "Nordea Global Climate and Environment Fund BP - EUR",
     "email_dela_title": "COUVERTURE OBSÈQUES DELA :",
-    "email_dela_p1": "La société DELA, avec laquelle je collabore, propose des solutions de couverture obsèques particulièrement avantageuses. Cette offre vous permet de garantir une tranquillité d'esprit pour vous et vos proches, avec des tarifs compétitifs adaptés à votre situation.",
+    "email_dela_p1": "La société DELA, avec laquelle je collabore, propose des solutions de couverture obsèques particulièrement avantageuses. Cette offre vous permet de guarantee une tranquillité d'esprit pour vous et vos proches, avec des tarifs compétitifs adaptés à votre situation.",
     "email_dela_p2": "Il est intéressant de noter que les primes sont calculées en fonction de votre âge actuel et restent <strong>fixes</strong> dès la mise en place de la couverture. Cela vous permet de bénéficier d'une stabilité financière à long terme.",
     "email_dela_p3": "En fonction de vos besoins, voici quelques exemples de couverture pour un paiement mensuel jusqu'à vos <strong>67 ans</strong> :",
     "email_dela_li_1": "<strong>Capital assuré de {capital}:</strong> prime mensuelle de <strong>{prime}</strong>.",
@@ -294,5 +294,10 @@
     "span_final_capital_combined": "CAPITAL FINAL COMBINÉ (C1 + C2)",
     
     "f4_sim_count_label": "Nombre d'options de simulations",
-    "email_ep_intro": "Voici une comparaison selon vos différents choix de montants mensuels :"
+    "email_ep_intro": "Voici une comparaison selon vos différents choix de montants mensuels :",
+    
+    "f4_toggle_comparator": "Comparateur",
+    "f4_comp_options_title": "Options Comparateur",
+    "email_comp_title": "COMPARATIF DE VOS CONTRATS",
+    "email_comp_intro": "Suite à notre analyse, voici la comparaison détaillée entre votre situation actuelle et la proposition qui vous a été faite :"
 }
