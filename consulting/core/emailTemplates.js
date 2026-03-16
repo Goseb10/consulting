@@ -21,10 +21,10 @@ export const emailTemplates = {
             let data = dataArray[0];
             html += `
         <p>
-            ${t('email_ep_amounts')}: <strong>${formatMonetaire(data.versementBrutMensuel)} BRUTS</strong> (Les montants peuvent être adaptés en fonction de votre objectif fiscal/financier).<br>
-            ${t('email_ep_net_cost')}: <strong>${formatMonetaire(data.capitalNetPlaceMensuel)} / mois</strong>.<br>
-            ${t('email_ep_deductibility')}: <strong>${formatMonetaire(data.avantageFiscalAnnuel)}/an</strong>.<br>
-            ${t('email_ep_duration')} - ${data.dureeVersementAnnees.toFixed(0)} ans âge terme - 67 ans.<br>
+            ${t('email_ep_amounts')}: ${t('email_ep_amounts_detail').replace('{amount}', formatMonetaire(data.versementBrutMensuel))}<br>
+            ${t('email_ep_net_cost')}: <strong>${formatMonetaire(data.capitalNetPlaceMensuel)}${t('email_per_month')}</strong>.<br>
+            ${t('email_ep_deductibility')}: <strong>${formatMonetaire(data.avantageFiscalAnnuel)}${t('email_per_year')}</strong>.<br>
+            ${t('email_ep_duration')} - ${t('email_ep_duration_detail').replace('{duration}', data.dureeVersementAnnees.toFixed(0))}<br>
             ${t('email_ep_entry_fees')}: <strong>3,00%</strong><br>
             ${t('email_ep_mgmt_fees')}:
             <ul style="margin-top: 5px; margin-bottom: 10px; padding-left: 20px;">
@@ -47,10 +47,10 @@ export const emailTemplates = {
             dataArray.forEach((data, index) => {
                 html += `
                 <div style="background-color: #f9f9f9; border-left: 4px solid #0070B0; padding: 10px; margin-bottom: 15px;">
-                    <h4 style="margin-top: 0; color: #0070B0; margin-bottom: 5px;">Option ${index + 1} : ${formatMonetaire(data.versementBrutMensuel)} BRUTS / mois</h4>
+                    <h4 style="margin-top: 0; color: #0070B0; margin-bottom: 5px;">${t('email_ep_option_title').replace('{index}', index + 1).replace('{amount}', formatMonetaire(data.versementBrutMensuel))}</h4>
                     <ul style="margin: 0; padding-left: 20px;">
-                        <li>${t('email_ep_net_cost')}: <strong>${formatMonetaire(data.capitalNetPlaceMensuel)} / mois</strong></li>
-                        <li>${t('email_ep_deductibility')}: <strong>${formatMonetaire(data.avantageFiscalAnnuel)}/an</strong></li>
+                        <li>${t('email_ep_net_cost')}: <strong>${formatMonetaire(data.capitalNetPlaceMensuel)}${t('email_per_month')}</strong></li>
+                        <li>${t('email_ep_deductibility')}: <strong>${formatMonetaire(data.avantageFiscalAnnuel)}${t('email_per_year')}</strong></li>
                         <li style="margin-top:5px;">${t('email_ep_summary')
                             .replace('{capitalBrut}', formatMonetaire(data.capitalBrutPlaceTotal))
                             .replace('{capitalFinal}', formatMonetaire(data.capitalFinalNet))
@@ -61,7 +61,7 @@ export const emailTemplates = {
             });
             html += `
         <p>
-            ${t('email_ep_duration')} - âge terme - 67 ans.<br>
+            ${t('email_ep_duration')} - ${t('email_ep_duration_short')}<br>
             ${t('email_ep_entry_fees')}: <strong>3,00%</strong><br>
             ${t('email_ep_mgmt_fees')}:
             <ul style="margin-top: 5px; margin-bottom: 10px; padding-left: 20px;">
@@ -84,10 +84,10 @@ export const emailTemplates = {
             let data = dataArray[0];
             html += `
         <p>
-            ${t('email_ep_amounts')}: <strong>${formatMonetaire(data.versementBrutMensuel)} BRUTS</strong> (Les montants peuvent être adaptés en fonction de votre objectif fiscal/financier).<br>
-            ${t('email_ep_net_cost')}: <strong>${formatMonetaire(data.capitalNetPlaceMensuel)} / mois</strong>.<br>
-            ${t('email_ep_deductibility')}: <strong>${formatMonetaire(data.avantageFiscalAnnuel)} / an</strong>.<br>
-            ${t('email_elt_duration')} - ${data.dureeVersementAnnees.toFixed(0)} ans âge terme - ${data.targetAge} ans.<br>
+            ${t('email_ep_amounts')}: ${t('email_ep_amounts_detail').replace('{amount}', formatMonetaire(data.versementBrutMensuel))}<br>
+            ${t('email_ep_net_cost')}: <strong>${formatMonetaire(data.capitalNetPlaceMensuel)}${t('email_per_month')}</strong>.<br>
+            ${t('email_ep_deductibility')}: <strong>${formatMonetaire(data.avantageFiscalAnnuel)}${t('email_per_year')}</strong>.<br>
+            ${t('email_elt_duration')} - ${t('email_elt_duration_detail').replace('{duration}', data.dureeVersementAnnees.toFixed(0)).replace('{targetAge}', data.targetAge)}<br>
             ${t('email_ep_entry_fees')}: <strong>3,00%</strong><br>
             ${t('email_ep_mgmt_fees')}:
             <ul style="margin-top: 5px; margin-bottom: 10px; padding-left: 20px;">
@@ -113,11 +113,11 @@ export const emailTemplates = {
             dataArray.forEach((data, index) => {
                 html += `
                 <div style="background-color: #f9f9f9; border-left: 4px solid #0070B0; padding: 10px; margin-bottom: 15px;">
-                    <h4 style="margin-top: 0; color: #0070B0; margin-bottom: 5px;">Option ${index + 1} : ${formatMonetaire(data.versementBrutMensuel)} BRUTS / mois</h4>
+                    <h4 style="margin-top: 0; color: #0070B0; margin-bottom: 5px;">${t('email_ep_option_title').replace('{index}', index + 1).replace('{amount}', formatMonetaire(data.versementBrutMensuel))}</h4>
                     <ul style="margin: 0; padding-left: 20px;">
-                        <li>${t('email_elt_duration')} : âge terme <strong>${data.targetAge} ans</strong></li>
-                        <li>${t('email_ep_net_cost')}: <strong>${formatMonetaire(data.capitalNetPlaceMensuel)} / mois</strong></li>
-                        <li>${t('email_ep_deductibility')}: <strong>${formatMonetaire(data.avantageFiscalAnnuel)}/an</strong></li>
+                        <li>${t('email_elt_duration')} : ${t('email_elt_duration_short').replace('{targetAge}', data.targetAge)}</li>
+                        <li>${t('email_ep_net_cost')}: <strong>${formatMonetaire(data.capitalNetPlaceMensuel)}${t('email_per_month')}</strong></li>
+                        <li>${t('email_ep_deductibility')}: <strong>${formatMonetaire(data.avantageFiscalAnnuel)}${t('email_per_year')}</strong></li>
                         <li style="margin-top:5px;">${t('email_elt_summary')
                             .replace('{capitalBrut}', formatMonetaire(data.capitalBrutPlaceTotal))
                             .replace('{capitalFinal}', formatMonetaire(data.capitalFinalNet))
@@ -166,10 +166,10 @@ export const emailTemplates = {
             <strong><u>${t('email_common_reco_title')}</u></strong><br>
             <a href="https://www.axa.be/fr/particuliers/pension" target="_blank" rel="noopener noreferrer"><strong>AXA</strong></a>
             <ul style="margin-top: 5px; margin-bottom: 10px; padding-left: 20px;">
-                <li>Fonds Épargne Pension/ Long Terme: <a href="https://www.quantalys.com/Fonds/Performances/731077" target="_blank" rel="noopener noreferrer">${t('email_common_reco_axa_link_1')}</a></li>
-                <li>Fonds Épargne Pension/ Long Terme: <a href="https://www.comgest.com/fr/lu/professionnel/fonds/comgest-growth-europe-eur-z-acc" target="_blank" rel="noopener noreferrer">${t('email_common_reco_axa_link_2')}</a></li>
+                <li>${t('email_fund_ep_lt')} <a href="https://www.quantalys.com/Fonds/Performances/731077" target="_blank" rel="noopener noreferrer">${t('email_common_reco_axa_link_1')}</a></li>
+                <li>${t('email_fund_ep_lt')} <a href="https://www.comgest.com/fr/lu/professionnel/fonds/comgest-growth-europe-eur-z-acc" target="_blank" rel="noopener noreferrer">${t('email_common_reco_axa_link_2')}</a></li>
                 
-                <li>Fonds Épargne Pension/ Long Terme: <a href="https://www.lecho.be/les-marches/fonds/r-co-valor-f-eur.60203572.html" target="_blank" rel="noopener noreferrer">AXA - Pension Plan R Valor</a></li>
+                <li>${t('email_fund_ep_lt')} <a href="https://www.lecho.be/les-marches/fonds/r-co-valor-f-eur.60203572.html" target="_blank" rel="noopener noreferrer">AXA - Pension Plan R Valor</a></li>
                 <li style="list-style-type: none; margin-top: 5px;">
                     <ul style="padding-left: 20px; margin-top: 5px; margin-bottom: 5px;">
                         <li>${t('email_common_reco_axa_li_1')}</li>
@@ -180,43 +180,42 @@ export const emailTemplates = {
             </ul>
             <a href="https://www.vivium.be/fr/private-individuals/home" target="_blank" rel="noopener noreferrer"><strong>P&V Assurances SC (Vivium)</strong></a>
             <ul style="margin-top: 5px; margin-bottom: 10px; padding-left: 20px;">
-                <li>Fonds d'Epargne Pension/ Long Terme: BlackRock - <a href="https://www.blackrock.com/fr/intermediaries/products/290846/ishares-msci-world-sri-ucits-etf" target="_blank" rel="noopener noreferrer">${t('email_common_reco_pv_link_1')}</a></li>
-                <li>Fonds d'Epargne Pension: P&V Group - <a href="https://www.lecho.be/les-marches/fonds/dynamic-multi-fund.620832117.html" target="_blank" rel="noopener noreferrer">${t('email_common_reco_pv_link_2')}</a></li>
+                <li>${t('email_fund_ep_lt')} BlackRock - <a href="https://www.blackrock.com/fr/intermediaries/products/290846/ishares-msci-world-sri-ucits-etf" target="_blank" rel="noopener noreferrer">${t('email_common_reco_pv_link_1')}</a></li>
+                <li>${t('email_fund_ep')} P&V Group - <a href="https://www.lecho.be/les-marches/fonds/dynamic-multi-fund.620832117.html" target="_blank" rel="noopener noreferrer">${t('email_common_reco_pv_link_2')}</a></li>
             </ul>
             
             <a href="https://www.allianzgi.com/" target="_blank" rel="noopener noreferrer"><strong>Allianz Global Investor</strong></a>
             <ul style="margin-top: 5px; margin-bottom: 10px; padding-left: 20px;">
-                <li>Fonds d'Epargne Pension: Allianz - <a href="https://www.lecho.be/les-marches/fonds/nordea-1-global-climate-and-environment-fund-bp-eur.60003833.html" target="_blank" rel="noopener noreferrer">Nordea</a></li>
+                <li>${t('email_fund_ep')} Allianz - <a href="https://www.lecho.be/les-marches/fonds/nordea-1-global-climate-and-environment-fund-bp-eur.60003833.html" target="_blank" rel="noopener noreferrer">Nordea</a></li>
             </ul>
             </p>
     `},
 
-    // --- NOUVEAU: TEMPLATE COMPARATEUR ---
     comparator: (t, data, formatMonetaire) => {
         let html = `<h3 style="color: #0070B0; border-bottom: 2px solid #0070B0; padding-bottom: 5px; margin-top: 35px; font-family: 'Inter', sans-serif;">${t('email_comp_title') || 'COMPARATIF DE VOS CONTRATS'}</h3>`;
-        html += `<p>${t('email_comp_intro') || 'Suite à notre analyse, voici la comparaison entre votre situation actuelle et notre proposition :'}</p>`;
+        html += `<p>${t('email_comp_intro')}</p>`;
 
         html += `<table style="width: 100%; border-collapse: collapse; margin-top: 15px; margin-bottom: 15px;">
             <thead>
                 <tr>
                     <th style="border: 1px solid #ddd; padding: 8px; background-color: #f2f2f2; width: 33%;"></th>
-                    <th style="border: 1px solid #ddd; padding: 8px; background-color: #f2f2f2; text-align: center;">${data.name1} (Existant)</th>
-                    <th style="border: 1px solid #ddd; padding: 8px; background-color: #e6f2ff; text-align: center; color: #0070B0;">${data.name2} (Proposition)</th>
+                    <th style="border: 1px solid #ddd; padding: 8px; background-color: #f2f2f2; text-align: center;">${data.name1} ${t('email_comp_existing')}</th>
+                    <th style="border: 1px solid #ddd; padding: 8px; background-color: #e6f2ff; text-align: center; color: #0070B0;">${data.name2} ${t('email_comp_proposal')}</th>
                 </tr>
             </thead>
             <tbody>
                 <tr>
-                    <td style="border: 1px solid #ddd; padding: 8px; font-weight: bold;">Rendement estimé</td>
+                    <td style="border: 1px solid #ddd; padding: 8px; font-weight: bold;">${t('email_comp_yield')}</td>
                     <td style="border: 1px solid #ddd; padding: 8px; text-align: center;">${data.rendement1.toFixed(2)} %</td>
                     <td style="border: 1px solid #ddd; padding: 8px; text-align: center; font-weight: bold; color: #0070B0;">${data.rendement2.toFixed(2)} %</td>
                 </tr>
                 <tr>
-                    <td style="border: 1px solid #ddd; padding: 8px; font-weight: bold;">Frais d'entrée</td>
+                    <td style="border: 1px solid #ddd; padding: 8px; font-weight: bold;">${t('email_comp_entry_fee')}</td>
                     <td style="border: 1px solid #ddd; padding: 8px; text-align: center;">${data.fraisEntree1.toFixed(2)} %</td>
                     <td style="border: 1px solid #ddd; padding: 8px; text-align: center; font-weight: bold; color: #0070B0;">${data.fraisEntree2.toFixed(2)} %</td>
                 </tr>
                 <tr>
-                    <td style="border: 1px solid #ddd; padding: 8px; font-weight: bold;">Frais de gestion annuels</td>
+                    <td style="border: 1px solid #ddd; padding: 8px; font-weight: bold;">${t('email_comp_mgmt_fee')}</td>
                     <td style="border: 1px solid #ddd; padding: 8px; text-align: center;">${data.fraisCourant1.toFixed(2)} %</td>
                     <td style="border: 1px solid #ddd; padding: 8px; text-align: center; font-weight: bold; color: #0070B0;">${data.fraisCourant2.toFixed(2)} %</td>
                 </tr>
@@ -225,23 +224,24 @@ export const emailTemplates = {
 
         if (data.isStopSwitch) {
             const totalCombined = data.result1.capitalFinalNet + data.result2.capitalFinalNet;
-            html += `<p>Dans le cadre d'un scénario <strong>"Stop & Switch"</strong>, nous vous conseillons d'arrêter les versements sur votre contrat ${data.name1} actuel et de le laisser fructifier, tout en démarrant un nouveau contrat chez ${data.name2}.</p>
+            html += `<p>${t('email_comp_stop_switch_text').replace('{name1}', data.name1).replace('{name2}', data.name2)}</p>
             <ul style="margin-top: 5px; margin-bottom: 10px; padding-left: 20px;">
-                <li>Capital estimé du contrat ${data.name1} à terme : <strong>${formatMonetaire(data.result1.capitalFinalNet)}</strong></li>
-                <li>Capital estimé du nouveau contrat ${data.name2} à terme : <strong>${formatMonetaire(data.result2.capitalFinalNet)}</strong></li>
-                <li style="margin-top: 10px; font-size: 1.1em;"><strong>Capital Final Total Combiné : <span style="color: #00B3A6;">${formatMonetaire(totalCombined)}</span></strong></li>
+                <li>${t('email_comp_est_capital_c1').replace('{name1}', data.name1)} <strong>${formatMonetaire(data.result1.capitalFinalNet)}</strong></li>
+                <li>${t('email_comp_est_capital_c2').replace('{name2}', data.name2)} <strong>${formatMonetaire(data.result2.capitalFinalNet)}</strong></li>
+                <li style="margin-top: 10px; font-size: 1.1em;"><strong>${t('email_comp_total_combined')} <span style="color: #00B3A6;">${formatMonetaire(totalCombined)}</span></strong></li>
             </ul>`;
         } else {
             const diff = data.result2.capitalFinalNet - data.result1.capitalFinalNet;
             const diffColor = diff > 0 ? '#00B3A6' : '#D3425A';
-            const diffText = diff > 0 ? `Un gain supplémentaire estimé à` : `Une différence de`;
+            const diffText = diff > 0 ? t('email_comp_gain') : t('email_comp_diff');
+            const favorText = diff > 0 ? data.name2 : data.name1;
 
             html += `<ul style="margin-top: 5px; margin-bottom: 10px; padding-left: 20px;">
-                <li>Capital final net estimé chez ${data.name1} (${data.finalAge1} ans) : <strong>${formatMonetaire(data.result1.capitalFinalNet)}</strong></li>
-                <li>Capital final net estimé chez ${data.name2} (${data.finalAge2} ans) : <strong>${formatMonetaire(data.result2.capitalFinalNet)}</strong></li>
+                <li>${t('email_comp_net_c1').replace('{name1}', data.name1).replace('{age}', data.finalAge1)} <strong>${formatMonetaire(data.result1.capitalFinalNet)}</strong></li>
+                <li>${t('email_comp_net_c1').replace('{name1}', data.name2).replace('{age}', data.finalAge2)} <strong>${formatMonetaire(data.result2.capitalFinalNet)}</strong></li>
             </ul>
             <p style="font-size: 1.1em; text-align: center; padding: 10px; background-color: #f9f9f9; border-radius: 5px; border: 1px solid var(--border-light);">
-                <strong>Bilan :</strong> ${diffText} <strong style="color: ${diffColor};">${formatMonetaire(Math.abs(diff))}</strong> en faveur de la proposition ${diff > 0 ? data.name2 : data.name1}.
+                <strong>${t('email_comp_balance')}</strong> ${diffText} <strong style="color: ${diffColor};">${formatMonetaire(Math.abs(diff))}</strong> ${t('email_comp_in_favor').replace('{name}', favorText)}
             </p>`;
         }
 
@@ -257,11 +257,11 @@ export const emailTemplates = {
             <strong><u>${t('email_common_reco_title')}</u></strong><br>
             <strong><a href="https://www.vivium.be/fr/private-individuals/home" target="_blank" rel="noopener noreferrer">P&V Assurances SC (Vivium)</a></strong>
             <ul style="margin-top: 5px; margin-bottom: 10px; padding-left: 20px;">
-                <li>Fonds Pension Libre Complémentaire pour Indépendant: <a href="...">${t('email_plci_reco_pv_link_1')}</a></li>
+                <li>${t('email_fund_plci')} <a href="...">${t('email_plci_reco_pv_link_1')}</a></li>
             </ul>
             <strong><a href="https://www.allianzgi.com/" target="_blank" rel="noopener noreferrer">Allianz Global Investor</a></strong>
             <ul style="margin-top: 5px; margin-bottom: 10px; padding-left: 20px;">
-                <li>Dispositif pour la Pension Libre Complémentaire pour Indépendant: <a href="...">${t('email_plci_reco_allianz_link_1')}</a></li>
+                <li>${t('email_device_plci')} <a href="...">${t('email_plci_reco_allianz_link_1')}</a></li>
             </ul>
         </p>
     `,
@@ -272,10 +272,10 @@ export const emailTemplates = {
         <p>${t('email_inami_p2')}</p>
         <p style="padding: 5px; margin-top: 10px;">${t('email_inami_p3')}</p>
         <p style="margin-top: 15px;">
-            <strong><u>SOCIÉTÉ RECOMMANDÉE</u></strong><br>
+            <strong><u>${t('email_common_reco_title')}</u></strong><br>
             <strong><a href="https://www.vivium.be/fr/private-individuals/home" target="_blank" rel="noopener noreferrer">P&V Assurances SC (Vivium)</a></strong>
             <ul style="margin-top: 5px; margin-bottom: 10px; padding-left: 20px;">
-                <li>Fonds Plan INAMI: <a href="...">${t('email_inami_reco_pv_link_1')}</a></li>
+                <li>${t('email_fund_inami')} <a href="...">${t('email_inami_reco_pv_link_1')}</a></li>
             </ul>
         </p>
     `,
@@ -292,13 +292,13 @@ export const emailTemplates = {
         <p>${t('email_eip_p4')}</p>
         <p style="padding: 5px; margin-top: 10px;">${t('email_eip_p5')}</p>
         <p style="margin-top: 15px;">
-            <strong><u>SOCIÉTÉ RECOMMANDÉE</u></strong><br>
+            <strong><u>${t('email_common_reco_title')}</u></strong><br>
             <strong><a href="https://ag.be/particuliers/fr" target="_blank" rel="noopener noreferrer">AG Insurance</a></strong>
             <ul style="margin-top: 5px; margin-bottom: 10px; padding-left: 20px;">
-                <li>Fonds Engagement Individuel de Pension: <a href="...">${t('email_eip_reco_ag_link_1')}</a></li>
-                <li>Fonds Engagement Individuel de Pension: <a href="...">${t('email_eip_reco_ag_link_2')}</a></li>
-                <li>Fonds Engagement Individuel de Pension: <a href="...">${t('email_eip_reco_ag_link_3')}</a></li>
-                <li>Fonds Engagement Individuel de Pension: <a href="...">${t('email_eip_reco_ag_link_4')}</a></li>
+                <li>${t('email_fund_eip')} <a href="...">${t('email_eip_reco_ag_link_1')}</a></li>
+                <li>${t('email_fund_eip')} <a href="...">${t('email_eip_reco_ag_link_2')}</a></li>
+                <li>${t('email_fund_eip')} <a href="...">${t('email_eip_reco_ag_link_3')}</a></li>
+                <li>${t('email_fund_eip')} <a href="...">${t('email_eip_reco_ag_link_4')}</a></li>
             </ul>
         </p>
     `,
@@ -339,15 +339,15 @@ export const emailTemplates = {
         </ul>
             `;
         } else {
-            html += `<p>Voici une comparaison selon vos différents choix de montants mensuels :</p>`;
+            html += `<p>${t('email_nf_compare_intro')}</p>`;
             dataArray.forEach((data, index) => {
                 html += `
                 <div style="background-color: #f9f9f9; border-left: 4px solid #0070B0; padding: 10px; margin-bottom: 15px;">
-                    <h4 style="margin-top: 0; color: #0070B0; margin-bottom: 5px;">Option ${index + 1} : ${formatMonetaire(data.mensualite)} / mois</h4>
+                    <h4 style="margin-top: 0; color: #0070B0; margin-bottom: 5px;">${t('email_nf_option_title').replace('{index}', index + 1).replace('{amount}', formatMonetaire(data.mensualite))}</h4>
                     <ul style="margin: 0; padding-left: 20px;">
-                        <li><strong>À 10 ans (${data.age + 10} ans)</strong> : Capital investi de ${formatMonetaire(data.res10.investedCapital)} pour un capital estimé à <strong>${formatMonetaire(data.res10.finalCapital)}</strong>.</li>
-                        <li><strong>À 20 ans (${data.age + 20} ans)</strong> : Capital investi de ${formatMonetaire(data.res20.investedCapital)} pour un capital estimé à <strong>${formatMonetaire(data.res20.finalCapital)}</strong>.</li>
-                        <li><strong>À 30 ans (${data.age + 30} ans)</strong> : Capital investi de ${formatMonetaire(data.res30.investedCapital)} pour un capital estimé à <strong>${formatMonetaire(data.res30.finalCapital)}</strong>.</li>
+                        <li>${t('email_nf_summary_10').replace('{age}', data.age + 10).replace('{invested}', formatMonetaire(data.res10.investedCapital)).replace('{final}', formatMonetaire(data.res10.finalCapital))}</li>
+                        <li>${t('email_nf_summary_20').replace('{age}', data.age + 20).replace('{invested}', formatMonetaire(data.res20.investedCapital)).replace('{final}', formatMonetaire(data.res20.finalCapital))}</li>
+                        <li>${t('email_nf_summary_30').replace('{age}', data.age + 30).replace('{invested}', formatMonetaire(data.res30.investedCapital)).replace('{final}', formatMonetaire(data.res30.finalCapital))}</li>
                     </ul>
                 </div>`;
             });
