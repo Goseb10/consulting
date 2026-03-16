@@ -192,4 +192,5 @@ document.addEventListener('DOMContentLoaded', async () => { // <-- ajout de 'asy
     }
 
     console.log("Initialisation modulaire terminée.");
+    
 });
