@@ -208,7 +208,7 @@
                     </div>
 
                     <div class="input-group-section">
-                        <h4 data-key="h4_fees_f2">Frais et Taxes Appliqués</h4>
+                        <h4 data-key="h4_fees_f2">Frais en Taxes Appliqués</h4>
                         
                         <label for="nf-frais-versement" data-key="label_fees_monthly_f2">Frais sur versement (%)</label>
                         <input type="number" id="nf-frais-versement" value="3.0" step="0.1" min="0">
@@ -563,6 +563,11 @@
                         </div>
                         
                         <div style="grid-column: 1 / -1;">
+                            <label for="mail-client-birthyear" data-key="f4_label_birthyear">Année de naissance (Client)</label>
+                            <input type="number" id="mail-client-birthyear" value="2000">
+                        </div>
+
+                        <div style="grid-column: 1 / -1;">
                             <label for="mail-client-email" data-key="f4_label_email">Email</label>
                             <input type="text" id="mail-client-email" value="client@email.com">
                         </div>
@@ -623,7 +628,11 @@
                         </label>
                         <label class="toggle-group" for="toggle-dela">
                             <input type="checkbox" id="toggle-dela">
-                            <span data-key="f4_toggle_dela">Couverture Dela</span>
+                            <span data-key="f4_toggle_dela">Plan Prévoyance Obsèques</span>
+                        </label>
+                        <label class="toggle-group" for="toggle-heritage">
+                            <input type="checkbox" id="toggle-heritage">
+                            <span data-key="f4_toggle_heritage">Plan Prévoyance Héritage</span>
                         </label>
                         <label class="toggle-group" for="toggle-plci">
                             <input type="checkbox" id="toggle-plci">
@@ -646,7 +655,7 @@
                     <div class="input-group-section" id="ep-options-container" style="display: none; border-top: 1px solid var(--border-light); padding-top: 15px; margin-top: 15px;">
                         <h4 data-key="f4_ep_options_title" style="margin-bottom: 15px;">Options Épargne Pension</h4>
                         <div>
-                            <label data-key="f4_sim_count_label">Nombre d'options de simulations</label>
+                            <label data-key="f4_sim_count_label">Nombre d'options de couverture</label>
                             <input type="number" id="mail-ep-count" value="1" min="1" max="5" step="1">
                         </div>
                         <div id="ep-dynamic-inputs" style="margin-top: 10px;"></div>
@@ -655,7 +664,7 @@
                     <div class="input-group-section" id="elt-options-container" style="display: none; border-top: 1px solid var(--border-light); padding-top: 15px; margin-top: 15px;">
                         <h4 data-key="f4_elt_options_title" style="margin-bottom: 15px;">Options Épargne Long Terme</h4>
                         <div>
-                            <label data-key="f4_sim_count_label">Nombre d'options de simulations</label>
+                            <label data-key="f4_sim_count_label">Nombre d'options de couverture</label>
                             <input type="number" id="mail-elt-count" value="1" min="1" max="5" step="1">
                         </div>
                         <div id="elt-dynamic-inputs" style="margin-top: 10px;"></div>
@@ -664,7 +673,7 @@
                     <div class="input-group-section" id="nonfiscal-options-container" style="display: none; border-top: 1px solid var(--border-light); padding-top: 15px; margin-top: 15px;">
                         <h4 data-key="f4_nonfiscal_options_title" style="margin-bottom: 15px;">Options Épargne Non-Fiscale</h4>
                         <div>
-                            <label data-key="f4_sim_count_label">Nombre d'options de simulations</label>
+                            <label data-key="f4_sim_count_label">Nombre d'options de couverture</label>
                             <input type="number" id="mail-nonfiscal-count" value="1" min="1" max="5" step="1">
                         </div>
                         <div id="nonfiscal-dynamic-inputs" style="margin-top: 10px;"></div>
@@ -680,12 +689,21 @@
                     </div>
                     
                     <div class="input-group-section" id="dela-options-container" style="display: none; border-top: 1px solid var(--border-light); padding-top: 15px; margin-top: 15px;">
-                        <h4 data-key="f4_dela_options_title" style="margin-bottom: 15px;">Options Dela</h4>
+                        <h4 data-key="f4_dela_options_title" style="margin-bottom: 15px;">Options Plan Prévoyance Obsèques</h4>
                         <div>
                             <label data-key="f4_sim_count_label">Nombre d'options de couverture</label>
                             <input type="number" id="mail-dela-count" value="1" min="1" max="5" step="1">
                         </div>
                         <div id="dela-dynamic-inputs" style="margin-top: 10px;"></div>
+                    </div>
+
+                    <div class="input-group-section" id="heritage-options-container" style="display: none; border-top: 1px solid var(--border-light); padding-top: 15px; margin-top: 15px;">
+                        <h4 data-key="f4_heritage_options_title" style="margin-bottom: 15px;">Options Plan Prévoyance Héritage</h4>
+                        <div>
+                            <label data-key="f4_sim_count_label">Nombre d'options de couverture</label>
+                            <input type="number" id="mail-heritage-count" value="1" min="1" max="5" step="1">
+                        </div>
+                        <div id="heritage-dynamic-inputs" style="margin-top: 10px;"></div>
                     </div>
                     
                     <div class="input-group-section" id="comparator-options-container" style="display: none; border-top: 1px solid var(--border-light); padding-top: 15px; margin-top: 15px;">

@@ -81,8 +81,9 @@ export async function genererEmail() {
         const includeEIP = state.f5_toggle_eip;
         const includeNonFiscal = state.f5_toggle_nonfiscal;
         const includeDela = state.f5_toggle_dela;
+        const includeHeritage = state.f5_toggle_heritage;
         const includeEnfant = state.f5_toggle_enfant; 
-        const includeComparator = state.f5_toggle_comparator; // NOUVEAU
+        const includeComparator = state.f5_toggle_comparator; 
 
         // Préparation des tableaux de données
         let epDataArray = [];
@@ -127,7 +128,7 @@ export async function genererEmail() {
             });
         }
 
-        // --- NOUVEAU : Calculs pour le Comparateur Mail ---
+        // Calculs pour le Comparateur Mail
         let compData = null;
         if (includeComparator) {
             const isStopSwitch = state.f5_comp_scenario_stop_switch;
@@ -214,7 +215,6 @@ export async function genererEmail() {
         if (includeELT) html += emailTemplates.elt(t, eltDataArray, formatMonetaire);
         if (includeEP || includeELT) html += emailTemplates.ep_elt_common(t, msciRate, formatMonetaire); 
         
-        // --- NOUVEAU: Insertion du comparateur ---
         if (includeComparator && compData) {
             html += emailTemplates.comparator(t, compData, formatMonetaire);
         }
@@ -239,6 +239,7 @@ export async function genererEmail() {
         }
         
         if (includeDela) html += emailTemplates.dela(t, state.f5_dela_data || [], formatMonetaire); 
+        if (includeHeritage) html += emailTemplates.heritage(t, state.f5_heritage_data || [], formatMonetaire); 
         
         html += emailTemplates.rdv(t, formattedRdvDate, formattedRdvTime, isTbd); 
         html += `<ul style="margin-top: 10px; margin-bottom: 15px; padding-left: 20px; list-style-type: disc;"><li>${t('email_docs_base')}</li>`; 
@@ -308,7 +309,7 @@ function renderDynamicInputs() {
             </div>`).join('');
     }
 
-    // Dela
+    // Dela Obsèques
     state.f5_dela_data = syncArray(parseInt(state.f5_dela_count) || 1, state.f5_dela_data, { capital: 10000, prime: 25 });
     const delaContainer = document.getElementById('dela-dynamic-inputs');
     if (delaContainer) {
@@ -318,6 +319,20 @@ function renderDynamicInputs() {
                 <div class="mail-inputs-grid">
                     <div><label>${t.f4_label_dela_capital || "Capital"}</label><input type="number" class="dyn-input" data-type="dela" data-idx="${idx}" data-field="capital" value="${sim.capital}" step="500"></div>
                     <div><label>${t.f4_label_dela_prime || "Prime"}</label><input type="number" class="dyn-input" data-type="dela" data-idx="${idx}" data-field="prime" value="${sim.prime}" step="0.01"></div>
+                </div>
+            </div>`).join('');
+    }
+
+    // Dela Héritage
+    state.f5_heritage_data = syncArray(parseInt(state.f5_heritage_count) || 1, state.f5_heritage_data, { capital: 10000, prime: 25 });
+    const heritageContainer = document.getElementById('heritage-dynamic-inputs');
+    if (heritageContainer) {
+        heritageContainer.innerHTML = state.f5_heritage_data.map((sim, idx) => `
+            <div style="border-top: 1px dashed var(--border-light); padding-top: 10px; margin-top: 10px;">
+                <h5 style="margin-bottom: 5px; color: var(--primary-color);">Option ${idx + 1}</h5>
+                <div class="mail-inputs-grid">
+                    <div><label>${t.f4_label_heritage_capital || "Capital"}</label><input type="number" class="dyn-input" data-type="heritage" data-idx="${idx}" data-field="capital" value="${sim.capital}" step="500"></div>
+                    <div><label>${t.f4_label_heritage_prime || "Prime"}</label><input type="number" class="dyn-input" data-type="heritage" data-idx="${idx}" data-field="prime" value="${sim.prime}" step="0.01"></div>
                 </div>
             </div>`).join('');
     }
@@ -341,6 +356,7 @@ function renderDynamicInputs() {
     updateState('f5_elt_data', state.f5_elt_data);
     updateState('f5_nonfiscal_data', state.f5_nonfiscal_data);
     updateState('f5_dela_data', state.f5_dela_data);
+    updateState('f5_heritage_data', state.f5_heritage_data);
     updateState('f5_children_data', state.f5_children_data);
     
     genererEmail();
@@ -357,6 +373,7 @@ function handleDynamicInput(e) {
         if (type === 'elt') stateKey = 'f5_elt_data';
         if (type === 'nf') stateKey = 'f5_nonfiscal_data';
         if (type === 'dela') stateKey = 'f5_dela_data';
+        if (type === 'heritage') stateKey = 'f5_heritage_data';
         if (type === 'enfant') stateKey = 'f5_children_data';
 
         if (stateKey) {
@@ -396,7 +413,7 @@ export function initF5() {
     bindInput('mail-langue', 'f5_langue', renderDynamicInputs);
     bindInput('mail-common-msci-rate', 'f5_msci_rate', genererEmail);
 
-    ['ep', 'elt', 'plci', 'inami', 'eip', 'nonfiscal', 'dela', 'enfant', 'comparator'].forEach(type => {
+    ['ep', 'elt', 'plci', 'inami', 'eip', 'nonfiscal', 'dela', 'heritage', 'enfant', 'comparator'].forEach(type => {
         bindCheckbox(`toggle-${type}`, `f5_toggle_${type}`, genererEmail);
         const toggle = document.getElementById(`toggle-${type}`);
         const container = document.getElementById(`${type === 'enfant' ? 'children-main' : type + '-options'}-container`);
@@ -406,11 +423,12 @@ export function initF5() {
         }
     });
 
-    ['ep', 'elt', 'nonfiscal', 'dela', 'children'].forEach(type => {
+    // On bind tous les compteurs d'options
+    ['ep', 'elt', 'nonfiscal', 'dela', 'heritage', 'children'].forEach(type => {
         bindInput(`mail-${type}-count`, `f5_${type}_count`, renderDynamicInputs);
     });
 
-    // --- NOUVEAU: Binding des inputs du comparateur interne ---
+    // Binding des inputs du comparateur interne
     bindCheckbox('mail-comp-stop-switch', 'f5_comp_scenario_stop_switch', () => {
         const group = document.getElementById('mail-comp-c1-stop-switch-group');
         if (group) group.style.display = getState().f5_comp_scenario_stop_switch ? 'block' : 'none';

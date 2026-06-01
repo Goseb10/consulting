@@ -439,6 +439,36 @@ export const emailTemplates = {
         return html;
     },
 
+    heritage: (t, dataArray, formatMonetaire) => {
+        if (!Array.isArray(dataArray)) dataArray = [dataArray];
+        let html = `
+        <h3 style="color: #0070B0; border-bottom: 2px solid #0070B0; padding-bottom: 5px; margin-top: 35px; font-family: 'Inter', sans-serif;">${t('email_heritage_title')}</h3>
+        <p>${t('email_heritage_p1')}</p>
+        <ul style="margin-top: 5px; margin-bottom: 10px; padding-left: 20px;">
+            <li>${t('email_heritage_li_1')}</li>
+            <li>${t('email_heritage_li_2')}</li>
+            <li>${t('email_heritage_li_3')}</li>
+        </ul>
+        <p style="margin-top: 10px;"><strong>${t('email_heritage_sub1')}</strong></p>
+        <p>${t('email_heritage_p2')}</p>
+        <p>${t('email_heritage_p3')}</p>
+        <p style="margin-top: 10px;">${t('email_heritage_p4')}</p>
+        <ul style="margin-top: 5px; margin-bottom: 10px; padding-left: 20px;">
+        `;
+        
+        dataArray.forEach(data => {
+            // Le .replace injecte les valeurs de chaque option, sans mettre le texte en gras
+            html += `<li>${t('email_heritage_li_4').replace('{capital}', formatMonetaire(data.capital)).replace('{prime}', formatMonetaire(data.prime))}</li>`;
+        });
+
+        html += `
+        </ul>
+        <p style="margin-top: 10px;"><strong>${t('email_heritage_sub2')}</strong></p>
+        <p>${t('email_heritage_p5')}</p>
+        `;
+        return html;
+    },
+
     rdv: (t, date, time, isTbd) => {
         const titleKey = isTbd ? 'email_rdv_title_tbd' : 'email_rdv_title';
         const title = t(titleKey)

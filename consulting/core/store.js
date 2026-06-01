@@ -63,8 +63,9 @@ const defaultState = {
     f5_toggle_eip: false,
     f5_toggle_nonfiscal: false,
     f5_toggle_dela: false,
+    f5_toggle_heritage: false, 
     f5_toggle_enfant: false,
-    f5_toggle_comparator: false, // NOUVEAU: Toggle comparateur mail
+    f5_toggle_comparator: false, 
     
     // Arrays for multiple simulations F5
     f5_ep_count: 1,
@@ -79,10 +80,13 @@ const defaultState = {
     f5_dela_count: 1,
     f5_dela_data: [{ capital: 10000, prime: 25.00 }],
     
+    f5_heritage_count: 1,
+    f5_heritage_data: [{ capital: 10000, prime: 25.00 }],
+    
     f5_children_count: 0,
     f5_children_data: [],
 
-    // NOUVEAU: Etat du comparateur interne au module Mail
+    // Etat du comparateur interne au module Mail
     f5_comp_scenario_stop_switch: false,
     f5_comp_c1_name: 'Belfius',
     f5_comp_c1_type: 'pension',
@@ -129,6 +133,7 @@ export function loadState() {
             if (!state.f5_elt_data) state.f5_elt_data = [{ mensualite: state.f5_elt_mensualite || 100, birthyear: state.f5_elt_birthyear || 2000, target_age: state.f5_elt_target_age || 67 }];
             if (!state.f5_nonfiscal_data) state.f5_nonfiscal_data = [{ mensualite: state.f5_nonfiscal_mensualite || 100, birthyear: state.f5_nonfiscal_birthyear || 2000 }];
             if (!state.f5_dela_data) state.f5_dela_data = [{ capital: state.f5_dela_capital || 10000, prime: state.f5_dela_prime || 25 }];
+            if (!state.f5_heritage_data) state.f5_heritage_data = [{ capital: state.f5_heritage_capital || 10000, prime: state.f5_heritage_prime || 25 }];
         } else {
             state = { ...defaultState };
         }
