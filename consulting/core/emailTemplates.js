@@ -30,7 +30,8 @@ export const emailTemplates = {
             <ul style="margin-top: 5px; margin-bottom: 10px; padding-left: 20px;">
                 <li><strong>1,90%</strong> (${t('email_ep_link_1')});</li>
                 <li><strong>0,85%</strong> (${t('email_ep_link_2')});</li>
-                <li><strong>1,25%</strong> (${t('email_ep_link_3')}).</li>
+                <li><strong>1,25%</strong> (${t('email_ep_link_3')});</li>
+                <li><strong>1,00%</strong> (${t('email_ep_link_4')}).</li>
             </ul>
             ${t('email_ep_yield_text')}: ${t('email_common_yield_range')} <a href="https://www.wikifin.be/fr/epargner-et-investir/produits-dinvestissement/produits-dassurances/assurance-de-la-branche-23/quest" target="_blank" rel="noopener noreferrer">${t('email_ep_yield_source')}</a>.<br>
             <ul style="margin-top: 5px; margin-bottom: 10px; padding-left: 20px;">
@@ -67,7 +68,8 @@ export const emailTemplates = {
             <ul style="margin-top: 5px; margin-bottom: 10px; padding-left: 20px;">
                 <li><strong>1,90%</strong> (${t('email_ep_link_1')});</li>
                 <li><strong>0,85%</strong> (${t('email_ep_link_2')});</li>
-                <li><strong>1,25%</strong> (${t('email_ep_link_3')}).</li>
+                <li><strong>1,25%</strong> (${t('email_ep_link_3')});</li>
+                <li><strong>1,00%</strong> (${t('email_ep_link_4')}).</li>
             </ul>
             ${t('email_ep_yield_text')}: ${t('email_common_yield_range')} <a href="https://www.wikifin.be/fr/epargner-et-investir/produits-dinvestissement/produits-dassurances/assurance-de-la-branche-23/quest" target="_blank" rel="noopener noreferrer">${t('email_ep_yield_source')}</a>.
         </p>
@@ -257,11 +259,15 @@ export const emailTemplates = {
             <strong><u>${t('email_common_reco_title')}</u></strong><br>
             <strong><a href="https://www.vivium.be/fr/private-individuals/home" target="_blank" rel="noopener noreferrer">P&V Assurances SC (Vivium)</a></strong>
             <ul style="margin-top: 5px; margin-bottom: 10px; padding-left: 20px;">
-                <li>${t('email_fund_plci')} <a href="...">${t('email_plci_reco_pv_link_1')}</a></li>
+                <li>${t('email_fund_plci')} <a href="https://www.lecho.be/les-marches/fonds/dynamic-multi-fund.620832117.html" target="_blank" rel="noopener noreferrer">${t('email_plci_reco_pv_link_1')}</a></li>
             </ul>
             <strong><a href="https://www.allianzgi.com/" target="_blank" rel="noopener noreferrer">Allianz Global Investor</a></strong>
             <ul style="margin-top: 5px; margin-bottom: 10px; padding-left: 20px;">
-                <li>${t('email_device_plci')} <a href="...">${t('email_plci_reco_allianz_link_1')}</a></li>
+                <li>${t('email_device_plci')} <a href="https://www.allianz.be/fr/independants-entreprises/pension/plci.html" target="_blank" rel="noopener noreferrer">${t('email_plci_reco_allianz_link_1')}</a></li>
+            </ul>
+            <strong><a href="https://ag.be/professionnel/fr" target="_blank" rel="noopener noreferrer">AG INSURANCE</a></strong> <strong>(top pour avances IMMO)</strong>
+            <ul style="margin-top: 5px; margin-bottom: 10px; padding-left: 20px;">
+                <li>${t('email_device_plci')} <a href="https://ag.be/professionnel/fr/pension/pension-independant/pension-libre-complementaire-pour-independants" target="_blank" rel="noopener noreferrer">${t('email_plci_reco_ag_link_1')}</a></li>
             </ul>
         </p>
     `,

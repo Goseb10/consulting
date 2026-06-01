@@ -13,3 +13,10 @@ export const LIMITES_VERSEMENT = {
     pension: { min: 30, max: 112.50 },
     'long-terme': { min: 30, max: 205 }
 };
+// Ajoutez ceci dans core/constants.js
+export const DELA_CONSTANTS = {
+    TAXE_ASSURANCE: 0.02, // 2% de taxe sur les primes en Belgique
+    FRAIS_GESTION: 0.05,  // Estimation des frais de gestion inclus
+    AGE_TERME_DEFAUT: 67,
+    CAPITAL_DEFAUT: 7000
+};
