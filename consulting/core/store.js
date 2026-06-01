@@ -75,7 +75,7 @@ const defaultState = {
     f5_elt_data: [{ mensualite: 100.00, birthyear: 2000, target_age: 67 }],
     
     f5_nonfiscal_count: 1,
-    f5_nonfiscal_data: [{ mensualite: 100, birthyear: 2000 }],
+    f5_nonfiscal_data: [{ mode: 'mensuel', mensualite: 100, capitalInitial: 0, birthyear: 2000, duree: 8, rendement: 3.0 }],
     
     f5_dela_count: 1,
     f5_dela_data: [{ capital: 10000, prime: 25.00 }],
@@ -131,7 +131,7 @@ export function loadState() {
             // Ensure arrays exist for backward compatibility
             if (!state.f5_ep_data) state.f5_ep_data = [{ mensualite: state.f5_ep_mensualite || 87.5, birthyear: state.f5_ep_birthyear || 2000 }];
             if (!state.f5_elt_data) state.f5_elt_data = [{ mensualite: state.f5_elt_mensualite || 100, birthyear: state.f5_elt_birthyear || 2000, target_age: state.f5_elt_target_age || 67 }];
-            if (!state.f5_nonfiscal_data) state.f5_nonfiscal_data = [{ mensualite: state.f5_nonfiscal_mensualite || 100, birthyear: state.f5_nonfiscal_birthyear || 2000 }];
+            if (!state.f5_nonfiscal_data) state.f5_nonfiscal_data = [{ mode: 'mensuel', mensualite: state.f5_nonfiscal_mensualite || 100, capitalInitial: 0, birthyear: state.f5_nonfiscal_birthyear || 2000, duree: 8, rendement: 3.0 }];
             if (!state.f5_dela_data) state.f5_dela_data = [{ capital: state.f5_dela_capital || 10000, prime: state.f5_dela_prime || 25 }];
             if (!state.f5_heritage_data) state.f5_heritage_data = [{ capital: state.f5_heritage_capital || 10000, prime: state.f5_heritage_prime || 25 }];
         } else {

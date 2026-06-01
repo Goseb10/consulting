@@ -4,31 +4,37 @@ import { CURRENT_YEAR, AGE_FINALE_DEFAUT, FRAIS_DEFAUT } from '../../core/consta
 import { emailTemplates } from '../../core/emailTemplates.js'; 
 import { translations, loadTranslations } from '../../core/i18n.js';
 import { effectuerSimulation } from '../../core/simulationEngine.js'; 
-import { formatMonetaire, updateElement, updateInputElement } from '../../core/utils.js';
+import { formatMonetaire, updateElement } from '../../core/utils.js';
 import { getState, bindInput, bindCheckbox, updateState } from '../../core/store.js';
 
-function calculateNonFiscal(monthlyPayment, years) {
-    const P_monthly = parseFloat(monthlyPayment);
-    const t = parseInt(years);
-    const annualRatePct = 8.0; 
-    const fraisMensuelPct = 0.03; 
+function calculateNonFiscal(data) {
+    const mode = data.mode || 'mensuel';
+    const P_monthly = parseFloat(data.mensualite) || 0;
+    const C_init = parseFloat(data.capitalInitial) || 0;
+    const t = parseInt(data.duree) || 0;
+    const annualRatePct = parseFloat(data.rendement) || 8.0;
+    
+    const fraisEntreeMensuel = 0.03;
+    const fraisEntreeInit = mode === 'unique' ? 0.02 : 0.03;
     const taxeVersamentPct = 0.02; 
     const fraisGestionAnnuelPct = 0.0085; 
     const taxePlusValuePct = 0.10; 
     const franchisePlusValue = 10000; 
 
-    if (isNaN(P_monthly) || P_monthly < 0 || isNaN(t) || t <= 0) {
+    if (t <= 0 || (P_monthly <= 0 && C_init <= 0)) {
         return { finalCapital: 0, investedCapital: 0 };
     }
 
     const monthlyRate = Math.pow(1 + (annualRatePct / 100), 1 / 12) - 1;
-    let currentCapital = 0; 
+    const versementNetInit = C_init * (1 - fraisEntreeInit - taxeVersamentPct);
+    const versementNetMensuel = P_monthly * (1 - fraisEntreeMensuel - taxeVersamentPct);
+    
+    let currentCapital = versementNetInit;
     const totalMonths = t * 12;
-    const investedCapital = P_monthly * totalMonths; 
-    const versementNet = P_monthly * (1 - fraisMensuelPct - taxeVersamentPct);
+    const investedCapital = C_init + (P_monthly * totalMonths);
 
     for (let month = 1; month <= totalMonths; month++) {
-        currentCapital += versementNet;
+        currentCapital += versementNetMensuel;
         currentCapital *= (1 + monthlyRate);
         if (month > 0 && month % 12 === 0) currentCapital -= (currentCapital * fraisGestionAnnuelPct || 0);
     }
@@ -85,7 +91,6 @@ export async function genererEmail() {
         const includeEnfant = state.f5_toggle_enfant; 
         const includeComparator = state.f5_toggle_comparator; 
 
-        // Préparation des tableaux de données
         let epDataArray = [];
         if (includeEP) {
             (state.f5_ep_data || []).forEach(sim => {
@@ -119,16 +124,36 @@ export async function genererEmail() {
         let nonFiscalDataArray = [];
         if (includeNonFiscal) {
             (state.f5_nonfiscal_data || []).forEach(sim => {
+                const mode = sim.mode || 'mensuel';
                 const mens = parseFloat(sim.mensualite) || 0;
+                const capInit = parseFloat(sim.capitalInitial) || 0;
+                const duree = parseInt(sim.duree) || 8;
+                const rendement = parseFloat(sim.rendement) || 3.0;
                 let age = CURRENT_YEAR - (parseInt(sim.birthyear) || CURRENT_YEAR);
-                nonFiscalDataArray.push({
-                    mensualite: mens, age: Math.max(0, age),
-                    res10: calculateNonFiscal(mens, 10), res20: calculateNonFiscal(mens, 20), res30: calculateNonFiscal(mens, 30)
-                });
+                
+                if (mode === 'unique') {
+                    const res = calculateNonFiscal({ mode: 'unique', capitalInitial: capInit, duree: duree, rendement: rendement });
+                    nonFiscalDataArray.push({
+                        mode: 'unique',
+                        capitalInitial: capInit,
+                        duree: duree,
+                        rendement: rendement,
+                        res: res
+                    });
+                } else {
+                    nonFiscalDataArray.push({
+                        mode: mode,
+                        mensualite: mens,
+                        capitalInitial: capInit,
+                        age: Math.max(0, age),
+                        res10: calculateNonFiscal({ mode: mode, mensualite: mens, capitalInitial: capInit, duree: 10 }),
+                        res20: calculateNonFiscal({ mode: mode, mensualite: mens, capitalInitial: capInit, duree: 20 }),
+                        res30: calculateNonFiscal({ mode: mode, mensualite: mens, capitalInitial: capInit, duree: 30 })
+                    });
+                }
             });
         }
 
-        // Calculs pour le Comparateur Mail
         let compData = null;
         if (includeComparator) {
             const isStopSwitch = state.f5_comp_scenario_stop_switch;
@@ -231,9 +256,9 @@ export async function genererEmail() {
                     const mensualite = parseFloat(child.mensualite) || 0;
                     const age = CURRENT_YEAR - (parseInt(child.birthyear) || CURRENT_YEAR);
                     html += emailTemplates.enfant(t, child, 
-                        calculateNonFiscal(mensualite, Math.max(0, 18 - age)), 
-                        calculateNonFiscal(mensualite, Math.max(0, 21 - age)), 
-                        calculateNonFiscal(mensualite, Math.max(0, 25 - age)), formatMonetaire);
+                        calculateNonFiscal({ mensualite: mensualite, duree: Math.max(0, 18 - age) }), 
+                        calculateNonFiscal({ mensualite: mensualite, duree: Math.max(0, 21 - age) }), 
+                        calculateNonFiscal({ mensualite: mensualite, duree: Math.max(0, 25 - age) }), formatMonetaire);
                 }
             });
         }
@@ -296,17 +321,46 @@ function renderDynamicInputs() {
     }
 
     // Non-Fiscal
-    state.f5_nonfiscal_data = syncArray(parseInt(state.f5_nonfiscal_count) || 1, state.f5_nonfiscal_data, { mensualite: 100, birthyear: 2000 });
+    state.f5_nonfiscal_data = syncArray(parseInt(state.f5_nonfiscal_count) || 1, state.f5_nonfiscal_data, { mode: 'mensuel', mensualite: 100, capitalInitial: 0, birthyear: 2000, duree: 8, rendement: 3.0 });
     const nfContainer = document.getElementById('nonfiscal-dynamic-inputs');
     if (nfContainer) {
-        nfContainer.innerHTML = state.f5_nonfiscal_data.map((sim, idx) => `
+        nfContainer.innerHTML = state.f5_nonfiscal_data.map((sim, idx) => {
+            let fieldsHtml = '';
+            
+            if (sim.mode === 'unique') {
+                fieldsHtml = `
+                    <div><label>${t.f4_label_nf_capital || "Capital de départ (€)"}</label><input type="number" class="dyn-input" data-type="nf" data-idx="${idx}" data-field="capitalInitial" value="${sim.capitalInitial}" step="100"></div>
+                    <div><label>${t.f4_label_nf_duree || "Durée (années)"}</label><input type="number" class="dyn-input" data-type="nf" data-idx="${idx}" data-field="duree" value="${sim.duree}" step="1"></div>
+                    <div><label>${t.f4_label_nf_rendement || "Rendement (%)"}</label><input type="number" class="dyn-input" data-type="nf" data-idx="${idx}" data-field="rendement" value="${sim.rendement}" step="0.1"></div>
+                `;
+            } else if (sim.mode === 'mensuel_init') {
+                fieldsHtml = `
+                    <div><label>${t.f4_label_nonfiscal_monthly || "Mensualité (€)"}</label><input type="number" class="dyn-input" data-type="nf" data-idx="${idx}" data-field="mensualite" value="${sim.mensualite}" step="10"></div>
+                    <div><label>${t.f4_label_nf_capital || "Capital de départ (€)"}</label><input type="number" class="dyn-input" data-type="nf" data-idx="${idx}" data-field="capitalInitial" value="${sim.capitalInitial}" step="100"></div>
+                    <div><label>${t.f4_label_nonfiscal_birthyear || "Naissance"}</label><input type="number" class="dyn-input" data-type="nf" data-idx="${idx}" data-field="birthyear" value="${sim.birthyear}" step="1"></div>
+                `;
+            } else {
+                fieldsHtml = `
+                    <div><label>${t.f4_label_nonfiscal_monthly || "Mensualité (€)"}</label><input type="number" class="dyn-input" data-type="nf" data-idx="${idx}" data-field="mensualite" value="${sim.mensualite}" step="10"></div>
+                    <div><label>${t.f4_label_nonfiscal_birthyear || "Naissance"}</label><input type="number" class="dyn-input" data-type="nf" data-idx="${idx}" data-field="birthyear" value="${sim.birthyear}" step="1"></div>
+                `;
+            }
+
+            return `
             <div style="border-top: 1px dashed var(--border-light); padding-top: 10px; margin-top: 10px;">
                 <h5 style="margin-bottom: 5px; color: var(--primary-color);">Option ${idx + 1}</h5>
-                <div class="mail-inputs-grid">
-                    <div><label>${t.f4_label_nonfiscal_monthly || "Mensualité"}</label><input type="number" class="dyn-input" data-type="nf" data-idx="${idx}" data-field="mensualite" value="${sim.mensualite}" step="10"></div>
-                    <div><label>${t.f4_label_nonfiscal_birthyear || "Naissance"}</label><input type="number" class="dyn-input" data-type="nf" data-idx="${idx}" data-field="birthyear" value="${sim.birthyear}" step="1"></div>
+                <div style="margin-bottom: 10px;">
+                    <select class="dyn-input" data-type="nf" data-idx="${idx}" data-field="mode" style="width: 100%; padding: 8px; border: 1px solid var(--border-light); border-radius: 4px; font-family: inherit;">
+                        <option value="mensuel" ${sim.mode === 'mensuel' ? 'selected' : ''}>${t.f4_nf_mode_mensuel || '1° Mensuel classique'}</option>
+                        <option value="mensuel_init" ${sim.mode === 'mensuel_init' ? 'selected' : ''}>${t.f4_nf_mode_mensuel_init || '2° Mensuel + Capital de départ'}</option>
+                        <option value="unique" ${sim.mode === 'unique' ? 'selected' : ''}>${t.f4_nf_mode_unique || '3° Prime Unique'}</option>
+                    </select>
                 </div>
-            </div>`).join('');
+                <div class="mail-inputs-grid">
+                    ${fieldsHtml}
+                </div>
+            </div>`;
+        }).join('');
     }
 
     // Dela Obsèques
@@ -386,7 +440,12 @@ function handleDynamicInput(e) {
             
             state[stateKey][idx][field] = val;
             updateState(stateKey, state[stateKey]);
-            genererEmail();
+            
+            if (field === 'mode') {
+                renderDynamicInputs(); 
+            } else {
+                genererEmail();
+            }
         }
     }
 }
@@ -423,12 +482,10 @@ export function initF5() {
         }
     });
 
-    // On bind tous les compteurs d'options
     ['ep', 'elt', 'nonfiscal', 'dela', 'heritage', 'children'].forEach(type => {
         bindInput(`mail-${type}-count`, `f5_${type}_count`, renderDynamicInputs);
     });
 
-    // Binding des inputs du comparateur interne
     bindCheckbox('mail-comp-stop-switch', 'f5_comp_scenario_stop_switch', () => {
         const group = document.getElementById('mail-comp-c1-stop-switch-group');
         if (group) group.style.display = getState().f5_comp_scenario_stop_switch ? 'block' : 'none';

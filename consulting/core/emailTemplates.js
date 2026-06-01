@@ -313,76 +313,119 @@ export const emailTemplates = {
         if (!Array.isArray(dataArray)) dataArray = [dataArray];
         let html = `<h3 style="color: #0070B0; border-bottom: 2px solid #0070B0; padding-bottom: 5px; margin-top: 35px; font-family: 'Inter', sans-serif;">${t('email_nonfiscal_title')}</h3>`;
         
-        if (dataArray.length === 1) {
-            let data = dataArray[0];
-            html += `
-        <p>
-            ${t('email_nonfiscal_p1_line_1').replace('{mensualite}', formatMonetaire(data.mensualite))}<br>
-            ${t('email_nonfiscal_p1_line_2')}<br>
-            ${t('email_nonfiscal_p1_line_4')}<br>
-            ${t('email_nonfiscal_p1_line_5')}<br>
-        </p>
-        <p style="margin-top: 10px;">${t('email_nonfiscal_p2').replace('{age}', data.age + 10)}</p>
-        <ul style="margin-top: 5px; margin-bottom: 10px; padding-left: 20px;">
-            <li style="padding: 5px;">${t('email_nonfiscal_p2_summary')
-                .replace('{investedCapital}', formatMonetaire(data.res10.investedCapital))
-                .replace('{finalCapital}', formatMonetaire(data.res10.finalCapital))}
-            </li>
-        </ul>
-        <p style="margin-top: 10px;">${t('email_nonfiscal_p3').replace('{age}', data.age + 20)}</p>
-        <ul style="margin-top: 5px; margin-bottom: 10px; padding-left: 20px;">
-            <li style="padding: 5px;">${t('email_nonfiscal_p3_summary')
-                .replace('{investedCapital}', formatMonetaire(data.res20.investedCapital))
-                .replace('{finalCapital}', formatMonetaire(data.res20.finalCapital))}
-            </li>
-        </ul>
-        <p style="margin-top: 10px;">${t('email_nonfiscal_p4').replace('{age}', data.age + 30)}</p>
-        <ul style="margin-top: 5px; margin-bottom: 10px; padding-left: 20px;">
-            <li style="padding: 5px;">${t('email_nonfiscal_p4_summary')
-                .replace('{investedCapital}', formatMonetaire(data.res30.investedCapital))
-                .replace('{finalCapital}', formatMonetaire(data.res30.finalCapital))}
-            </li>
-        </ul>
-            `;
-        } else {
-            html += `<p>${t('email_nf_compare_intro')}</p>`;
-            dataArray.forEach((data, index) => {
+        let hasClassic = false;
+
+        dataArray.forEach((data, index) => {
+            if (data.mode === 'unique') {
                 html += `
-                <div style="background-color: #f9f9f9; border-left: 4px solid #0070B0; padding: 10px; margin-bottom: 15px;">
-                    <h4 style="margin-top: 0; color: #0070B0; margin-bottom: 5px;">${t('email_nf_option_title').replace('{index}', index + 1).replace('{amount}', formatMonetaire(data.mensualite))}</h4>
-                    <ul style="margin: 0; padding-left: 20px;">
-                        <li>${t('email_nf_summary_10').replace('{age}', data.age + 10).replace('{invested}', formatMonetaire(data.res10.investedCapital)).replace('{final}', formatMonetaire(data.res10.finalCapital))}</li>
-                        <li>${t('email_nf_summary_20').replace('{age}', data.age + 20).replace('{invested}', formatMonetaire(data.res20.investedCapital)).replace('{final}', formatMonetaire(data.res20.finalCapital))}</li>
-                        <li>${t('email_nf_summary_30').replace('{age}', data.age + 30).replace('{invested}', formatMonetaire(data.res30.investedCapital)).replace('{final}', formatMonetaire(data.res30.finalCapital))}</li>
+                <h4 style="color: #0070B0; margin-top: 20px; text-transform: uppercase;">PLACEMENT PRIME UNIQUE :</h4>
+                <p>💡 <strong>Conditions et avantages du placement</strong><br>
+                Placement accessible avec un montant variant entre 6.200€ et 1.000.000€.</p>
+                <p>Le placement s’envisage idéalement sur 8 ans minimum si <span style="color: #27ae60; font-weight: bold;">branche 21</span> et 5 ans minimum si <span style="color: #27ae60; font-weight: bold;">branche 23</span>.</p>
+                <p>Une taxe de 2 % s’applique sur le versement, mais Allianz rembourse actuellement cette taxe dans le cadre de l’action “Taxe remboursée” valable jusqu’au 29 mars.<br><br>
+                Les frais d’entrée s’élèvent à 2 % du montant investi.</p>
+                <p>Concernant le suivi, vous disposez d’un accès personnel au portail Allianz pour consulter votre placement. Chaque année, la compagnie d’assurance transmettra également un rapport détaillé, soit par e-mail, soit par courrier selon votre préférence.</p>
+
+                <p>📈 <strong>Rendement et sécurité (Branche 21) <span style="color: #27ae60;">Allianz Invest for Life3A My Future</span></strong><br>
+                Le taux d’intérêt garanti est actuellement de 0,5 %, auquel s’ajoute la participation bénéficiaire.<br>
+                En 2024, Allianz a distribué 2,75 % de participation bénéficiaire, soit un rendement total net de 3,15 %.<br>
+                En 2025, Allianz a distribué 2,50 % de participation bénéficiaire, soit un rendement total net de 3,00 %.</p>
+
+                <p>📈 <strong>Rendement potentiellement élevé (Branche 23) <span style="color: #27ae60;">Xcellence</span> ou <span style="color: #27ae60;">Active Invest</span></strong><br>
+                1° Produit <span style="color: #27ae60; font-weight: bold;">Xcellence</span><br>
+                Si vous optez pour le produit Xcellence, vous avez la liberté de choisir vous-même les fonds d’investissement dans lesquels placer votre capital. Vous disposez d’une sélection de 54 fonds d’investissement. Bien entendu, je peux vous accompagner et vous conseiller dans la constitution du portefeuille le plus adapté à vos objectifs.<br><br>
+                2° Produit <span style="color: #27ae60; font-weight: bold;">Active Invest</span><br>
+                Si vous choisissez le produit Active Invest, la gestion de votre portefeuille est entièrement confiée à Allianz. Les investissements sont réalisés par des experts, en fonction de votre profil de risque. Vous n’avez donc pas à sélectionner vous-même les fonds : tout est géré pour vous.</p>
+
+                <p>💰 <strong>Flexibilité du contrat</strong><br>
+                Ce qui peut également être intéressant, c’est qu’en cas de besoin, vous pourrez effectuer un rachat partiel sur votre placement — une fois par an, à hauteur maximale de 10 % de la valeur du contrat.<br>
+                Bien entendu, cette option n’a de sens que si vous souhaitez disposer d’une partie de votre capital.</p>
+
+                <div style="background-color: #f9f9f9; border-left: 4px solid #27ae60; padding: 15px; margin-top: 15px; margin-bottom: 20px;">
+                    <p style="margin: 0;"><strong>Votre simulation (Option ${index + 1}) :</strong><br>
+                    Pour un capital de départ de <strong>${formatMonetaire(data.capitalInitial)}</strong>, sur une durée de <strong>${data.duree} ans</strong> avec un rendement estimé à <strong>${data.rendement}%</strong>, le capital final projeté est de <strong>${formatMonetaire(data.res.finalCapital)}</strong>.</p>
+                </div>
+                `;
+            } else {
+                hasClassic = true;
+                const isSingle = dataArray.length === 1;
+                const titleStr = data.mode === 'mensuel_init' 
+                    ? `${formatMonetaire(data.mensualite)}/mois + ${formatMonetaire(data.capitalInitial)} initial`
+                    : `${formatMonetaire(data.mensualite)}/mois`;
+
+                if (isSingle) {
+                    html += `
+                    <p>
+                        Montants: <strong>${titleStr} BRUTS</strong> (Les montants peuvent être adaptés en fonction de votre objectif fiscal/financier).<br>
+                        ${t('email_nonfiscal_p1_line_2')}<br>
+                        ${t('email_nonfiscal_p1_line_4')}<br>
+                        ${t('email_nonfiscal_p1_line_5')}<br>
+                    </p>
+                    <p style="margin-top: 10px;">${t('email_nonfiscal_p2').replace('{age}', data.age + 10)}</p>
+                    <ul style="margin-top: 5px; margin-bottom: 10px; padding-left: 20px;">
+                        <li style="padding: 5px;">${t('email_nonfiscal_p2_summary')
+                            .replace('{investedCapital}', formatMonetaire(data.res10.investedCapital))
+                            .replace('{finalCapital}', formatMonetaire(data.res10.finalCapital))}
+                        </li>
                     </ul>
-                </div>`;
-            });
-            html += `<p>${t('email_nonfiscal_p1_line_2')}<br>${t('email_nonfiscal_p1_line_4')}<br>${t('email_nonfiscal_p1_line_5')}</p>`;
-        }
+                    <p style="margin-top: 10px;">${t('email_nonfiscal_p3').replace('{age}', data.age + 20)}</p>
+                    <ul style="margin-top: 5px; margin-bottom: 10px; padding-left: 20px;">
+                        <li style="padding: 5px;">${t('email_nonfiscal_p3_summary')
+                            .replace('{investedCapital}', formatMonetaire(data.res20.investedCapital))
+                            .replace('{finalCapital}', formatMonetaire(data.res20.finalCapital))}
+                        </li>
+                    </ul>
+                    <p style="margin-top: 10px;">${t('email_nonfiscal_p4').replace('{age}', data.age + 30)}</p>
+                    <ul style="margin-top: 5px; margin-bottom: 10px; padding-left: 20px;">
+                        <li style="padding: 5px;">${t('email_nonfiscal_p4_summary')
+                            .replace('{investedCapital}', formatMonetaire(data.res30.investedCapital))
+                            .replace('{finalCapital}', formatMonetaire(data.res30.finalCapital))}
+                        </li>
+                    </ul>
+                    `;
+                } else {
+                    html += `
+                    <div style="background-color: #f9f9f9; border-left: 4px solid #0070B0; padding: 10px; margin-bottom: 15px;">
+                        <h4 style="margin-top: 0; color: #0070B0; margin-bottom: 5px;">Option ${index + 1} : ${titleStr}</h4>
+                        <ul style="margin: 0; padding-left: 20px;">
+                            <li>${t('email_nf_summary_10').replace('{age}', data.age + 10).replace('{invested}', formatMonetaire(data.res10.investedCapital)).replace('{final}', formatMonetaire(data.res10.finalCapital))}</li>
+                            <li>${t('email_nf_summary_20').replace('{age}', data.age + 20).replace('{invested}', formatMonetaire(data.res20.investedCapital)).replace('{final}', formatMonetaire(data.res20.finalCapital))}</li>
+                            <li>${t('email_nf_summary_30').replace('{age}', data.age + 30).replace('{invested}', formatMonetaire(data.res30.investedCapital)).replace('{final}', formatMonetaire(data.res30.finalCapital))}</li>
+                        </ul>
+                    </div>`;
+                }
+            }
+        });
         
-        html += `
-        <p style="margin-top: 25px;">${t('email_nonfiscal_p5')}</p>
-        <p style="font-size: 0.9em; font-style: italic; margin-top: 10px;">
-            ${t('email_nonfiscal_p6')}
-        </p>
-        <p style="margin-top: 15px;">
-            <strong><u>${t('email_common_reco_title')}</u></strong><br>
-            <strong><a href="https://www.vivium.be/fr/private-individuals/home" target="_blank" rel="noopener noreferrer">P&V Assurances SC (Vivium)</a></strong><br>
-            ${t('email_nonfiscal_reco_pv_text')}
-            <ul style="margin-top: 5px; margin-bottom: 10px; padding-left: 20px;">
-                <li><a href="...">${t('email_nonfiscal_reco_pv_link_1')}</a></li>
-                <li><a href="...">${t('email_nonfiscal_reco_pv_link_2')}</a></li>
-                <li><a href="...">${t('email_nonfiscal_reco_pv_link_3')}</a></li>
-                <li><a href="...">${t('email_nonfiscal_reco_pv_link_4')}</a></li>
-                <li><a href="...">${t('email_nonfiscal_reco_pv_link_5')}</a></li>
-            </ul>
-            <strong><a href="https://www.allianzgi.com/" target="_blank" rel="noopener noreferrer">Allianz Global Investor</a></strong><br>
-            ${t('email_nonfiscal_reco_allianz_text')}
-            <ul style="margin-top: 5px; margin-bottom: 10px; padding-left: 20px;">
-                <li><a href="...">${t('email_nonfiscal_reco_allianz_link_1')}</a></li>
-            </ul>
-        </p>
-        `;
+        if (hasClassic) {
+            if (dataArray.length > 1) {
+                html += `<p>${t('email_nonfiscal_p1_line_2')}<br>${t('email_nonfiscal_p1_line_4')}<br>${t('email_nonfiscal_p1_line_5')}</p>`;
+            }
+            html += `
+            <p style="margin-top: 25px;">${t('email_nonfiscal_p5')}</p>
+            <p style="font-size: 0.9em; font-style: italic; margin-top: 10px;">
+                ${t('email_nonfiscal_p6')}
+            </p>
+            <p style="margin-top: 15px;">
+                <strong><u>${t('email_common_reco_title')}</u></strong><br>
+                <strong><a href="https://www.vivium.be/fr/private-individuals/home" target="_blank" rel="noopener noreferrer">P&V Assurances SC (Vivium)</a></strong><br>
+                ${t('email_nonfiscal_reco_pv_text')}
+                <ul style="margin-top: 5px; margin-bottom: 10px; padding-left: 20px;">
+                    <li><a href="...">BlackRock iShares MSCI World SRI UCITS ETF</a></li>
+                    <li><a href="...">Amundi MSCI Water ESG Screened UCITS ETF ACC</a></li>
+                    <li><a href="...">Amundi Money Market Euro Liquidity Short Term Responsible - E (C)</a></li>
+                    <li><a href="...">Amundi KBI Global Energy Transition Fund - Euro Class G (C)</a></li>
+                    <li><a href="...">Amundi Global Climate Change Equities ETF</a></li>
+                </ul>
+                <strong><a href="https://www.allianzgi.com/" target="_blank" rel="noopener noreferrer">Allianz Global Investor</a></strong><br>
+                ${t('email_nonfiscal_reco_allianz_text')}
+                <ul style="margin-top: 5px; margin-bottom: 10px; padding-left: 20px;">
+                    <li><a href="...">Nordea Global Climate and Environment Fund BP - EUR</a></li>
+                </ul>
+            </p>
+            `;
+        }
+
         return html;
     },
 
@@ -457,7 +500,6 @@ export const emailTemplates = {
         `;
         
         dataArray.forEach(data => {
-            // Le .replace injecte les valeurs de chaque option, sans mettre le texte en gras
             html += `<li>${t('email_heritage_li_4').replace('{capital}', formatMonetaire(data.capital)).replace('{prime}', formatMonetaire(data.prime))}</li>`;
         });
 
@@ -489,7 +531,6 @@ export const emailTemplates = {
                 <ul style="margin-top: 5px; margin-bottom: 5px; padding-left: 15px;">
                     <li>${t('email_docs_eip_ol_1_li_1')}</li>
                     <li>${t('email_docs_eip_ol_1_li_2')}</li>
-                </ul>
             </li>
             <li>${t('email_docs_eip_ol_2')}
                 <ul style="margin-top: 5px; margin-bottom: 5px; padding-left: 15px;">
