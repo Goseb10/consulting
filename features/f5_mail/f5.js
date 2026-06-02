@@ -1,0 +1,556 @@
+// features/f5_mail/f5.js 
+
+import { CURRENT_YEAR, AGE_FINALE_DEFAUT, FRAIS_DEFAUT } from '../../core/constants.js';
+import { emailTemplates } from '../../core/emailTemplates.js'; 
+import { translations, loadTranslations } from '../../core/i18n.js';
+import { effectuerSimulation } from '../../core/simulationEngine.js'; 
+import { formatMonetaire, updateElement } from '../../core/utils.js';
+import { getState, bindInput, bindCheckbox, updateState } from '../../core/store.js';
+
+function calculateNonFiscal(data) {
+    const mode = data.mode || 'mensuel';
+    const P_monthly = parseFloat(data.mensualite) || 0;
+    const C_init = parseFloat(data.capitalInitial) || 0;
+    const t = parseInt(data.duree) || 0;
+    const annualRatePct = parseFloat(data.rendement) || 8.0;
+    
+    const fraisEntreeMensuel = 0.03;
+    const fraisEntreeInit = mode === 'unique' ? 0.02 : 0.03;
+    const taxeVersamentPct = 0.02; 
+    const fraisGestionAnnuelPct = 0.0085; 
+    const taxePlusValuePct = 0.10; 
+    const franchisePlusValue = 10000; 
+
+    if (t <= 0 || (P_monthly <= 0 && C_init <= 0)) {
+        return { finalCapital: 0, investedCapital: 0 };
+    }
+
+    const monthlyRate = Math.pow(1 + (annualRatePct / 100), 1 / 12) - 1;
+    const versementNetInit = C_init * (1 - fraisEntreeInit - taxeVersamentPct);
+    const versementNetMensuel = P_monthly * (1 - fraisEntreeMensuel - taxeVersamentPct);
+    
+    let currentCapital = versementNetInit;
+    const totalMonths = t * 12;
+    const investedCapital = C_init + (P_monthly * totalMonths);
+
+    for (let month = 1; month <= totalMonths; month++) {
+        currentCapital += versementNetMensuel;
+        currentCapital *= (1 + monthlyRate);
+        if (month > 0 && month % 12 === 0) currentCapital -= (currentCapital * fraisGestionAnnuelPct || 0);
+    }
+
+    const capitalFinalBrut = currentCapital;
+    const plusValueBrute = capitalFinalBrut - investedCapital; 
+    const plusValueTaxable = Math.max(0, plusValueBrute - franchisePlusValue);
+    const capitalFinalNet = capitalFinalBrut - (plusValueTaxable * taxePlusValuePct);
+
+    return { finalCapital: capitalFinalNet, investedCapital: investedCapital };
+}
+
+export async function genererEmail() {
+    try {
+        const state = getState();
+        const mailLang = state.f5_langue || 'fr';
+        await loadTranslations(mailLang);
+        
+        const langDict = translations[mailLang] || translations['fr'];
+        const t = (key) => langDict[key] !== undefined ? langDict[key] : (translations['fr'][key] || `[${key}]`);
+
+        const prenom = state.f5_prenom || "Prénom";
+        const nom = state.f5_nom || "Nom";
+        const email = state.f5_email || ""; 
+        const isTbd = state.f5_rdv_tbd;
+
+        let formattedRdvDate = state.f5_rdv_date;
+        let formattedRdvTime = state.f5_rdv_time;
+        const langLocale = mailLang === 'nl' ? 'nl-BE' : (mailLang === 'en' ? 'en-GB' : 'fr-BE');
+
+        if (!isTbd) { 
+            try {
+                if (state.f5_rdv_date) {
+                    const dateObj = new Date(state.f5_rdv_date + 'T00:00:00'); 
+                    let dateString = new Intl.DateTimeFormat(langLocale, { weekday: 'long', day: 'numeric', month: 'long' }).format(dateObj);
+                    formattedRdvDate = dateString.charAt(0).toUpperCase() + dateString.slice(1);
+                }
+                if (state.f5_rdv_time) {
+                    const [hours, minutes] = state.f5_rdv_time.split(':');
+                    formattedRdvTime = (mailLang === 'fr' || mailLang === 'nl') ? `${hours}h${minutes}` : state.f5_rdv_time;
+                }
+            } catch (e) {}
+        }
+        
+        const msciRate = parseFloat(state.f5_msci_rate) || 8.53;
+        const includeEP = state.f5_toggle_ep;
+        const includeELT = state.f5_toggle_elt;
+        const includePLCI = state.f5_toggle_plci;
+        const includeINAMI = state.f5_toggle_inami;
+        const includeEIP = state.f5_toggle_eip;
+        const includeNonFiscal = state.f5_toggle_nonfiscal;
+        const includeDela = state.f5_toggle_dela;
+        const includeHeritage = state.f5_toggle_heritage;
+        const includeEnfant = state.f5_toggle_enfant; 
+        const includeComparator = state.f5_toggle_comparator; 
+
+        let epDataArray = [];
+        if (includeEP) {
+            (state.f5_ep_data || []).forEach(sim => {
+                const epParams = {
+                    anneeNaissance: parseInt(sim.birthyear) || CURRENT_YEAR, versementBrutMensuel: parseFloat(sim.mensualite) || 0,
+                    typeEpargne: 'pension', rendementAnnuel: 5.0,
+                    fraisEntreePct: FRAIS_DEFAUT.pension.fraisEntree, fraisCourantAnnuelPct: FRAIS_DEFAUT.pension.fraisCourant,
+                    targetAge: AGE_FINALE_DEFAUT
+                };
+                const simResult = effectuerSimulation(epParams, CURRENT_YEAR);
+                simResult.targetAge = AGE_FINALE_DEFAUT; 
+                epDataArray.push(simResult);
+            });
+        }
+
+        let eltDataArray = [];
+        if (includeELT) {
+            (state.f5_elt_data || []).forEach(sim => {
+                const eltParams = {
+                    anneeNaissance: parseInt(sim.birthyear) || CURRENT_YEAR, versementBrutMensuel: parseFloat(sim.mensualite) || 0,
+                    typeEpargne: 'long-terme', rendementAnnuel: 5.0,
+                    fraisEntreePct: FRAIS_DEFAUT['long-terme'].fraisEntree, fraisCourantAnnuelPct: FRAIS_DEFAUT['long-terme'].fraisCourant,
+                    targetAge: parseInt(sim.target_age) || 67
+                };
+                const simResult = effectuerSimulation(eltParams, CURRENT_YEAR);
+                simResult.targetAge = eltParams.targetAge; 
+                eltDataArray.push(simResult);
+            });
+        }
+
+        let nonFiscalDataArray = [];
+        let hasClassicNf = false;
+        
+        if (includeNonFiscal) {
+            (state.f5_nonfiscal_data || []).forEach(sim => {
+                const mode = sim.mode || 'mensuel';
+                const mens = parseFloat(sim.mensualite) || 0;
+                const capInit = parseFloat(sim.capitalInitial) || 0;
+                const duree = parseInt(sim.duree) || 8;
+                const rendement = parseFloat(sim.rendement) || 3.0;
+                let age = CURRENT_YEAR - (parseInt(sim.birthyear) || CURRENT_YEAR);
+                
+                if (mode !== 'unique') hasClassicNf = true;
+                
+                if (mode === 'unique') {
+                    const res = calculateNonFiscal({ mode: 'unique', capitalInitial: capInit, duree: duree, rendement: rendement });
+                    nonFiscalDataArray.push({
+                        mode: 'unique',
+                        capitalInitial: capInit,
+                        duree: duree,
+                        rendement: rendement,
+                        res: res
+                    });
+                } else {
+                    nonFiscalDataArray.push({
+                        mode: mode,
+                        mensualite: mens,
+                        capitalInitial: capInit,
+                        age: Math.max(0, age),
+                        res10: calculateNonFiscal({ mode: mode, mensualite: mens, capitalInitial: capInit, duree: 10 }),
+                        res20: calculateNonFiscal({ mode: mode, mensualite: mens, capitalInitial: capInit, duree: 20 }),
+                        res30: calculateNonFiscal({ mode: mode, mensualite: mens, capitalInitial: capInit, duree: 30 })
+                    });
+                }
+            });
+        }
+
+        let compData = null;
+        if (includeComparator) {
+            const isStopSwitch = state.f5_comp_scenario_stop_switch;
+
+            const name1 = state.f5_comp_c1_name;
+            const type1 = state.f5_comp_c1_type;
+            const currentAge1 = parseInt(state.f5_comp_c1_start_age) || 0; 
+            const anneeNaissance1 = CURRENT_YEAR - currentAge1;
+            const versement1_base = parseFloat(state.f5_comp_c1_versement) || 0;
+            const rendement1 = parseFloat(state.f5_comp_c1_rendement) || 0;
+            const fraisEntree1 = parseFloat(state.f5_comp_c1_frais_entree) || 0;
+            const fraisCourant1 = parseFloat(state.f5_comp_c1_frais_courant) || 0;
+            const finalAge1 = parseInt(state.f5_comp_c1_target_age) || 67;
+
+            const paramsC1_Base = { 
+                typeEpargne: type1, anneeNaissance: anneeNaissance1, 
+                rendementAnnuel: rendement1, fraisEntreePct: fraisEntree1, 
+                fraisCourantAnnuelPct: fraisCourant1, targetAge: finalAge1
+            };
+
+            const name2 = state.f5_comp_c2_name;
+            const type2 = state.f5_comp_c2_type;
+            const currentAge2 = parseInt(state.f5_comp_c2_start_age) || 0; 
+            const anneeNaissance2 = CURRENT_YEAR - currentAge2;
+            const versement2 = parseFloat(state.f5_comp_c2_versement) || 0;
+            const rendement2 = parseFloat(state.f5_comp_c2_rendement) || 0;
+            const fraisEntree2 = parseFloat(state.f5_comp_c2_frais_entree) || 0;
+            const fraisCourant2 = parseFloat(state.f5_comp_c2_frais_courant) || 0;
+            const finalAge2 = parseInt(state.f5_comp_c2_target_age) || 67;
+            
+            const paramsC2_Base = { 
+                typeEpargne: type2, anneeNaissance: anneeNaissance2, versementBrutMensuel: versement2, 
+                rendementAnnuel: rendement2, fraisEntreePct: fraisEntree2, fraisCourantAnnuelPct: fraisCourant2, 
+                targetAge: finalAge2, capitalInitial: 0
+            };
+
+            let result1, result2, result_Precalc_data = null; 
+
+            if (isStopSwitch) {
+                const originalStartAge = parseInt(state.f5_comp_c1_original_start_age) || 18;
+                const startYear_Precalc = anneeNaissance1 + originalStartAge;
+                
+                const params_Precalc = {
+                    ...paramsC1_Base,
+                    versementBrutMensuel: versement1_base,
+                    targetAge: currentAge1, 
+                    capitalInitial: 0
+                };
+                result_Precalc_data = effectuerSimulation(params_Precalc, startYear_Precalc);
+                const capitalActuelC1 = result_Precalc_data.capitalFinalNet;
+                
+                const params_C1_Growth = {
+                    ...paramsC1_Base,
+                    versementBrutMensuel: 0, 
+                    capitalInitial: capitalActuelC1, 
+                    targetAge: finalAge1 
+                };
+                result1 = effectuerSimulation(params_C1_Growth, CURRENT_YEAR);
+                result2 = effectuerSimulation(paramsC2_Base, CURRENT_YEAR);
+            } else {
+                const params_C1_Normal = {
+                    ...paramsC1_Base,
+                    versementBrutMensuel: versement1_base,
+                    capitalInitial: 0,
+                    targetAge: finalAge1
+                };
+                result1 = effectuerSimulation(params_C1_Normal, CURRENT_YEAR);
+                result2 = effectuerSimulation(paramsC2_Base, CURRENT_YEAR);
+            }
+
+            compData = {
+                isStopSwitch, name1, name2, result1, result2, result_Precalc_data,
+                versement1: versement1_base, versement2, type1, type2,
+                rendement1, rendement2, fraisEntree1, fraisEntree2, fraisCourant1, fraisCourant2,
+                finalAge1, finalAge2, currentAge1, currentAge2
+            };
+        }
+
+        const sujet = (t('email_subject') || "Synthèse d’analyse financière : {prenom} {nom}").replace('{nom}', nom).replace('{prenom}', prenom);
+        
+        let html = emailTemplates.intro(t, prenom, nom, email, sujet); 
+        
+        if (includeEP) html += emailTemplates.ep(t, epDataArray, formatMonetaire); 
+        if (includeELT) html += emailTemplates.elt(t, eltDataArray, formatMonetaire);
+        if (includeEP || includeELT) html += emailTemplates.ep_elt_common(t, msciRate, formatMonetaire); 
+        
+        if (includeComparator && compData) {
+            html += emailTemplates.comparator(t, compData, formatMonetaire);
+        }
+        
+        if (includePLCI) html += emailTemplates.plci(t);
+        if (includeINAMI) html += emailTemplates.inami(t);
+        if (includeEIP) html += emailTemplates.eip(t);
+        
+        if (includeNonFiscal) html += emailTemplates.nonfiscal(t, nonFiscalDataArray, formatMonetaire);
+        
+        if (includeEnfant) {
+            (state.f5_children_data || []).forEach((child) => {
+                if (child.name && (child.mensualite > 0 || child.capitalInitial > 0)) {
+                    const mensualite = parseFloat(child.mensualite) || 0;
+                    const capitalInitial = parseFloat(child.capitalInitial) || 0;
+                    const age = CURRENT_YEAR - (parseInt(child.birthyear) || CURRENT_YEAR);
+                    html += emailTemplates.enfant(t, child, 
+                        calculateNonFiscal({ mensualite: mensualite, capitalInitial: capitalInitial, duree: Math.max(0, 18 - age) }), 
+                        calculateNonFiscal({ mensualite: mensualite, capitalInitial: capitalInitial, duree: Math.max(0, 21 - age) }), 
+                        calculateNonFiscal({ mensualite: mensualite, capitalInitial: capitalInitial, duree: Math.max(0, 25 - age) }), formatMonetaire);
+                }
+            });
+        }
+        
+        // Affichage des recommandations ETF une seule fois si "Enfant" ou "Non-fiscale classique" sélectionnés
+        if (hasClassicNf || includeEnfant) {
+            html += emailTemplates.nonfiscal_reco(t);
+        }
+        
+        if (includeDela) html += emailTemplates.dela(t, state.f5_dela_data || [], formatMonetaire); 
+        if (includeHeritage) html += emailTemplates.heritage(t, state.f5_heritage_data || [], formatMonetaire); 
+        
+        html += emailTemplates.rdv(t, formattedRdvDate, formattedRdvTime, isTbd); 
+        html += `<ul style="margin-top: 10px; margin-bottom: 15px; padding-left: 20px; list-style-type: disc;"><li>${t('email_docs_base')}</li>`; 
+        if (includeEIP) html += `<li>${emailTemplates.docs_eip(t)}</li>`; 
+        html += `</ul>${emailTemplates.outro(t)}`; 
+
+        const previewContainer = document.getElementById('email-preview-container');
+        if (previewContainer) previewContainer.innerHTML = html;
+        updateElement('email-subject-display', sujet, false);
+        updateElement('email-to-display', email, false);
+
+    } catch (e) {
+        console.error("Erreur lors de la génération de l'email:", e);
+    }
+}
+
+function renderDynamicInputs() {
+    const state = getState();
+    const t = translations[state.f5_langue || 'fr'] || translations['fr'];
+
+    const syncArray = (count, array, defaultObj) => {
+        let newArr = [...(array || [])];
+        while (newArr.length < count) newArr.push({ ...defaultObj });
+        return newArr.slice(0, count);
+    };
+
+    // EP
+    state.f5_ep_data = syncArray(parseInt(state.f5_ep_count) || 1, state.f5_ep_data, { mensualite: 87.50, birthyear: 2000 });
+    const epContainer = document.getElementById('ep-dynamic-inputs');
+    if (epContainer) {
+        epContainer.innerHTML = state.f5_ep_data.map((sim, idx) => `
+            <div style="border-top: 1px dashed var(--border-light); padding-top: 10px; margin-top: 10px;">
+                <h5 style="margin-bottom: 5px; color: var(--primary-color);">Option ${idx + 1}</h5>
+                <div class="mail-inputs-grid">
+                    <div><label>${t.f4_label_ep_monthly || "Mensualité"}</label><input type="number" class="dyn-input" data-type="ep" data-idx="${idx}" data-field="mensualite" value="${sim.mensualite}" step="0.01"></div>
+                    <div><label>${t.f4_label_ep_birthyear || "Naissance"}</label><input type="number" class="dyn-input" data-type="ep" data-idx="${idx}" data-field="birthyear" value="${sim.birthyear}" step="1"></div>
+                </div>
+            </div>`).join('');
+    }
+
+    // ELT
+    state.f5_elt_data = syncArray(parseInt(state.f5_elt_count) || 1, state.f5_elt_data, { mensualite: 100, birthyear: 2000, target_age: 67 });
+    const eltContainer = document.getElementById('elt-dynamic-inputs');
+    if (eltContainer) {
+        eltContainer.innerHTML = state.f5_elt_data.map((sim, idx) => `
+            <div style="border-top: 1px dashed var(--border-light); padding-top: 10px; margin-top: 10px;">
+                <h5 style="margin-bottom: 5px; color: var(--primary-color);">Option ${idx + 1}</h5>
+                <div class="mail-inputs-grid">
+                    <div><label>${t.f4_label_elt_monthly || "Mensualité"}</label><input type="number" class="dyn-input" data-type="elt" data-idx="${idx}" data-field="mensualite" value="${sim.mensualite}" step="0.01"></div>
+                    <div><label>${t.f4_label_elt_birthyear || "Naissance"}</label><input type="number" class="dyn-input" data-type="elt" data-idx="${idx}" data-field="birthyear" value="${sim.birthyear}" step="1"></div>
+                    <div style="grid-column: 1/-1"><label>Âge terme</label><input type="number" class="dyn-input" data-type="elt" data-idx="${idx}" data-field="target_age" value="${sim.target_age}" step="1"></div>
+                </div>
+            </div>`).join('');
+    }
+
+    // Non-Fiscal
+    state.f5_nonfiscal_data = syncArray(parseInt(state.f5_nonfiscal_count) || 1, state.f5_nonfiscal_data, { mode: 'mensuel', mensualite: 100, capitalInitial: 0, birthyear: 2000, duree: 8, rendement: 3.0 });
+    const nfContainer = document.getElementById('nonfiscal-dynamic-inputs');
+    if (nfContainer) {
+        nfContainer.innerHTML = state.f5_nonfiscal_data.map((sim, idx) => {
+            let fieldsHtml = '';
+            
+            if (sim.mode === 'unique') {
+                fieldsHtml = `
+                    <div><label>${t.f4_label_nf_capital || "Capital de départ (€)"}</label><input type="number" class="dyn-input" data-type="nf" data-idx="${idx}" data-field="capitalInitial" value="${sim.capitalInitial}" step="100"></div>
+                    <div><label>${t.f4_label_nf_duree || "Durée (années)"}</label><input type="number" class="dyn-input" data-type="nf" data-idx="${idx}" data-field="duree" value="${sim.duree}" step="1"></div>
+                    <div><label>${t.f4_label_nf_rendement || "Rendement (%)"}</label><input type="number" class="dyn-input" data-type="nf" data-idx="${idx}" data-field="rendement" value="${sim.rendement}" step="0.1"></div>
+                `;
+            } else if (sim.mode === 'mensuel_init') {
+                fieldsHtml = `
+                    <div><label>${t.f4_label_nonfiscal_monthly || "Mensualité (€)"}</label><input type="number" class="dyn-input" data-type="nf" data-idx="${idx}" data-field="mensualite" value="${sim.mensualite}" step="10"></div>
+                    <div><label>${t.f4_label_nf_capital || "Capital de départ (€)"}</label><input type="number" class="dyn-input" data-type="nf" data-idx="${idx}" data-field="capitalInitial" value="${sim.capitalInitial}" step="100"></div>
+                    <div><label>${t.f4_label_nonfiscal_birthyear || "Naissance"}</label><input type="number" class="dyn-input" data-type="nf" data-idx="${idx}" data-field="birthyear" value="${sim.birthyear}" step="1"></div>
+                `;
+            } else {
+                fieldsHtml = `
+                    <div><label>${t.f4_label_nonfiscal_monthly || "Mensualité (€)"}</label><input type="number" class="dyn-input" data-type="nf" data-idx="${idx}" data-field="mensualite" value="${sim.mensualite}" step="10"></div>
+                    <div><label>${t.f4_label_nonfiscal_birthyear || "Naissance"}</label><input type="number" class="dyn-input" data-type="nf" data-idx="${idx}" data-field="birthyear" value="${sim.birthyear}" step="1"></div>
+                `;
+            }
+
+            return `
+            <div style="border-top: 1px dashed var(--border-light); padding-top: 10px; margin-top: 10px;">
+                <h5 style="margin-bottom: 5px; color: var(--primary-color);">Option ${idx + 1}</h5>
+                <div style="margin-bottom: 10px;">
+                    <select class="dyn-input" data-type="nf" data-idx="${idx}" data-field="mode" style="width: 100%; padding: 8px; border: 1px solid var(--border-light); border-radius: 4px; font-family: inherit;">
+                        <option value="mensuel" ${sim.mode === 'mensuel' ? 'selected' : ''}>${t.f4_nf_mode_mensuel || '1° Mensuel classique'}</option>
+                        <option value="mensuel_init" ${sim.mode === 'mensuel_init' ? 'selected' : ''}>${t.f4_nf_mode_mensuel_init || '2° Mensuel + Capital de départ'}</option>
+                        <option value="unique" ${sim.mode === 'unique' ? 'selected' : ''}>${t.f4_nf_mode_unique || '3° Prime Unique'}</option>
+                    </select>
+                </div>
+                <div class="mail-inputs-grid">
+                    ${fieldsHtml}
+                </div>
+            </div>`;
+        }).join('');
+    }
+
+    // Dela Obsèques
+    state.f5_dela_data = syncArray(parseInt(state.f5_dela_count) || 1, state.f5_dela_data, { capital: 10000, prime: 25 });
+    const delaContainer = document.getElementById('dela-dynamic-inputs');
+    if (delaContainer) {
+        delaContainer.innerHTML = state.f5_dela_data.map((sim, idx) => `
+            <div style="border-top: 1px dashed var(--border-light); padding-top: 10px; margin-top: 10px;">
+                <h5 style="margin-bottom: 5px; color: var(--primary-color);">Option ${idx + 1}</h5>
+                <div class="mail-inputs-grid">
+                    <div><label>${t.f4_label_dela_capital || "Capital"}</label><input type="number" class="dyn-input" data-type="dela" data-idx="${idx}" data-field="capital" value="${sim.capital}" step="500"></div>
+                    <div><label>${t.f4_label_dela_prime || "Prime"}</label><input type="number" class="dyn-input" data-type="dela" data-idx="${idx}" data-field="prime" value="${sim.prime}" step="0.01"></div>
+                </div>
+            </div>`).join('');
+    }
+
+    // Dela Héritage
+    state.f5_heritage_data = syncArray(parseInt(state.f5_heritage_count) || 1, state.f5_heritage_data, { capital: 10000, prime: 25 });
+    const heritageContainer = document.getElementById('heritage-dynamic-inputs');
+    if (heritageContainer) {
+        heritageContainer.innerHTML = state.f5_heritage_data.map((sim, idx) => `
+            <div style="border-top: 1px dashed var(--border-light); padding-top: 10px; margin-top: 10px;">
+                <h5 style="margin-bottom: 5px; color: var(--primary-color);">Option ${idx + 1}</h5>
+                <div class="mail-inputs-grid">
+                    <div><label>${t.f4_label_heritage_capital || "Capital"}</label><input type="number" class="dyn-input" data-type="heritage" data-idx="${idx}" data-field="capital" value="${sim.capital}" step="500"></div>
+                    <div><label>${t.f4_label_heritage_prime || "Prime"}</label><input type="number" class="dyn-input" data-type="heritage" data-idx="${idx}" data-field="prime" value="${sim.prime}" step="0.01"></div>
+                </div>
+            </div>`).join('');
+    }
+
+    // Enfants
+    state.f5_children_data = syncArray(parseInt(state.f5_children_count) || 0, state.f5_children_data, { name: "Enfant", mode: 'mensuel', mensualite: 100, capitalInitial: 0, birthyear: 2010 });
+    const childrenContainer = document.getElementById('children-options-container');
+    if (childrenContainer) {
+        childrenContainer.innerHTML = state.f5_children_data.map((sim, idx) => {
+            let fieldsHtml = '';
+            
+            if (sim.mode === 'mensuel_init') {
+                fieldsHtml = `
+                    <div><label>Nom</label><input type="text" class="dyn-input" data-type="enfant" data-idx="${idx}" data-field="name" value="${(sim.name||'').replace(/"/g, '&quot;')}"></div>
+                    <div><label>Mensualité</label><input type="number" class="dyn-input" data-type="enfant" data-idx="${idx}" data-field="mensualite" value="${sim.mensualite}"></div>
+                    <div><label>${t.f4_label_nf_capital || "Capital de départ"}</label><input type="number" class="dyn-input" data-type="enfant" data-idx="${idx}" data-field="capitalInitial" value="${sim.capitalInitial}" step="100"></div>
+                    <div><label>Naissance</label><input type="number" class="dyn-input" data-type="enfant" data-idx="${idx}" data-field="birthyear" value="${sim.birthyear}"></div>
+                `;
+            } else {
+                fieldsHtml = `
+                    <div><label>Nom</label><input type="text" class="dyn-input" data-type="enfant" data-idx="${idx}" data-field="name" value="${(sim.name||'').replace(/"/g, '&quot;')}"></div>
+                    <div><label>Mensualité</label><input type="number" class="dyn-input" data-type="enfant" data-idx="${idx}" data-field="mensualite" value="${sim.mensualite}"></div>
+                    <div><label>Naissance</label><input type="number" class="dyn-input" data-type="enfant" data-idx="${idx}" data-field="birthyear" value="${sim.birthyear}"></div>
+                `;
+            }
+            
+            return `
+            <div style="border-top: 1px dashed var(--border-light); padding-top: 10px; margin-top: 10px;">
+                <h5 style="margin-bottom: 5px; color: var(--primary-color);">${t.f4_child_name_label || "Enfant"} ${idx + 1}</h5>
+                <div style="margin-bottom: 10px;">
+                    <select class="dyn-input" data-type="enfant" data-idx="${idx}" data-field="mode" style="width: 100%; padding: 8px; border: 1px solid var(--border-light); border-radius: 4px; font-family: inherit;">
+                        <option value="mensuel" ${sim.mode === 'mensuel' ? 'selected' : ''}>${t.f4_nf_mode_mensuel || '1° Mensuel classique'}</option>
+                        <option value="mensuel_init" ${sim.mode === 'mensuel_init' ? 'selected' : ''}>${t.f4_nf_mode_mensuel_init || '2° Mensuel + Capital de départ'}</option>
+                    </select>
+                </div>
+                <div class="mail-inputs-grid">
+                    ${fieldsHtml}
+                </div>
+            </div>`;
+        }).join('');
+    }
+
+    updateState('f5_ep_data', state.f5_ep_data);
+    updateState('f5_elt_data', state.f5_elt_data);
+    updateState('f5_nonfiscal_data', state.f5_nonfiscal_data);
+    updateState('f5_dela_data', state.f5_dela_data);
+    updateState('f5_heritage_data', state.f5_heritage_data);
+    updateState('f5_children_data', state.f5_children_data);
+    
+    genererEmail();
+}
+
+function handleDynamicInput(e) {
+    if (e.target.classList.contains('dyn-input')) {
+        const type = e.target.dataset.type;
+        const idx = e.target.dataset.idx;
+        const field = e.target.dataset.field;
+        
+        let stateKey;
+        if (type === 'ep') stateKey = 'f5_ep_data';
+        if (type === 'elt') stateKey = 'f5_elt_data';
+        if (type === 'nf') stateKey = 'f5_nonfiscal_data';
+        if (type === 'dela') stateKey = 'f5_dela_data';
+        if (type === 'heritage') stateKey = 'f5_heritage_data';
+        if (type === 'enfant') stateKey = 'f5_children_data';
+
+        if (stateKey) {
+            const state = getState();
+            let val = e.target.value;
+            if (e.target.type === 'number') {
+                val = parseFloat(val);
+                if (isNaN(val)) val = 0;
+            }
+            
+            state[stateKey][idx][field] = val;
+            updateState(stateKey, state[stateKey]);
+            
+            if (field === 'mode') {
+                renderDynamicInputs(); 
+            } else {
+                genererEmail();
+            }
+        }
+    }
+}
+
+function toggleRdvInputs() {
+    const isTbd = getState().f5_rdv_tbd;
+    const displayValue = isTbd ? 'none' : 'block';
+    ['mail-rdv-date', 'mail-rdv-time'].forEach(id => {
+        const el = document.getElementById(id);
+        const lbl = document.querySelector(`label[for="${id}"]`);
+        if (el) el.style.display = displayValue;
+        if (lbl) lbl.style.display = displayValue;
+    });
+    genererEmail(); 
+}
+
+export function initF5() {
+    bindInput('mail-client-prenom', 'f5_prenom', genererEmail);
+    bindInput('mail-client-nom', 'f5_nom', genererEmail);
+    bindInput('mail-client-email', 'f5_email', genererEmail); 
+    bindInput('mail-rdv-date', 'f5_rdv_date', genererEmail);
+    bindInput('mail-rdv-time', 'f5_rdv_time', genererEmail);
+    bindCheckbox('mail-rdv-tbd', 'f5_rdv_tbd', toggleRdvInputs); 
+    bindInput('mail-langue', 'f5_langue', renderDynamicInputs);
+    bindInput('mail-common-msci-rate', 'f5_msci_rate', genererEmail);
+
+    ['ep', 'elt', 'plci', 'inami', 'eip', 'nonfiscal', 'dela', 'heritage', 'enfant', 'comparator'].forEach(type => {
+        bindCheckbox(`toggle-${type}`, `f5_toggle_${type}`, genererEmail);
+        const toggle = document.getElementById(`toggle-${type}`);
+        const container = document.getElementById(`${type === 'enfant' ? 'children-main' : type + '-options'}-container`);
+        if (toggle && container) {
+            const action = () => { container.style.display = toggle.checked ? 'block' : 'none'; };
+            toggle.addEventListener('change', action); action();
+        }
+    });
+
+    ['ep', 'elt', 'nonfiscal', 'dela', 'heritage', 'children'].forEach(type => {
+        bindInput(`mail-${type}-count`, `f5_${type}_count`, renderDynamicInputs);
+    });
+
+    bindCheckbox('mail-comp-stop-switch', 'f5_comp_scenario_stop_switch', () => {
+        const group = document.getElementById('mail-comp-c1-stop-switch-group');
+        if (group) group.style.display = getState().f5_comp_scenario_stop_switch ? 'block' : 'none';
+        genererEmail();
+    });
+
+    const group = document.getElementById('mail-comp-c1-stop-switch-group');
+    if (group) group.style.display = getState().f5_comp_scenario_stop_switch ? 'block' : 'none';
+
+    ['c1', 'c2'].forEach(c => {
+        bindInput(`mail-comp-${c}-name`, `f5_comp_${c}_name`, genererEmail);
+        bindInput(`mail-comp-${c}-type`, `f5_comp_${c}_type`, genererEmail);
+        bindInput(`mail-comp-${c}-target-age`, `f5_comp_${c}_target_age`, genererEmail);
+        bindInput(`mail-comp-${c}-start-age`, `f5_comp_${c}_start_age`, genererEmail);
+        bindInput(`mail-comp-${c}-versement`, `f5_comp_${c}_versement`, genererEmail);
+        bindInput(`mail-comp-${c}-rendement`, `f5_comp_${c}_rendement`, genererEmail);
+        bindInput(`mail-comp-${c}-frais-entree`, `f5_comp_${c}_frais_entree`, genererEmail);
+        bindInput(`mail-comp-${c}-frais-courant`, `f5_comp_${c}_frais_courant`, genererEmail);
+    });
+    bindInput('mail-comp-c1-original-age', 'f5_comp_c1_original_start_age', genererEmail);
+
+    const f4Section = document.getElementById('f4');
+    if (f4Section) {
+        f4Section.addEventListener('input', handleDynamicInput);
+    }
+
+    document.getElementById('f5-generate-button').addEventListener('click', () => {
+        genererEmail(); 
+        const previewCard = document.getElementById('f5-results-card');
+        if (previewCard) previewCard.style.display = 'block';
+    });
+    
+    toggleRdvInputs();
+    renderDynamicInputs(); 
+}

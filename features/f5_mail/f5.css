@@ -1,0 +1,222 @@
+/* ======================================================= */
+/* ### STYLES : GÉNÉRATEUR DE MAIL (F4 / ID HTML f4) ### */
+/* ======================================================= */
+
+/* Grille pour les infos client */
+.mail-inputs-grid {
+    display: grid;
+    /* Utilise auto-fit pour s'adapter, comme la grille globale */
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 15px;
+}
+/* Grille pour les toggles */
+.mail-toggles-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px 20px;
+}
+
+label.toggle-group {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background-color: var(--background-light);
+    padding: 10px;
+    border-radius: 8px;
+    border: 1px solid var(--border-light);
+    cursor: pointer; 
+    transition: border-color 0.2s ease;
+}
+label.toggle-group:hover {
+    border-color: var(--primary-color);
+}
+label.toggle-group span {
+    margin: 0;
+    font-weight: 600;
+    cursor: pointer;
+    user-select: none; 
+}
+label.toggle-group input[type="checkbox"] {
+    width: auto;
+    accent-color: var(--primary-color);
+    transform: scale(1.2);
+}
+
+/* --- NOUVEAU : Masquer la carte de prévisualisation par défaut --- */
+#f5-results-card {
+    display: none; /* Caché par défaut, JS le montrera au clic */
+}
+
+/* Conteneur d'aperçu de l'email */
+#email-preview-container {
+    border: 1px solid var(--border-light);
+    border-radius: var(--border-radius-base);
+    padding: 25px;
+    background-color: #fdfdfd;
+    min-height: 300px;
+    box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.05);
+    
+    /* Styles pour forcer le bon affichage du contenu HTML */
+    font-family: Arial, sans-serif;
+    font-size: 14px;
+    line-height: 1.6;
+    color: #333;
+}
+#email-preview-container p { margin-bottom: 16px; }
+#email-preview-container h3 {
+    font-size: 1.3em;
+    color: var(--primary-color);
+    margin-top: 25px;
+    margin-bottom: 15px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid var(--primary-color);
+    font-family: var(--font-family-primary); 
+}
+#email-preview-container strong { font-weight: bold; }
+#email-preview-container ul, #email-preview-container ol {
+    margin-left: 20px;
+    margin-bottom: 16px;
+}
+#email-preview-container a {
+    color: #0070B0;
+    text-decoration: underline;
+}
+
+/* Feedback de copie */
+#copy-feedback {
+    display: none;
+    margin-left: 10px;
+    color: var(--secondary-color);
+    font-weight: bold;
+}
+
+/* Responsive F4 */
+@media (max-width: 480px) {
+    /* .mail-inputs-grid est maintenant auto-fit, plus besoin de media query */
+    .mail-toggles-grid { grid-template-columns: 1fr; }
+    #email-preview-container { padding: 15px; }
+}
+
+/* --- Styles pour le lien-image MSCI --- */
+
+/* Wrapper for label + info link */
+.label-with-link {
+    display: flex;
+    align-items: center;
+    justify-content: space-between; /* Aligne le label à gauche et le bouton à droite */
+    margin-bottom: 5px; /* Remplace le margin de la label de base */
+}
+
+/* La label à l'intérieur perd son margin */
+.label-with-link label {
+    margin-bottom: 0;
+}
+
+/* Le bouton-lien */
+.info-link-button {
+    display: inline-block;
+    padding: 2px;
+    border: 1px solid var(--border-light);
+    border-radius: 5px;
+    line-height: 0; /* Pour que l'image colle bien */
+    transition: all 0.2s ease;
+}
+
+.info-link-button img {
+    height: 20px; /* Hauteur de l'image */
+    width: auto;
+    display: block;
+}
+
+.info-link-button:hover {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 5px rgba(0,112,176, 0.3);
+}
+
+/* Styles pour les méta-données de l'email (Sujet, À) */
+.email-meta-container {
+    border: 1px solid var(--border-light);
+    border-bottom: none; /* Le conteneur principal a déjà une bordure */
+    border-top-left-radius: var(--border-radius-base);
+    border-top-right-radius: var(--border-radius-base);
+    padding: 15px 25px;
+    background-color: #fcfcfc;
+    font-size: 0.9em;
+    color: #333;
+}
+.email-meta-line {
+    display: flex;
+    gap: 10px;
+    padding: 5px 0;
+}
+.email-meta-line strong {
+    color: var(--text-color-light);
+    font-weight: 600;
+    flex-shrink: 0;
+}
+.email-meta-line span {
+    font-weight: 500;
+    color: var(--text-color-dark);
+}
+
+/* Ajuster le conteneur d'aperçu pour coller */
+#email-preview-container {
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
+    border-top-color: #f0f0f0; /* Ligne fine de séparation */
+}
+
+/* Responsive */
+@media (max-width: 480px) {
+     .email-meta-container { padding: 10px 15px; }
+     #email-preview-container { padding: 15px; }
+     .email-meta-line { flex-direction: column; gap: 2px; }
+}
+
+
+/* --- Surcharge pour la mise en page (Req 5) --- */
+/* Cible le conteneur principal de la section F4 (Mail) */
+section#f4 .calculator-content {
+    display: block; /* Annule le 'display: flex' de style.css */
+}
+
+/* Force les deux cartes (paramètres et résultats) à prendre toute la largeur */
+section#f4 .parameters-card,
+section#f4 .results-card {
+    max-width: 100%; /* Annule la largeur max de style.css */
+    flex-basis: 100%; /* Annule le flex-basis */
+    min-width: unset;  /* Annule le min-width */
+    margin-bottom: 30px; /* Ajoute un espace entre les deux cartes */
+}
+
+/* Ajustement pour la dernière carte */
+section#f4 .results-card {
+    margin-bottom: 0;
+}
+
+
+/* --- NOUVEAU : Ajout de style "box" pour les groupes de paramètres F5 --- */
+section#f4 .parameters-card .input-group-section {
+    background-color: var(--background-light); /* Couleur de fond légère */
+    border: 1px solid var(--border-light);
+    border-radius: var(--border-radius-base);
+    padding: 20px; /* Plus de padding */
+    margin-bottom: 20px; /* Plus d'espace entre les boîtes */
+}
+
+/* Ajustement du premier groupe (pas de padding en haut) */
+section#f4 .parameters-card .input-group-section:first-of-type {
+    padding-top: 20px;
+}
+
+/* Ajustement des H4 dans les nouvelles boîtes (concerne les options EP, ELT, etc.) */
+section#f4 .parameters-card .input-group-section h4 {
+    margin-bottom: 15px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--border-light);
+}
+
+/* Ajustement du dernier groupe pour coller au bouton */
+section#f4 .parameters-card .input-group-section:last-of-type {
+    margin-bottom: 0;
+}
